@@ -1,7 +1,5 @@
 #include "crypto/Base64.hpp"
 
-#include <iostream>
-
 namespace Crypto
 {
 
