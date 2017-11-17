@@ -7,8 +7,8 @@ namespace Crypto
 class Base64
 {
 	public:
-		static std::string encode(const std::vector<uint8_t>&);
-		static std::vector<uint8_t> decode(const std::string);
+		static void encode(const uint8_t*, std::size_t, std::string&);
+		static void decode(const std::string, uint8_t*, std::size_t&);
 
 	private:
 		static const char    encode_map[64];

@@ -3,66 +3,63 @@
 namespace Crypto
 {
 
-std::string
-Base64::encode(const std::vector<uint8_t> &in)
+void
+Base64::encode(const uint8_t *input, std::size_t input_sz, std::string &output)
 {
-	std::string out;
-	std::size_t n = (in.size() / 3) * 3;
+	std::size_t n = (input_sz / 3) * 3;
 
+	output = "";
 	// Encode until padding part
 	for ( std::size_t i = 0 ; i < n ; i += 3 ) {
-		out += encode_map[ (in[i]   & 0xFC) >> 2];
-		out += encode_map[((in[i]   & 0x03) << 4) | ((in[i+1] & 0xF0) >> 4)];
-		out += encode_map[((in[i+1] & 0x0F) << 2) | ((in[i+2] & 0xC0) >> 6)];
-		out += encode_map[ (in[i+2] & 0x3F)];
+		output += encode_map[ (input[i]   & 0xFC) >> 2];
+		output += encode_map[((input[i]   & 0x03) << 4) | ((input[i+1] & 0xF0) >> 4)];
+		output += encode_map[((input[i+1] & 0x0F) << 2) | ((input[i+2] & 0xC0) >> 6)];
+		output += encode_map[ (input[i+2] & 0x3F)];
 	}
 
 	// Pad output if needed
-	if ( n < in.size() ) {
-		out += encode_map[ (in[n] & 0xFC) >> 2];
+	if ( n < input_sz ) {
+		output += encode_map[ (input[n] & 0xFC) >> 2];
 
-		if ( 1 == in.size() % 3 ) {
-			out += encode_map[((in[n]   & 0x03) << 4) | 0x00];
-			out += pad;
+		if ( 1 == input_sz % 3 ) {
+			output += encode_map[((input[n]   & 0x03) << 4) | 0x00];
+			output += pad;
 		} else {
-			out += encode_map[((in[n]   & 0x03) << 4) | ((in[n+1] & 0xF0) >> 4)];
-			out += encode_map[((in[n+1] & 0x0F) << 2) | 0x00];
+			output += encode_map[((input[n]   & 0x03) << 4) | ((input[n+1] & 0xF0) >> 4)];
+			output += encode_map[((input[n+1] & 0x0F) << 2) | 0x00];
 		}
 
-		out += pad;
+		output += pad;
 	}
-
-	return out;
 }
 
-std::vector<uint8_t>
-Base64::decode(const std::string in)
+void
+Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 {
-	std::vector<uint8_t> out;
 	std::size_t i, n;
 	uint32_t j, x;
 
 	// First pass: check for validity and get output length
 	j = 0;
-	for ( i = n = 0 ; i < in.length() ; ++i ) {
+	for ( i = n = 0 ; i < input.length() ; ++i ) {
 		// Skip spaces before checking for EOL
 		x = 0;
 
-		while ( i < in.length() && ' ' == in[i] ) {
+		while ( i < input.length() && ' ' == input[i] ) {
 			++i;
 			++x;
 		}
 
 		// Spaces at end of buffer are OK
-		if ( i == in.length() ) {
+		if ( i == input.length() ) {
 			break;
 		}
 
-		if ( (in.length() - i) >= 2 && '\r' == in[i] && '\n' == in[i+1] ) {
+		if ( (input.length() - i) >= 2 && '\r' == input[i] && '\n' == input[i+1] ) {
 			continue;
 		}
 
-		if ( '\n' == in[i] ) {
+		if ( '\n' == input[i] ) {
 			continue;
 		}
 
@@ -72,43 +69,61 @@ Base64::decode(const std::string in)
 		}
 
 		// More than 2 '=' is an arror
-		if ( '=' == in[i] && 2 < ++j ) {
+		if ( '=' == input[i] && 2 < ++j ) {
 			throw Base64Exception("Invalid character");
 		}
 
 		// Input character out of mapping
-		if ( 0x7F < in[i] || 0x7F == decode_map[static_cast<std::size_t>(in[i])] ) {
+		if ( 0x7F < input[i] || 0x7F == decode_map[static_cast<std::size_t>(input[i])] ) {
 			throw Base64Exception("Invalid character");
 		}
 
 		// '=' was in the middle of the string
-		if ( 0x40 > decode_map[static_cast<std::size_t>(in[i])] && 0 != j ) {
+		if ( 0x40 > decode_map[static_cast<std::size_t>(input[i])] && 0 != j ) {
 			throw Base64Exception("Invalid character");
 		}
 
 		++n;
 	}
 
+	if ( 0 == n ) {
+		output_sz = 0;
+		return;
+	}
+
+	/* The following expression is to calculate the following formula without
+	 * risk of integer overflow in n:
+	 *     n = ( ( n * 6 ) + 7 ) >> 3;
+	 */
+	n = ( 6 * ( n >> 3 ) ) + ( ( 6 * ( n & 0x7 ) + 7 ) >> 3 );
+	n -= j;
+
+	if ( n > output_sz ) {
+		output_sz = n;
+		return;
+	}
+
 	x = 0;
 	j = 3;
-	for ( i = n = 0 ; i < in.length() ; ++i ) {
-		if ( ' ' == in[i] || '\r' == in[i] || '\n' == in[i] ) {
+	n = 0;
+	uint8_t *p = output;
+	for ( i = 0 ; i < input.length() ; ++i ) {
+		if ( ' ' == input[i] || '\r' == input[i] || '\n' == input[i] ) {
 			continue;
 		}
 
-		j -= (64 == decode_map[static_cast<std::size_t>(in[i])]);
-		x = (x << 6) | (decode_map[static_cast<std::size_t>(in[i])] & 0x3F);
+		j -= ( 0x40 == decode_map[static_cast<std::size_t>(input[i])] );
+		x  = ( x << 6 ) | ( decode_map[static_cast<std::size_t>(input[i])] & 0x3F );
 
 		if ( 4 == ++n ) {
 			n = 0;
-
-			if ( j > 0 ) { out.push_back(static_cast<std::uint8_t>(x >> 16)); }
-			if ( j > 1 ) { out.push_back(static_cast<std::uint8_t>(x >>  8)); }
-			if ( j > 2 ) { out.push_back(static_cast<std::uint8_t>(x      )); }
+			if ( j > 0 ) { *p++ = static_cast<uint8_t>(x >> 16); }
+			if ( j > 1 ) { *p++ = static_cast<uint8_t>(x >>  8); }
+			if ( j > 2 ) { *p++ = static_cast<uint8_t>(x      ); }
 		}
 	}
 
-	return out;
+	output_sz = p - output;
 }
 
 const char

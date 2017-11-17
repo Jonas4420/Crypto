@@ -13,7 +13,7 @@ class SHA256
 		void update(const uint8_t*, std::size_t);
 		void finish(unsigned char[32]);
 
-		static void digest(const uint8_t*, std::size_t, uint8_t[32], bool);
+		static void digest(const uint8_t*, std::size_t, uint8_t[32], bool=false);
 	private:
 		uint32_t total[2];
 		uint32_t state[8];
