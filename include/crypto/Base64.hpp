@@ -1,3 +1,4 @@
+#include <string>
 #include <vector>
 
 namespace Crypto
@@ -6,8 +7,8 @@ namespace Crypto
 class Base64
 {
 	public:
-		static std::vector<char> encode(const std::vector<uint8_t>&);
-		static std::vector<uint8_t> decode(const std::vector<char>&);
+		static std::string encode(const std::vector<uint8_t>&);
+		static std::vector<uint8_t> decode(const std::string);
 
 	private:
 		static const char    encode_map[64];
