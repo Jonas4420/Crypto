@@ -47,8 +47,18 @@ namespace Crypto
 
 SHA256::SHA256(void)
 {
-	Utils::zeroize(total,  sizeof(total));
-	Utils::zeroize(state,  sizeof(state));
+	total[0] = 0;
+	total[1] = 0;
+
+	state[0] = 0x6A09E667;
+	state[1] = 0xBB67AE85;
+	state[2] = 0x3C6EF372;
+	state[3] = 0xA54FF53A;
+	state[4] = 0x510E527F;
+	state[5] = 0x9B05688C;
+	state[6] = 0x1F83D9AB;
+	state[7] = 0x5BE0CD19;
+
 	Utils::zeroize(buffer, sizeof(buffer));
 }
 
@@ -57,37 +67,6 @@ SHA256::~SHA256(void)
 	Utils::zeroize(total,  sizeof(total));
 	Utils::zeroize(state,  sizeof(state));
 	Utils::zeroize(buffer, sizeof(buffer));
-}
-
-void
-SHA256::starts(bool is224)
-{
-	total[0] = 0;
-	total[1] = 0;
-
-	if ( is224 == 0 ) {
-		/* SHA-256 */
-		state[0] = 0x6A09E667;
-		state[1] = 0xBB67AE85;
-		state[2] = 0x3C6EF372;
-		state[3] = 0xA54FF53A;
-		state[4] = 0x510E527F;
-		state[5] = 0x9B05688C;
-		state[6] = 0x1F83D9AB;
-		state[7] = 0x5BE0CD19;
-	} else {
-		/* SHA-224 */
-		state[0] = 0xC1059ED8;
-		state[1] = 0x367CD507;
-		state[2] = 0x3070DD17;
-		state[3] = 0xF70E5939;
-		state[4] = 0xFFC00B31;
-		state[5] = 0x68581511;
-		state[6] = 0x64F98FA7;
-		state[7] = 0xBEFA4FA4;
-	}
-
-	this->is224 = is224;
 }
 
 void 
@@ -133,11 +112,11 @@ SHA256::update(const uint8_t *input, std::size_t input_sz)
 }
 
 void 
-SHA256::finish(uint8_t output[32])
+SHA256::finish(uint8_t *output)
 {
 	uint32_t last, padn;
 	uint32_t high, low;
-	uint8_t msglen[8];
+	uint8_t  msglen[8];
 
 	high = (total[0] >> 29) | (total[1] << 3);
 	low  = (total[0] <<  3);
@@ -158,20 +137,7 @@ SHA256::finish(uint8_t output[32])
 	PUT_UINT32_BE(state[4], output, 16);
 	PUT_UINT32_BE(state[5], output, 20);
 	PUT_UINT32_BE(state[6], output, 24);
-
-	if ( ! is224 ) {
-		PUT_UINT32_BE(state[7], output, 28);
-	}
-}
-
-void
-SHA256::digest(const uint8_t *input, std::size_t input_sz, uint8_t output[32], bool is224)
-{
-	SHA256 ctx;
-
-	ctx.starts(is224);
-	ctx.update(input, input_sz);
-	ctx.finish(output);
+	PUT_UINT32_BE(state[7], output, 28);
 }
 
 void
@@ -179,7 +145,7 @@ SHA256::process(const uint8_t data[64])
 {
 	uint32_t temp1, temp2, W[64];
 	uint32_t A[8];
-	unsigned int i;
+	std::size_t i;
 
 	for ( i = 0 ; i < 8 ; ++i ) {
 		A[i] = state[i];
