@@ -13,12 +13,12 @@ Utils::zeroize(void *v, std::size_t n)
 	}
 }
 
-void
+int
 Utils::from_string(const std::string input, uint8_t *output, std::size_t &output_sz)
 {
 	if ( input.length() > output_sz ) {
 		output_sz = input.length();
-		return;
+		return CRYPTO_UTILS_INCORRECT_LENGTH;
 	}
 
 	for ( std::size_t i = 0 ; i < input.length() ; ++i ) {
@@ -26,17 +26,23 @@ Utils::from_string(const std::string input, uint8_t *output, std::size_t &output
 	}
 
 	output_sz = input.length();
+
+	return CRYPTO_UTILS_SUCCESS;
 }
 
-void
+int
 Utils::to_string(const uint8_t* input, std::size_t input_sz, std::string &output)
 {
+	output = "";
+
 	for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
 		output += static_cast<char>(input[i]);
 	}
+
+	return CRYPTO_UTILS_SUCCESS;
 }
 
-void
+int
 Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz)
 {
 	char c[2];
@@ -47,7 +53,7 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 
 	if ( input.length() / 2 > output_sz ) {
 		output_sz = input.length() / 2;
-		return;
+		return CRYPTO_UTILS_INCORRECT_LENGTH;
 	}
 
 	for ( std::size_t i = 0 ; i < input.length() ; i += 2 ) {
@@ -85,9 +91,11 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 	}
 
 	output_sz = input.length() / 2;
+
+	return CRYPTO_UTILS_SUCCESS;
 }
 
-void
+int
 Utils::to_hex(const uint8_t *input, std::size_t input_sz, std::string &output, bool uppercase)
 {
 	uint8_t u[2];
@@ -109,6 +117,8 @@ Utils::to_hex(const uint8_t *input, std::size_t input_sz, std::string &output, b
 			output += u[1] + (uppercase ? 'A' : 'a') - 10;
 		}
 	}
+
+	return CRYPTO_UTILS_SUCCESS;
 }
 
 }

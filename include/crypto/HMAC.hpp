@@ -1,29 +1,27 @@
 #ifndef CRYPTO_HMAC_H
 #define CRYPTO_HMAC_H
 
-#include <type_traits>
-
 #include "crypto/MessageDigest.hpp"
 #include "crypto/Utils.hpp"
 
 namespace Crypto
 {
 
-template <typename T, typename = std::enable_if<std::is_base_of<MessageDigest, T>::value>>
+template <class MD>
 class HMAC final
 {
 	public:
 		HMAC(const uint8_t *key, std::size_t key_sz)
 		{
-			uint8_t K0[T::BLOCK_SIZE];
+			uint8_t K0[MD::BLOCK_SIZE];
 			uint8_t *ipad, *opad;
 
-			Utils::zeroize(K0, T::BLOCK_SIZE);
+			Utils::zeroize(K0, MD::BLOCK_SIZE);
 
-			if ( key_sz > T::BLOCK_SIZE ) {
+			if ( key_sz > MD::BLOCK_SIZE ) {
 				md_ctx.update(key, key_sz);
 				md_ctx.finish(K0);
-				md_ctx = T();
+				md_ctx = MD();
 			} else {
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					K0[i] = key[i];
@@ -31,19 +29,19 @@ class HMAC final
 			}
 
 			ipad = hmac_ctx;
-			opad = hmac_ctx + T::BLOCK_SIZE;
+			opad = hmac_ctx + MD::BLOCK_SIZE;
 
-			memset(ipad, 0x36, T::BLOCK_SIZE);
-			memset(opad, 0x5C, T::BLOCK_SIZE);
+			memset(ipad, 0x36, MD::BLOCK_SIZE);
+			memset(opad, 0x5C, MD::BLOCK_SIZE);
 
-			for ( std::size_t i = 0 ; i < T::BLOCK_SIZE ; ++i ) {
+			for ( std::size_t i = 0 ; i < MD::BLOCK_SIZE ; ++i ) {
 				ipad[i] ^= K0[i];
 				opad[i] ^= K0[i];
 			}
 
 			Utils::zeroize(K0, sizeof(K0));
 
-			md_ctx.update(ipad, T::BLOCK_SIZE);
+			md_ctx.update(ipad, MD::BLOCK_SIZE);
 		}
 
 		~HMAC(void)
@@ -58,15 +56,15 @@ class HMAC final
 
 		void finish(uint8_t *output)
 		{
-			uint8_t tmp[T::SIZE];
+			uint8_t tmp[MD::SIZE];
 			uint8_t *opad;
 
-			opad = hmac_ctx + T::BLOCK_SIZE;
+			opad = hmac_ctx + MD::BLOCK_SIZE;
 			md_ctx.finish(tmp);
 
-			md_ctx = T();
-			md_ctx.update(opad, T::BLOCK_SIZE);
-			md_ctx.update(tmp,  T::SIZE);
+			md_ctx = MD();
+			md_ctx.update(opad, MD::BLOCK_SIZE);
+			md_ctx.update(tmp,  MD::SIZE);
 			md_ctx.finish(output);
 		}
 
@@ -74,20 +72,20 @@ class HMAC final
 		{
 			uint8_t *ipad = hmac_ctx;
 
-			md_ctx = T();
-			md_ctx.update(ipad, T::BLOCK_SIZE);
+			md_ctx = MD();
+			md_ctx.update(ipad, MD::BLOCK_SIZE);
 		}
 
-		static const std::size_t SIZE = T::SIZE;
+		static const std::size_t SIZE = MD::SIZE;
 	private:
-		T md_ctx;
-		uint8_t hmac_ctx[2 * T::BLOCK_SIZE];
+		MD md_ctx;
+		uint8_t hmac_ctx[2 * MD::BLOCK_SIZE];
 };
 
-template <typename T, typename = std::enable_if<std::is_base_of<MessageDigest, T>::value>>
+template <typename MD, typename = std::enable_if<std::is_base_of<MessageDigest, MD>::value>>
 void getHMAC(const uint8_t *key, std::size_t key_sz, const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
-	HMAC<T> ctx(key, key_sz);
+	HMAC<MD> ctx(key, key_sz);
 	ctx.update(input, input_sz);
 	ctx.finish(output);
 }

@@ -1,8 +1,6 @@
 #ifndef CRYPTO_MESSAGEDIGEST_H
 #define CRYPTO_MESSAGEDIGEST_H
 
-#include <type_traits>
-
 #include <cstddef>
 #include <cstdint>
 
@@ -16,11 +14,10 @@ class MessageDigest
 		virtual void finish(uint8_t*) = 0;
 };
 
-
-template <typename T, typename = std::enable_if<std::is_base_of<MessageDigest, T>::value>>
+template <class MD>
 static void getMessageDigest(const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
-	T ctx;
+	MD ctx;
 	ctx.update(input, input_sz);
 	ctx.finish(output);
 }

@@ -66,7 +66,7 @@
 namespace Crypto
 {
 
-AES::AES(const uint8_t *key, std::size_t key_sz)
+AES::AES(const uint8_t *key, std::size_t key_sz) : SymmetricCipher(key, key_sz)
 {
 	switch ( key_sz ) {
 		case 16 : nr = 10; break;
@@ -75,8 +75,14 @@ AES::AES(const uint8_t *key, std::size_t key_sz)
 		default : throw AESException("Key size is not supported");
 	}
 
-	set_keyenc(key, key_sz * 8);
-	set_keydec(key, key_sz * 8);
+	uint32_t *RK = buf_enc;
+
+	for ( std::size_t i = 0 ; i < ((key_sz * 8) >> 5); ++i ) {
+		GET_UINT32_LE(RK[i], key, i << 2);
+	}
+
+	set_keyenc();
+	set_keydec();
 }
 
 AES::~AES(void)
@@ -189,15 +195,11 @@ AES::decrypt(const uint8_t *ciphertext, uint8_t *plaintext)
 }
 
 void
-AES::set_keyenc(const uint8_t *key, std::size_t key_sz)
+AES::set_keyenc(void)
 {
 	uint32_t *RK;
 
 	rk_enc = RK = buf_enc;
-
-	for ( std::size_t i = 0 ; i < (key_sz >> 5); ++i ) {
-		GET_UINT32_LE(RK[i], key, i << 2);
-	}
 
 	switch ( nr ) {
 		case 10:
@@ -257,7 +259,7 @@ AES::set_keyenc(const uint8_t *key, std::size_t key_sz)
 }
 
 void
-AES::set_keydec(const uint8_t *key, std::size_t key_sz)
+AES::set_keydec(void)
 {
 	uint32_t *RK;
 	uint32_t *SK;

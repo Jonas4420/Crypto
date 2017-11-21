@@ -9,13 +9,16 @@ namespace Crypto
 	class Utils
 	{
 		public:
-			void static zeroize(void *v, std::size_t n);
+			static void zeroize(void *v, std::size_t n);
 
-			void static from_string(const std::string, uint8_t*, std::size_t&);
-			void static to_string(const uint8_t*, std::size_t, std::string&);
+			static int from_string(const std::string, uint8_t*, std::size_t&);
+			static int to_string(const uint8_t*, std::size_t, std::string&);
 
-			void static from_hex(const std::string, uint8_t*, std::size_t&);
-			void static to_hex(const uint8_t*, std::size_t, std::string&, bool=true);
+			static int from_hex(const std::string, uint8_t*, std::size_t&);
+			static int to_hex(const uint8_t*, std::size_t, std::string&, bool=true);
+
+			static const uint8_t CRYPTO_UTILS_SUCCESS          = 0x00;
+			static const uint8_t CRYPTO_UTILS_INCORRECT_LENGTH = 0x01;
 	};
 
 	class CryptoException : public std::runtime_error
