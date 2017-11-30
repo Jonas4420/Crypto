@@ -15,7 +15,7 @@ class MessageDigest
 };
 
 template <class MD>
-static void getMessageDigest(const uint8_t *input, std::size_t input_sz, uint8_t *output)
+static void MessageDigest_get(const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
 	MD ctx;
 	ctx.update(input, input_sz);

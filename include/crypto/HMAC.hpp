@@ -82,8 +82,8 @@ class HMAC final
 		uint8_t hmac_ctx[2 * MD::BLOCK_SIZE];
 };
 
-template <typename MD, typename = std::enable_if<std::is_base_of<MessageDigest, MD>::value>>
-void getHMAC(const uint8_t *key, std::size_t key_sz, const uint8_t *input, std::size_t input_sz, uint8_t *output)
+template <class MD>
+void HMAC_get(const uint8_t *key, std::size_t key_sz, const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
 	HMAC<MD> ctx(key, key_sz);
 	ctx.update(input, input_sz);
