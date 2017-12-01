@@ -52,9 +52,9 @@ class ECB final
 		{
 			std::size_t need_sz, total_sz, write_sz;
 
-			// Check that cipher is large enough
+			// Check that ciphertext is large enough
 			need_sz = ((buffer_sz + plain_sz) / BLOCK_SIZE) * BLOCK_SIZE;
-			if ( need_sz > cipher_sz ) {
+			if ( cipher_sz < need_sz ) {
 				cipher_sz = need_sz;
 				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
 			}
@@ -87,16 +87,15 @@ class ECB final
 			// Copy remaining part of plaintext into buffer
 			if ( plain_sz > 0 ) {
 				memcpy(buffer + buffer_sz, plain, plain_sz);
-				buffer_sz += plain_sz % BLOCK_SIZE;
+				buffer_sz += plain_sz;
 			}
-			cipher_sz = need_sz;
 
 			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
 		}
 
 		int encrypt_finish(uint8_t *cipher, std::size_t &cipher_sz)
 		{
-			if ( BLOCK_SIZE > cipher_sz ) {
+			if ( cipher_sz < BLOCK_SIZE ) {
 				cipher_sz = BLOCK_SIZE;
 				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
 			}
@@ -110,7 +109,51 @@ class ECB final
 
 		int decrypt_update(const uint8_t *cipher, std::size_t cipher_sz, uint8_t *plain, std::size_t &plain_sz)
 		{
-			// TODO: always keep buffer full, so we can have padding at finish
+			std::size_t need_sz, total_sz, write_sz;
+
+			// Check that plaintext is large enough
+			need_sz = ((buffer_sz + cipher_sz) / BLOCK_SIZE) * BLOCK_SIZE;
+
+			if ( need_sz >= BLOCK_SIZE ) {
+				need_sz -= BLOCK_SIZE;
+			}
+
+			if ( plain_sz < need_sz ) {
+				plain_sz = need_sz;
+				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
+			}
+
+			// Decrypt provided ciphertext
+			total_sz  = buffer_sz + cipher_sz;
+			plain_sz = 0;
+			while ( total_sz > BLOCK_SIZE ) {
+				// Fill the buffer with ciphertext 
+				if ( buffer_sz < BLOCK_SIZE ) {
+					write_sz = BLOCK_SIZE - buffer_sz;
+
+					memcpy(buffer + buffer_sz, cipher, write_sz);
+					buffer_sz = BLOCK_SIZE;
+
+					cipher    += write_sz;
+					cipher_sz -= write_sz;
+				}
+
+				// Decrypt data
+				sc_ctx.decrypt(buffer, plain);
+				buffer_sz = 0;
+
+				// Update size of data
+				plain    += BLOCK_SIZE;
+				plain_sz += BLOCK_SIZE;
+				total_sz -= BLOCK_SIZE;
+			}
+
+			// Copy remaining part of ciphertext into buffer
+			if ( 0 < cipher_sz ) {
+				memcpy(buffer + buffer_sz, cipher, cipher_sz);
+				buffer_sz += cipher_sz;
+			}
+
 			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
 		}
 
@@ -120,7 +163,7 @@ class ECB final
 				throw PaddingException("Invalid padding");
 			}
 
-			if ( BLOCK_SIZE > plain_sz ) {
+			if ( plain_sz < BLOCK_SIZE ) {
 				plain_sz = BLOCK_SIZE;
 				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
 			}
@@ -136,7 +179,7 @@ template <class SC, class P>
 int ECB_process(const uint8_t *key,   std::size_t key_sz,
 		const uint8_t *input, std::size_t input_sz,
 		uint8_t *output,      std::size_t &output_sz,
-		bool is_encrypt)
+		bool is_encrypt = true)
 {
 	std::size_t need_sz, total_sz, tmp_sz;
 

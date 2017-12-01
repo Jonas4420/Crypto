@@ -17,8 +17,9 @@ class SymmetricCipher
 		virtual void encrypt(const uint8_t*, uint8_t*) = 0;
 		virtual void decrypt(const uint8_t*, uint8_t*) = 0;
 
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_SUCCESS        = 0x00;
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH = 0x01;
+		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_SUCCESS         = 0x00;
+		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH  = 0x01;
+		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_BUFFER_NOT_FULL = 0x02;
 };
 
 }
