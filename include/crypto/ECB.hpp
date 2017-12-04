@@ -112,10 +112,14 @@ class ECB final
 			std::size_t need_sz, total_sz, write_sz;
 
 			// Check that plaintext is large enough
-			need_sz = ((buffer_sz + cipher_sz) / BLOCK_SIZE) * BLOCK_SIZE;
+			need_sz = buffer_sz + cipher_sz;
 
-			if ( need_sz >= BLOCK_SIZE ) {
+			if ( need_sz <= BLOCK_SIZE ) {
+				need_sz = 0;
+			} else if ( need_sz % BLOCK_SIZE == 0 ) {
 				need_sz -= BLOCK_SIZE;
+			} else {
+				need_sz = (need_sz / BLOCK_SIZE) * BLOCK_SIZE;
 			}
 
 			if ( plain_sz < need_sz ) {
@@ -149,7 +153,7 @@ class ECB final
 			}
 
 			// Copy remaining part of ciphertext into buffer
-			if ( 0 < cipher_sz ) {
+			if ( cipher_sz > 0 ) {
 				memcpy(buffer + buffer_sz, cipher, cipher_sz);
 				buffer_sz += cipher_sz;
 			}
