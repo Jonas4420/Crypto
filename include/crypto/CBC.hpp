@@ -1,5 +1,5 @@
-#ifndef CRYPTO_ECB_H
-#define CRYPTO_ECB_H
+#ifndef CRYPTO_CBC_H
+#define CRYPTO_CBC_H
 
 #include <cstddef>
 #include <cstdint>
@@ -11,16 +11,18 @@ namespace Crypto
 {
 
 template <class SC>
-class ECB final
+class CBC final
 {
 	public:
-		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt = true)
+		CBC(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], bool is_encrypt = true)
 			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt), is_finished(false)
 		{
+			memcpy(last, iv, BLOCK_SIZE);
 		}
 
-		~ECB(void)
+		~CBC(void)
 		{
+			Utils::zeroize(last,   sizeof(last));
 			Utils::zeroize(buffer, sizeof(buffer));
 		}
 
@@ -55,11 +57,25 @@ class ECB final
 				}
 
 				if ( is_encrypt ) {
+					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
+						buffer[i] = buffer[i] ^ last[i];
+					}
+
 					sc_ctx.encrypt(buffer, output);
+					buffer_sz = 0;
+
+					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
+						last[i] = output[i];
+					}
 				} else {
 					sc_ctx.decrypt(buffer, output);
+					buffer_sz = 0;
+
+					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
+						output[i] = output[i] ^ last[i];
+						last[i]   = buffer[i];
+					}
 				}
-				buffer_sz = 0;
 
 				// Update size of data
 				output    += BLOCK_SIZE;
@@ -96,6 +112,7 @@ class ECB final
 
 		uint8_t     buffer[BLOCK_SIZE];
 		std::size_t buffer_sz;
+		uint8_t     last[BLOCK_SIZE];
 		bool        is_encrypt;
 		bool        is_finished;
 };
