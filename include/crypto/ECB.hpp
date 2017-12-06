@@ -4,19 +4,18 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "crypto/Padding.hpp"
 #include "crypto/SymmetricCipher.hpp"
 #include "crypto/Utils.hpp"
 
 namespace Crypto
 {
 
-template <class SC, class P = PKCS7Padding>
+template <class SC>
 class ECB final
 {
 	public:
 		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt = true)
-			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt)
+			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt), is_finished(false)
 		{
 		}
 
@@ -27,158 +26,81 @@ class ECB final
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
-			return is_encrypt ?
-				encrypt_update(input, input_sz, output, output_sz) :
-				decrypt_update(input, input_sz, output, output_sz);
+			std::size_t need_sz, total_sz, write_sz;
+
+			if ( is_finished ) {
+				throw SymmetricCipherException("Cipher has finished processing data");
+			}
+
+			// Check that output is large enough
+			need_sz = ((buffer_sz + input_sz) / BLOCK_SIZE) * BLOCK_SIZE;
+			if ( output_sz < need_sz ) {
+				output_sz = need_sz;
+				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
+			}
+
+			// Process input
+			total_sz  = buffer_sz + input_sz;
+			output_sz = 0;
+			while ( total_sz >= BLOCK_SIZE ) {
+				// Fill the buffer with input
+				if ( buffer_sz < BLOCK_SIZE ) {
+					write_sz = BLOCK_SIZE - buffer_sz;
+
+					memcpy(buffer + buffer_sz, input, write_sz);
+					buffer_sz = BLOCK_SIZE;
+
+					input    += write_sz;
+					input_sz -= write_sz;
+				}
+
+				if ( is_encrypt ) {
+					sc_ctx.encrypt(buffer, output);
+				} else {
+					sc_ctx.decrypt(buffer, output);
+				}
+				buffer_sz = 0;
+
+				// Update size of data
+				output    += BLOCK_SIZE;
+				output_sz += BLOCK_SIZE;
+				total_sz  -= BLOCK_SIZE;
+			}
+
+			// Copy remaining part of input into buffer
+			if ( input_sz > 0 ) {
+				memcpy(buffer + buffer_sz, input, input_sz);
+				buffer_sz += input_sz;
+			}
+
+			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
 		}
 
-		int finish(uint8_t *output, std::size_t &output_sz)
+		int finish(std::size_t &pad_sz)
 		{
-			return is_encrypt ?
-				encrypt_finish(output, output_sz) :
-				decrypt_finish(output, output_sz);
+			if ( ! is_finished ) {
+				if ( buffer_sz != 0 ) {
+					pad_sz = BLOCK_SIZE - buffer_sz;
+					return SC::CRYPTO_SYMMETRIC_CIPHER_NOT_FULL;
+				}
+
+				is_finished = true;
+			}
+
+			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
 		}
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
 	private:
 		SC sc_ctx;
-		P  p_ctx;
 
 		uint8_t     buffer[BLOCK_SIZE];
 		std::size_t buffer_sz;
 		bool        is_encrypt;
-
-		int encrypt_update(const uint8_t *plain, std::size_t plain_sz, uint8_t *cipher, std::size_t &cipher_sz)
-		{
-			std::size_t need_sz, total_sz, write_sz;
-
-			// Check that ciphertext is large enough
-			need_sz = ((buffer_sz + plain_sz) / BLOCK_SIZE) * BLOCK_SIZE;
-			if ( cipher_sz < need_sz ) {
-				cipher_sz = need_sz;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
-			}
-
-			// Encrypt provided plaintext 
-			total_sz  = buffer_sz + plain_sz;
-			cipher_sz = 0;
-			while ( total_sz >= BLOCK_SIZE ) {
-				// Fill the buffer with plaintext
-				if ( buffer_sz < BLOCK_SIZE ) {
-					write_sz = BLOCK_SIZE - buffer_sz;
-
-					memcpy(buffer + buffer_sz, plain, write_sz);
-					buffer_sz = BLOCK_SIZE;
-
-					plain    += write_sz;
-					plain_sz -= write_sz;
-				}
-
-				// Encrypt data
-				sc_ctx.encrypt(buffer, cipher);
-				buffer_sz = 0;
-
-				// Update size of data
-				cipher    += BLOCK_SIZE;
-				cipher_sz += BLOCK_SIZE;
-				total_sz  -= BLOCK_SIZE;
-			}
-
-			// Copy remaining part of plaintext into buffer
-			if ( plain_sz > 0 ) {
-				memcpy(buffer + buffer_sz, plain, plain_sz);
-				buffer_sz += plain_sz;
-			}
-
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
-		}
-
-		int encrypt_finish(uint8_t *cipher, std::size_t &cipher_sz)
-		{
-			if ( cipher_sz < BLOCK_SIZE ) {
-				cipher_sz = BLOCK_SIZE;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
-			}
-
-			P::pad(buffer, buffer_sz, BLOCK_SIZE);
-			sc_ctx.encrypt(buffer, cipher);
-			cipher_sz = BLOCK_SIZE;
-
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
-		}
-
-		int decrypt_update(const uint8_t *cipher, std::size_t cipher_sz, uint8_t *plain, std::size_t &plain_sz)
-		{
-			std::size_t need_sz, total_sz, write_sz;
-
-			// Check that plaintext is large enough
-			need_sz = buffer_sz + cipher_sz;
-
-			if ( need_sz <= BLOCK_SIZE ) {
-				need_sz = 0;
-			} else if ( need_sz % BLOCK_SIZE == 0 ) {
-				need_sz -= BLOCK_SIZE;
-			} else {
-				need_sz = (need_sz / BLOCK_SIZE) * BLOCK_SIZE;
-			}
-
-			if ( plain_sz < need_sz ) {
-				plain_sz = need_sz;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
-			}
-
-			// Decrypt provided ciphertext
-			total_sz  = buffer_sz + cipher_sz;
-			plain_sz = 0;
-			while ( total_sz > BLOCK_SIZE ) {
-				// Fill the buffer with ciphertext 
-				if ( buffer_sz < BLOCK_SIZE ) {
-					write_sz = BLOCK_SIZE - buffer_sz;
-
-					memcpy(buffer + buffer_sz, cipher, write_sz);
-					buffer_sz = BLOCK_SIZE;
-
-					cipher    += write_sz;
-					cipher_sz -= write_sz;
-				}
-
-				// Decrypt data
-				sc_ctx.decrypt(buffer, plain);
-				buffer_sz = 0;
-
-				// Update size of data
-				plain    += BLOCK_SIZE;
-				plain_sz += BLOCK_SIZE;
-				total_sz -= BLOCK_SIZE;
-			}
-
-			// Copy remaining part of ciphertext into buffer
-			if ( cipher_sz > 0 ) {
-				memcpy(buffer + buffer_sz, cipher, cipher_sz);
-				buffer_sz += cipher_sz;
-			}
-
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
-		}
-
-		int decrypt_finish(uint8_t *plain, std::size_t &plain_sz)
-		{
-			if ( 0 != buffer_sz % BLOCK_SIZE ) {
-				throw PaddingException("Invalid padding");
-			}
-
-			if ( plain_sz < BLOCK_SIZE ) {
-				plain_sz = BLOCK_SIZE;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
-			}
-
-			sc_ctx.decrypt(buffer, plain);
-			P::unpad(plain, BLOCK_SIZE, plain_sz);
-
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
-		}
+		bool        is_finished;
 };
 
+/*
 template <class SC, class P>
 int ECB_process(const uint8_t *key,   std::size_t key_sz,
 		const uint8_t *input, std::size_t input_sz,
@@ -211,6 +133,7 @@ int ECB_process(const uint8_t *key,   std::size_t key_sz,
 
 	return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
 }
+*/
 
 }
 
