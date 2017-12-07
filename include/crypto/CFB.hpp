@@ -1,5 +1,5 @@
-#ifndef CRYPTO_CBC_H
-#define CRYPTO_CBC_H
+#ifndef CRYPTO_CFB_H
+#define CRYPTO_CFB_H
 
 #include <cstddef>
 #include <cstdint>
@@ -11,19 +11,30 @@ namespace Crypto
 {
 
 template <class SC>
-class CBC final
+class CFB final
 {
 	public:
-		CBC(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], bool is_encrypt = true)
+		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE, bool is_encrypt = true)
 			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt), is_finished(false)
 		{
+			if ( 0 != STREAM_SIZE % 8 ) {
+				throw SymmetricCipherException("Unsupported data segment size");
+			}
+
+			this->STREAM_SIZE = STREAM_SIZE / 8;
+
+			if ( this->STREAM_SIZE < 1 || this->STREAM_SIZE > BLOCK_SIZE ) {
+				throw SymmetricCipherException("Invalid data segment size");
+			}
+
 			memcpy(this->iv, iv, BLOCK_SIZE);
 		}
 
-		~CBC(void)
+		~CFB(void)
 		{
 			Utils::zeroize(buffer, sizeof(buffer));
 			Utils::zeroize(iv,     sizeof(iv));
+			Utils::zeroize(ov,     sizeof(ov));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
@@ -35,7 +46,7 @@ class CBC final
 			}
 
 			// Check that output is large enough
-			need_sz = ((buffer_sz + input_sz) / BLOCK_SIZE) * BLOCK_SIZE;
+			need_sz = ((buffer_sz + input_sz) / STREAM_SIZE) * STREAM_SIZE;
 			if ( output_sz < need_sz ) {
 				output_sz = need_sz;
 				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
@@ -44,43 +55,38 @@ class CBC final
 			// Process input
 			total_sz  = buffer_sz + input_sz;
 			output_sz = 0;
-			while ( total_sz >= BLOCK_SIZE ) {
+			while ( total_sz >= STREAM_SIZE ) {
 				// Fill the buffer with input
-				if ( buffer_sz < BLOCK_SIZE ) {
-					write_sz = BLOCK_SIZE - buffer_sz;
+				if ( buffer_sz < STREAM_SIZE ) {
+					write_sz = STREAM_SIZE - buffer_sz;
 
 					memcpy(buffer + buffer_sz, input, write_sz);
-					buffer_sz = BLOCK_SIZE;
+					buffer_sz = STREAM_SIZE;
 
 					input    += write_sz;
 					input_sz -= write_sz;
 				}
 
-				if ( is_encrypt ) {
-					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						buffer[i] = buffer[i] ^ iv[i];
-					}
+				sc_ctx.encrypt(iv, ov);
 
-					sc_ctx.encrypt(buffer, output);
-					buffer_sz = 0;
-
-					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						iv[i] = output[i];
-					}
-				} else {
-					sc_ctx.decrypt(buffer, output);
-					buffer_sz = 0;
-
-					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						output[i] = output[i] ^ iv[i];
-						iv[i]   = buffer[i];
-					}
+				for ( std::size_t i = 0 ; i < STREAM_SIZE ; ++i ) {
+					output[i] = buffer[i] ^ ov[i];
 				}
 
+				for ( std::size_t i = 0 ; i < BLOCK_SIZE - STREAM_SIZE ; ++i ) {
+					iv[i] = iv[STREAM_SIZE + i];
+				}
+				for ( std::size_t i = 0 ; i < STREAM_SIZE ; ++i ) {
+					iv[(BLOCK_SIZE - STREAM_SIZE) + i] =
+						is_encrypt ?  output[i] : buffer[i];
+				}
+
+				buffer_sz = 0;
+
 				// Update size of data
-				output    += BLOCK_SIZE;
-				output_sz += BLOCK_SIZE;
-				total_sz  -= BLOCK_SIZE;
+				output    += STREAM_SIZE;
+				output_sz += STREAM_SIZE;
+				total_sz  -= STREAM_SIZE;
 			}
 
 			// Copy remaining part of input into buffer
@@ -96,7 +102,7 @@ class CBC final
 		{
 			if ( ! is_finished ) {
 				if ( buffer_sz != 0 ) {
-					pad_sz = BLOCK_SIZE - buffer_sz;
+					pad_sz = STREAM_SIZE - buffer_sz;
 					return SC::CRYPTO_SYMMETRIC_CIPHER_NOT_FULL;
 				}
 
@@ -112,7 +118,9 @@ class CBC final
 
 		uint8_t     buffer[BLOCK_SIZE];
 		std::size_t buffer_sz;
+		std::size_t STREAM_SIZE;
 		uint8_t     iv[BLOCK_SIZE];
+		uint8_t     ov[BLOCK_SIZE];
 		bool        is_encrypt;
 		bool        is_finished;
 };
