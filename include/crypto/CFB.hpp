@@ -14,16 +14,10 @@ template <class SC>
 class CFB final
 {
 	public:
-		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = 128, bool is_encrypt = true)
-			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt), is_finished(false)
+		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = SC::BLOCK_SIZE, bool is_encrypt = true)
+			: sc_ctx(key, key_sz), buffer_sz(0), STREAM_SIZE(STREAM_SIZE), is_encrypt(is_encrypt), is_finished(false)
 		{
-			if ( 0 != STREAM_SIZE % 8 ) {
-				throw SymmetricCipherException("Unsupported data segment size");
-			}
-
-			this->STREAM_SIZE = STREAM_SIZE / 8;
-
-			if ( this->STREAM_SIZE < 1 || this->STREAM_SIZE > BLOCK_SIZE ) {
+			if ( STREAM_SIZE < 1 || STREAM_SIZE > BLOCK_SIZE ) {
 				throw SymmetricCipherException("Invalid data segment size");
 			}
 
