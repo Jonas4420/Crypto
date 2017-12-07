@@ -14,7 +14,7 @@ template <class SC>
 class CFB final
 {
 	public:
-		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE, bool is_encrypt = true)
+		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = 128, bool is_encrypt = true)
 			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt), is_finished(false)
 		{
 			if ( 0 != STREAM_SIZE % 8 ) {
