@@ -11,10 +11,10 @@ do {                                            \
 
 #define PUT_UINT32_BE(n,b,i)                    \
 do {                                            \
-    (b)[(i)    ] = (uint8_t) ( (n) >> 24 );     \
-    (b)[(i) + 1] = (uint8_t) ( (n) >> 16 );     \
-    (b)[(i) + 2] = (uint8_t) ( (n) >>  8 );     \
-    (b)[(i) + 3] = (uint8_t) ( (n)       );     \
+	(b)[(i)    ] = (uint8_t) ( (n) >> 24 ); \
+	(b)[(i) + 1] = (uint8_t) ( (n) >> 16 ); \
+	(b)[(i) + 2] = (uint8_t) ( (n) >>  8 ); \
+	(b)[(i) + 3] = (uint8_t) ( (n)       ); \
 } while( 0 )
 
 #define  SHR(x,n) ((x & 0xFFFFFFFF) >> n)
@@ -106,7 +106,7 @@ SHA256::update(const uint8_t *input, std::size_t input_sz)
 		input_sz -= 64;
 	}
 
-	if( input_sz > 0 ) {
+	if ( input_sz > 0 ) {
 		memcpy(buffer + left, input, input_sz);
 	}
 }

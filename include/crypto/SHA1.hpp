@@ -18,7 +18,6 @@ class SHA1 : public MessageDigest
 		static const std::size_t SIZE       = 20;
 		static const std::size_t BLOCK_SIZE = 64;
 	protected:
-		std::size_t size;
 		uint32_t    total[2];
 		uint32_t    state[5];
 		uint8_t     buffer[64];
