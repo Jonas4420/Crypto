@@ -31,7 +31,7 @@ class CBC final
 			std::size_t need_sz, total_sz, write_sz;
 
 			if ( is_finished ) {
-				throw SymmetricCipherException("Cipher has finished processing data");
+				throw SymmetricCipher::Exception("Cipher has finished processing data");
 			}
 
 			// Check that output is large enough

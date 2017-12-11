@@ -28,7 +28,7 @@ class OFB final
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
 			if ( is_finished ) {
-				throw SymmetricCipherException("Cipher has finished processing data");
+				throw SymmetricCipher::Exception("Cipher has finished processing data");
 			}
 
 			// Check that output is large enough

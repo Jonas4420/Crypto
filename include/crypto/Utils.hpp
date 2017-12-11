@@ -19,14 +19,13 @@ namespace Crypto
 
 			static const uint8_t CRYPTO_UTILS_SUCCESS          = 0x00;
 			static const uint8_t CRYPTO_UTILS_INCORRECT_LENGTH = 0x01;
-	};
 
-	class CryptoException : public std::runtime_error
-	{
-		public:
-			CryptoException(const char *what_arg) : std::runtime_error(what_arg) {}
+			class Exception : public std::runtime_error
+			{
+				public:
+					Exception(const char *what_arg) : std::runtime_error(what_arg) {}
+			};
 	};
-
 }
 
 #endif

@@ -12,14 +12,14 @@ namespace Crypto
 class Padding
 {
 	public:
+		class Exception : public std::runtime_error
+		{
+			public:
+				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
+		};
+
 		static const uint8_t CRYPTO_PADDING_SUCCESS        = 0x00;
 		static const uint8_t CRYPTO_PADDING_INVALID_LENGTH = 0x01;
-};
-
-class PaddingException : public std::runtime_error
-{
-	public:
-		PaddingException(const char *what_arg) : std::runtime_error(what_arg) {}
 };
 
 /*

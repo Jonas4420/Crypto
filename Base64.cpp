@@ -65,22 +65,22 @@ Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 
 		// Space inside a line is an error
 		if ( 0 != x ) {
-			throw Base64Exception("Invalid character");
+			throw Base64::Exception("Invalid character");
 		}
 
 		// More than 2 '=' is an arror
 		if ( '=' == input[i] && 2 < ++j ) {
-			throw Base64Exception("Invalid character");
+			throw Base64::Exception("Invalid character");
 		}
 
 		// Input character out of mapping
 		if ( 0x7F < input[i] || 0x7F == decode_map[static_cast<std::size_t>(input[i])] ) {
-			throw Base64Exception("Invalid character");
+			throw Base64::Exception("Invalid character");
 		}
 
 		// '=' was in the middle of the string
 		if ( 0x40 > decode_map[static_cast<std::size_t>(input[i])] && 0 != j ) {
-			throw Base64Exception("Invalid character");
+			throw Base64::Exception("Invalid character");
 		}
 
 		++n;

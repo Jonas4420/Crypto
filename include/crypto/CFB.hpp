@@ -18,7 +18,7 @@ class CFB final
 			: sc_ctx(key, key_sz), buffer_sz(0), STREAM_SIZE(STREAM_SIZE), is_encrypt(is_encrypt), is_finished(false)
 		{
 			if ( STREAM_SIZE < 1 || STREAM_SIZE > BLOCK_SIZE ) {
-				throw SymmetricCipherException("Invalid data segment size");
+				throw SymmetricCipher::Exception("Invalid data segment size");
 			}
 
 			memcpy(this->iv, iv, BLOCK_SIZE);
@@ -36,7 +36,7 @@ class CFB final
 			std::size_t need_sz, total_sz, write_sz;
 
 			if ( is_finished ) {
-				throw SymmetricCipherException("Cipher has finished processing data");
+				throw SymmetricCipher::Exception("Cipher has finished processing data");
 			}
 
 			// Check that output is large enough

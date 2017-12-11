@@ -19,13 +19,14 @@ class SymmetricCipher
 
 		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_SUCCESS         = 0x00;
 		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH  = 0x01;
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_NOT_FULL        = 0x02;
-};
 
-class SymmetricCipherException : public std::runtime_error
-{
-	public:
-		SymmetricCipherException(const char *what_arg) : std::runtime_error(what_arg) {}
+		class Exception : public std::runtime_error
+		{
+			public:
+				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
+		};
+
+		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_NOT_FULL        = 0x02;
 };
 
 }

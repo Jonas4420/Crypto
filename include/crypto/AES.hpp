@@ -15,6 +15,12 @@ class AES : public SymmetricCipher
 		virtual void encrypt(const uint8_t*, uint8_t*);
 		virtual void decrypt(const uint8_t*, uint8_t*);
 
+		class Exception : public std::runtime_error
+		{
+			public:
+				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
+		};
+
 		static const std::size_t BLOCK_SIZE = 16;
 	protected:
 		std::size_t nr;
@@ -34,12 +40,6 @@ class AES : public SymmetricCipher
 		static const uint32_t RT0[256], RT1[256], RT2[256], RT3[256];
 
 		static const uint32_t RCON[10];
-};
-
-class AESException : public std::runtime_error
-{
-	public:
-		AESException(const char *what_arg) : std::runtime_error(what_arg) {}
 };
 
 }

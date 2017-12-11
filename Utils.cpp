@@ -48,7 +48,7 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 	char c[2];
 
 	if ( input.length() % 2 != 0 ) {
-		throw CryptoException("Incorrect length");
+		throw Utils::Exception("Incorrect length");
 	}
 
 	if ( input.length() / 2 > output_sz ) {
@@ -62,7 +62,7 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 
 		if ( (c[1] < '0' || c[1] > '9') && (c[1] < 'a' || c[1] > 'f')
 				&& (c[1] < 'A' || c[1] > 'F') ) {
-			throw CryptoException("Invalid character");
+			throw Utils::Exception("Invalid character");
 		}
 
 		uint8_t out = 0;
@@ -74,7 +74,7 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 		} else if ( c[0] >= 'A' && c[0] <= 'F' ) {
 			out |= 0xF0 & ((c[0] - 'A' + 10) << 4);
 		} else {
-			throw CryptoException("Invalid character");
+			throw Utils::Exception("Invalid character");
 		}
 
 		if ( c[1] >= '0' && c[1] <= '9' ) {
@@ -84,7 +84,7 @@ Utils::from_hex(const std::string input, uint8_t *output, std::size_t &output_sz
 		} else if ( c[1] >= 'A' && c[1] <= 'F' ) {
 			out |= 0x0F & (c[1] - 'A' + 10);
 		} else {
-			throw CryptoException("Invalid character");
+			throw Utils::Exception("Invalid character");
 		}
 
 		output[i / 2] = out;

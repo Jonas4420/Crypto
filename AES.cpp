@@ -72,7 +72,7 @@ AES::AES(const uint8_t *key, std::size_t key_sz) : SymmetricCipher(key, key_sz)
 		case 16 : nr = 10; break;
 		case 24 : nr = 12; break;
 		case 32 : nr = 14; break;
-		default : throw AESException("Key size is not supported");
+		default : throw AES::Exception("Key size is not supported");
 	}
 
 	uint32_t *RK = buf_enc;

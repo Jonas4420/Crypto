@@ -33,7 +33,7 @@ class CTR final
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
 			if ( is_finished ) {
-				throw SymmetricCipherException("Cipher has finished processing data");
+				throw SymmetricCipher::Exception("Cipher has finished processing data");
 			}
 
 			// Check that output is large enough
@@ -55,7 +55,7 @@ class CTR final
 					}
 
 					if ( 0 == memcmp(begin, counter, BLOCK_SIZE) ) {
-						throw SymmetricCipherException("Counter MUST be unique for a given key");
+						throw SymmetricCipher::Exception("Counter MUST be unique for a given key");
 					}
 
 					sc_ctx.encrypt(counter, stream);

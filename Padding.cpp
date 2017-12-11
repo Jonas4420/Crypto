@@ -23,16 +23,16 @@ PKCS7Padding::unpad(const uint8_t *data, std::size_t input_sz, std::size_t &outp
 	uint8_t pad_sz = data[input_sz - 1];
 
 	if ( pad_sz > input_sz ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 
 	if ( 0 == pad_sz ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 
 	for ( std::size_t i = 1 ; i < pad_sz ; ++i ) {
 		if ( pad_sz != data[input_sz - 1 - i] ) {
-			throw PaddingException("Invalid padding");
+			throw Padding::Exception("Invalid padding");
 		}
 	}
 
@@ -65,11 +65,11 @@ OneAndZeroesPadding::unpad(const uint8_t *data, std::size_t input_sz, std::size_
 	}
 
 	if ( input_sz <= i ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 
 	if ( 0x80 != data[i] ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 	++pad_sz;
 
@@ -97,16 +97,16 @@ ANSIX923Padding::unpad(const uint8_t *data, std::size_t input_sz, std::size_t &o
 	uint8_t pad_sz = data[input_sz - 1];
 
 	if ( pad_sz > input_sz ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 
 	if ( 0 == pad_sz ) {
-		throw PaddingException("Invalid padding");
+		throw Padding::Exception("Invalid padding");
 	}
 
 	for ( std::size_t i = 1 ; i < pad_sz ; ++i ) {
 		if ( 0x00 != data[input_sz - 1 - i] ) {
-			throw PaddingException("Invalid padding");
+			throw Padding::Exception("Invalid padding");
 		}
 	}
 

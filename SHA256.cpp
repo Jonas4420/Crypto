@@ -75,7 +75,7 @@ SHA256::update(const uint8_t *input, std::size_t input_sz)
 	std::size_t fill;
 	uint32_t left;
 
-	if ( 0 == input_sz ) {
+	if ( NULL == input || 0 == input_sz ) {
 		return;
 	}
 
