@@ -554,9 +554,20 @@ BigNum::operator%(const BigNum& other) const
 BigNum&
 BigNum::operator%=(const BigNum& other)
 {
-	auto result = div_mod(other);
+	if ( other < 0 ) {
+		throw BigNum::Exception("Invalid value for modulus");
+	}
 
+	auto result = div_mod(other);
 	*this = std::move(result.second);
+
+	while ( *this < 0 ) {
+		*this += other;
+	}
+
+	while ( *this >= other ) {
+		*this -= other;
+	}
 
 	return *this;
 }
@@ -577,7 +588,7 @@ BigNum::exp_mod(const BigNum& E, const BigNum& N, BigNum *_RR) const
 	}
 
 	if ( E < 0 ) {
-		throw BigNum::Exception("Invalid value for exponentiation");
+		throw BigNum::Exception("Invalid value for exponent");
 	}
 
 	// Fast Montgomery initialization
@@ -1163,6 +1174,13 @@ BigNum::raw(uint8_t* data, std::size_t& data_sz)
 	}
 
 	return CRYPTO_BIGNUM_SUCCESS;
+}
+
+std::ostream&
+operator<<(std::ostream &os, const BigNum& bn)
+{
+	os << bn.str();
+	return os;
 }
 
 uint64_t

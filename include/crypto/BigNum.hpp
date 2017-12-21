@@ -94,6 +94,7 @@ class BigNum
 		explicit operator uint64_t(void) const;
 		std::string str(uint8_t = 10) const;
 		int raw(uint8_t*, std::size_t&);
+		friend std::ostream& operator<<(std::ostream&, const BigNum&);
 
 		class Exception : public std::runtime_error
 		{
