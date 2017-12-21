@@ -92,9 +92,8 @@ class BigNum
 
 		/* Cast and dump functions */
 		explicit operator uint64_t(void) const;
-		std::string str(uint8_t = 10) const;
+		std::string str(uint8_t = 10, bool = true) const;
 		int raw(uint8_t*, std::size_t&);
-		friend std::ostream& operator<<(std::ostream&, const BigNum&);
 
 		class Exception : public std::runtime_error
 		{
@@ -106,7 +105,7 @@ class BigNum
 		static const int CRYPTO_BIGNUM_SUCCESS        = 0x00;
 		static const int CRYPTO_BIGNUM_INVALID_LENGTH = 0x01;
 	private:
-		int8_t      s; // signed integer 
+		int         s; // signed integer
 		std::size_t n; // number of limbs
 		uint64_t   *p; // vector of limbs
 
@@ -126,7 +125,6 @@ class BigNum
 
 		/* Memory helpers */
 		void grow(std::size_t);
-		void shrink(std::size_t);
 
 		static inline std::size_t clz(uint64_t);
 		static inline std::size_t bits_to_limbs(std::size_t);

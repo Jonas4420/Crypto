@@ -1,6 +1,3 @@
-#include <limits>
-#include <iostream>
-
 #include "crypto/Utils.hpp"
 #include "crypto/BigNum.hpp"
 
@@ -32,18 +29,19 @@ BigNum::BigNum(const uint8_t* data, std::size_t data_sz)
 	s = 1;
 
 	// Number of limbs
-	std::size_t n;
-	for ( n = 0 ; n < data_sz ; ++n ) {
-		if ( 0 != data[n] ) {
+	for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
+		if ( 0 != data[i] ) {
+			data    += i;
+			data_sz -= i;
 			break;
 		}
 	}
-	grow(chars_to_limbs(data_sz - n));
+	grow(chars_to_limbs(data_sz));
 
 	// Content of limbs
-	memset(p, 0, this->n * ciL);
-	for ( std::size_t i = data_sz, j = 0 ; i > n ; --i, ++j ) {
-		p[j / ciL] |= ((uint64_t)data[i - 1]) << ((j % ciL) << 3);
+	memset(p, 0, n * ciL);
+	for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
+		p[i / ciL] |= ((uint64_t)data[data_sz - i  - 1]) << ((i % ciL) << 3);
 	}
 }
 
@@ -54,46 +52,34 @@ BigNum::BigNum(std::string str, uint8_t radix)
 		throw BigNum::Exception("Radix not supported");
 	}
 
+	if ( str.empty() ) {
+		return;
+	}
+
+	// Sign
+	if ( str[0] == '-' ) {
+		s = -1;
+		str = str.substr(1);
+	}
+
 	if( 16 == radix ) {
-		if ( str.size() > (std::numeric_limits<std::size_t>::max() >> 2) ) {
-			throw BigNum::Exception("Number size not supported");
-		}
-
-		// Sign
-		s = 1;
-
 		// Number of limbs
-		std::size_t n = bits_to_limbs(str.size() << 2);
-		grow(n);
+		grow(bits_to_limbs(str.length() << 2));
 
 		// Content of limbs
-		memset(p, 0, this->n * ciL);
-		for ( std::size_t i = str.size(), j = 0 ; i > 0 ; --i, ++j ) {
-			if ( 1 == i && '-' == str[i - 1] ) {
-				s = -1;
-				break;
-			}
-
-			uint64_t d = get_digit(str[i - 1], radix);
-			p[j / (2 * ciL)] |= d << ((j % (2 * ciL)) << 2);
+		memset(p, 0, n * ciL);
+		for ( std::size_t i = 0 ; i < str.length() ; ++i ) {
+			uint64_t d = get_digit(str[str.length() - i - 1], radix);
+			p[i / (2 * ciL)] |= d << ((i % (2 * ciL)) << 2);
 		}
 	} else {
-		for ( std::size_t i = 0 ; i < str.size() ; ++i ) {
-			if ( 0 == i && '-' == str[i] ) {
-				// Sign
-				s = -1;
-				continue;
-			}
-
-			// Get value with correct radix
+		for ( std::size_t i = 0 ; i < str.length() ; ++i ) {
 			uint64_t d = get_digit(str[i], radix);
-			// Shift result by radix
 			*this *= radix;
-			// Add value to result
-			if ( 1 == s ) {
-				*this += d;
-			} else {
+			if ( s < 0 ) {
 				*this -= d;
+			} else {
+				*this += d;
 			}
 		}
 	}
@@ -109,7 +95,10 @@ BigNum::BigNum(const BigNum& other)
 	grow(other.n);
 
 	// Content of limbs
-	memcpy(p, other.p, n * ciL);
+	if ( NULL != p ) {
+		memset(p, 0x00, n * ciL);
+	}
+	memcpy(p, other.p, other.n * ciL);
 }
 
 BigNum::BigNum(BigNum&& other)
@@ -131,7 +120,10 @@ BigNum::operator=(const BigNum& other)
 		grow(other.n);
 
 		// Content of limbs
-		memcpy(p, other.p, n * ciL);
+		if ( NULL != p ) {
+			memset(p, 0x00, n * ciL);
+		}
+		memcpy(p, other.p, other.n * ciL);
 	}
 
 	return *this;
@@ -142,7 +134,7 @@ BigNum::operator=(BigNum&& other)
 {
 	if ( &other != this ) {
 		// Sign
-		s = other.s;
+		std::swap(s, other.s);
 
 		// Number of limbs
 		std::swap(n, other.n);
@@ -259,11 +251,11 @@ BigNum::operator<<(std::size_t shift) const
 BigNum&
 BigNum::operator<<=(std::size_t shift)
 {
-	std::size_t t, v0, t1;
+	std::size_t t, v0, v1;
 	uint64_t r0 = 0, r1;
 
-	v0 = shift / (biL    );
-	t1 = shift & (biL - 1);
+	v0 = shift / biL;
+	v1 = shift % biL;
 
 	t = bitlen() + shift;
 
@@ -284,11 +276,11 @@ BigNum::operator<<=(std::size_t shift)
 	}
 
 	// shift by count % limb_size
-	if ( t1 > 0 ) {
+	if ( v1 > 0 ) {
 		std::size_t i;
 		for ( i = v0 ; i < n ; ++i ) {
-			r1 = p[i] >> (biL - t1);
-			p[i] <<= t1;
+			r1 = p[i] >> (biL - v1);
+			p[i] <<= v1;
 			p[i]  |= r0;
 			r0 = r1;
 		}
@@ -310,15 +302,16 @@ BigNum::operator>>(std::size_t shift) const
 BigNum&
 BigNum::operator>>=(std::size_t shift)
 {
-	std::size_t v0, v1;
+	std::size_t t, v0, v1;
 	uint64_t r0 = 0, r1;
 
-	v0 = shift /  biL;
-	v1 = shift & (biL - 1);
+	v0 = shift / biL;
+	v1 = shift % biL;
 
-	if ( v0 > n || ((v0 == n) && (v1 > 0)) ) {
-		shrink(1);
-		p[0] = 0;
+	t = bitlen();
+
+	if ( shift >= t ) {
+		memset(p, 0, n * ciL);
 
 		return *this;
 	}
@@ -583,7 +576,7 @@ BigNum::exp_mod(const BigNum& E, const BigNum& N, BigNum *_RR) const
 	uint64_t mm, ei, state;
 	bool neg;
 
-	if ( (N < 0) || (0 == (N.p[0] & 0x01)) ) {
+	if ( (N < 0) || (0 == (N.p[0] % 2)) ) {
 		throw BigNum::Exception("Invalid value for modulus");
 	}
 
@@ -762,11 +755,10 @@ BigNum::div_mod(const BigNum& other) const
 
 	n = X.n - 1;
 	t = Y.n - 1;
-
 	Y <<= (biL * (n - t));
 
 	while ( X >= Y ) {
-		++Z.p[n - t];
+		Z.p[n - t]++;
 		X -= Y;
 	}
 	Y >>= (biL * (n - t));
@@ -802,7 +794,7 @@ BigNum::div_mod(const BigNum& other) const
 			T1 = Y;
 			T1 <<= (biL * (i - t - 1));
 			X += T1;
-			--Z.p[i - t - 1];
+			Z.p[i - t - 1]--;
 		}
 	}
 
@@ -1095,62 +1087,61 @@ BigNum::operator uint64_t(void) const
 }
 
 std::string
-BigNum::str(uint8_t radix) const
+BigNum::str(uint8_t radix, bool lowercase) const
 {
 	std::string result;
-	std::size_t i;
 
 	if ( radix < 2 || radix > 16 ) {
 		throw BigNum::Exception("Radix not supported");
 	}
 
-	// Check if value is 0
-	for ( i = n ; i > 0 ; ++i ) {
-		if ( 0 != p[i - 1] ) {
-			break;
-		}
-	}
-
-	if ( 0 == i ) {
-		return "0";
-	}
-
-	// Write sign
-	result += (-1 == s) ? "-" : "";
-
 	if ( 16 == radix ) {
-		int c;
 		bool first = true;
 
-		for ( std::size_t i = n ; i > 0 ; --i ) {
-			for ( std::size_t j = ciL ; j > 0 ; --j ) {
-				c = (p[i - 1] >> ((j - 1) << 3)) & 0xFF;
+		if ( *this == 0 ) {
+			result = "00";
+		} else {
+			for ( std::size_t i = n ; i > 0 ; --i ) {
+				for ( std::size_t j = ciL ; j > 0 ; --j ) {
+					int c = (p[i - 1] >> ((j - 1) << 3)) & 0xFF;
 
-				if ( 0 == c && first && 2 != (i + j) ) {
-					continue;
+					if ( 0 == c && first && 2 != (i + j) ) {
+						continue;
+					}
+
+					result += "0123456789ABCDEF"[c / 16];
+					result += "0123456789ABCDEF"[c % 16];
+					first = false;
 				}
-
-				result += "0123456789ABCDEF"[c / 16];
-				result += "0123456789ABCDEF"[c % 16];
-				first = false;
 			}
 		}
 	} else {
-		BigNum T = this->abs();
-		uint64_t r = 0;
+		if ( *this == 0 ) {
+			result = "0";
+		} else {
+			BigNum T = this->abs();
+			BigNum R = 0;
+			uint64_t r = 0;
 
-		while ( T != 0 ) {
-			auto div = T.div_mod(radix);
+			while ( T != 0 ) {
+				R = T % radix;
+				T = T / radix;
+				r = static_cast<uint64_t>(R);
 
-			T = div.first;
-			r = static_cast<uint64_t>(div.second);
-
-			if ( r < 10 ) {
-				result += (char)(r + 0x30);
-			} else {
-				result += (char)(r + 0x37);
+				int c = r + ((r < 10) ? 0x30 : 0x37);
+				result = ((char)c) + result;
 			}
 		}
+	}
+
+	// Sign
+	if ( s < 0 ) {
+		result = '-' + result;
+	}
+
+	// Normalize case
+	for ( auto &c : result ) {
+		c = lowercase ? tolower(c) : toupper(c);
 	}
 
 	return result;
@@ -1167,20 +1158,24 @@ BigNum::raw(uint8_t* data, std::size_t& data_sz)
 		return CRYPTO_BIGNUM_INVALID_LENGTH;
 	}
 
-	memset(data, 0, data_sz);
+	bool first = true;
+	data_sz = 0;
+	for ( std::size_t i = n ; i > 0 ; --i ) {
+		for ( std::size_t j = ciL ; j > 0 ; --j ) {
+			int c = (p[i - 1] >> ((j - 1) << 3)) & 0xFF;
 
-	for ( std::size_t i = data_sz - 1, j = 0 ; need_sz > 0 ; --i, ++j, --need_sz ) {
-		data[i] = (uint8_t)(p[j / ciL] >> ((j % ciL) << 3));
+			if ( 0 == c && first && 2 != (i + j) ) {
+				continue;
+			}
+
+			*data = (uint8_t)c;
+			++data;
+			++data_sz;
+			first = false;
+		}
 	}
 
 	return CRYPTO_BIGNUM_SUCCESS;
-}
-
-std::ostream&
-operator<<(std::ostream &os, const BigNum& bn)
-{
-	os << bn.str();
-	return os;
 }
 
 uint64_t
@@ -1221,10 +1216,10 @@ BigNum::cmp(const BigNum& other) const
 	}
 
 	if ( i > j ) { return        s; }
-	if ( j > i ) { return -other.s; }
+	if ( i < j ) { return -other.s; }
 
-	if (       s > 0 && other.s < 0 ) { return  1; }
-	if ( other.s > 0 &&       s < 0 ) { return -1; }
+	if ( s > 0 && other.s < 0 ) { return  1; }
+	if ( s < 0 && other.s > 0 ) { return -1; }
 
 	for ( ; i > 0 ; --i ) {
 		if ( p[i - 1] > other.p[i - 1] ) { return  s; }
@@ -1272,9 +1267,6 @@ BigNum::add_abs(const BigNum &other)
 	std::size_t i, j;
 	const BigNum *B = &other;
 
-	// Sign
-	s = 1;
-
 	// Number of limbs
 	for ( j = B->n ; j > 0 ; --j ) {
 		if ( 0 != B->p[j - 1] ) {
@@ -1317,15 +1309,12 @@ BigNum::sub_abs(const BigNum &other)
 	std::size_t i;
 	const BigNum *B = &other;
 
-	if ( *this < *B ) {
+	if ( cmp_abs(other) < 0 ) {
 		throw BigNum::Exception("Invalid value");
 	}
 
-	// Sign
-	s = 1;
-
 	// Number of limbs
-	for ( i = B->n ; i > 0 ; --n ) {
+	for ( i = B->n ; i > 0 ; --i ) {
 		if ( 0 != B->p[i - 1] ) {
 			break;
 		}
@@ -1487,6 +1476,7 @@ BigNum::grow(std::size_t new_size)
     if ( n < new_size ) {
 	    try {
 		    tmp = new uint64_t[new_size];
+		    memset(tmp, 0, new_size * ciL);
 		    memcpy(tmp, p, n * ciL);
 	    } catch ( const std::bad_alloc& ba ) {
 		    throw BigNum::Exception("Memory allocation failed");
@@ -1500,41 +1490,6 @@ BigNum::grow(std::size_t new_size)
 	    n = new_size;
 	    p = tmp;
     }
-}
-
-void
-BigNum::shrink(std::size_t new_size)
-{
-	std::size_t i;
-	uint64_t *tmp = NULL;
-
-	if ( n <= new_size ) {
-		grow(new_size);
-		return;
-	}
-
-	for ( i = n ; i > 1 ; --i ) {
-		if ( 0 != p[i - 1] ) {
-			break;
-		}
-	}
-
-	new_size = (i < new_size) ? new_size : i;
-
-	try {
-		tmp = new uint64_t[new_size];
-		memcpy(tmp, p, new_size * ciL);
-	} catch ( const std::bad_alloc& ba ) {
-		throw BigNum::Exception("Memory allocation failed");
-	}
-
-	if ( NULL != p ) {
-		Utils::zeroize(p, n * ciL);
-		delete[] p;
-	}
-
-	n = new_size;
-	p = tmp;
 }
 
 std::size_t
