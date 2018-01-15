@@ -1,5 +1,7 @@
-#include "crypto/Utils.hpp"
 #include "crypto/RIPEMD160.hpp"
+#include "crypto/Utils.hpp"
+
+#include <cstring>
 
 #define GET_UINT32_LE(n,b,i)                    \
 do {                                            \

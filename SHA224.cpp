@@ -1,5 +1,6 @@
-#include "crypto/Utils.hpp"
 #include "crypto/SHA224.hpp"
+
+#include <cstring>
 
 namespace Crypto
 {

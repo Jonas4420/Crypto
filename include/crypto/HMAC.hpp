@@ -1,6 +1,10 @@
 #ifndef CRYPTO_HMAC_H
 #define CRYPTO_HMAC_H
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+
 #include "crypto/MessageDigest.hpp"
 #include "crypto/Utils.hpp"
 

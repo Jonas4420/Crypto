@@ -1,5 +1,6 @@
-#include "crypto/Utils.hpp"
 #include "crypto/SHA384.hpp"
+
+#include <cstring>
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
 	#define UL64(x) x##ui64

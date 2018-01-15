@@ -1,8 +1,7 @@
 #ifndef CRYPTO_OFB_H
 #define CRYPTO_OFB_H
 
-#include <cstddef>
-#include <cstdint>
+#include <cstring>
 
 #include "crypto/SymmetricCipher.hpp"
 #include "crypto/Utils.hpp"

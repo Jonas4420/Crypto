@@ -1,7 +1,8 @@
 #ifndef CRYPTO_HMAC_DRBG_H
 #define CRYPTO_HMAC_DRBG_H
 
-#include "crypto/MessageDigest.hpp"
+#include <memory>
+
 #include "crypto/HMAC.hpp"
 #include "crypto/Utils.hpp"
 

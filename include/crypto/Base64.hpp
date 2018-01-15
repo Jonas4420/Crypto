@@ -1,8 +1,12 @@
 #ifndef CRYPTO_BASE64_H
 #define CRYPTO_BASE64_H
 
+#include <stdexcept>
+
 #include <string>
-#include <vector>
+
+#include <cstddef>
+#include <cstdint>
 
 namespace Crypto
 {

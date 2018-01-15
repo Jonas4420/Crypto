@@ -1,11 +1,10 @@
 #ifndef CRYPTO_SYMMETRICCIPHER_H
 #define CRYPTO_SYMMETRICCIPHER_H
 
+#include <stdexcept>
+
 #include <cstddef>
 #include <cstdint>
-
-#include "crypto/Padding.hpp"
-#include "crypto/Utils.hpp"
 
 namespace Crypto
 {

@@ -1,8 +1,7 @@
 #ifndef CRYPTO_ECB_H
 #define CRYPTO_ECB_H
 
-#include <cstddef>
-#include <cstdint>
+#include <cstring>
 
 #include "crypto/SymmetricCipher.hpp"
 #include "crypto/Utils.hpp"

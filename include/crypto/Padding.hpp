@@ -1,7 +1,7 @@
 #ifndef CRYPTO_PADDING_H
 #define CRYPTO_PADDING_H
 
-#include <string>
+#include <stdexcept>
 
 #include <cstddef>
 #include <cstdint>

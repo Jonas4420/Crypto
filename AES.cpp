@@ -1,5 +1,7 @@
-#include "crypto/Utils.hpp"
+#include <cstring>
+
 #include "crypto/AES.hpp"
+#include "crypto/Utils.hpp"
 
 #define GET_UINT32_LE(n,b,i)                            \
 {                                                       \

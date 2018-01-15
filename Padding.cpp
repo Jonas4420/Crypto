@@ -1,5 +1,7 @@
 #include "crypto/Padding.hpp"
 
+#include <cstring>
+
 namespace Crypto
 {
 

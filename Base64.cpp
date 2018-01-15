@@ -74,7 +74,7 @@ Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 		}
 
 		// Input character out of mapping
-		if ( 0x7F < input[i] || 0x7F == decode_map[static_cast<std::size_t>(input[i])] ) {
+		if ( 0x7F == decode_map[static_cast<std::size_t>(input[i])] ) {
 			throw Base64::Exception("Invalid character");
 		}
 

@@ -1,5 +1,7 @@
-#include "crypto/Utils.hpp"
 #include "crypto/SHA256.hpp"
+#include "crypto/Utils.hpp"
+
+#include <cstring>
 
 #define GET_UINT32_BE(n,b,i)                    \
 do {                                            \
