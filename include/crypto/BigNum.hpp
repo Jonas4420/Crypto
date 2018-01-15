@@ -103,8 +103,10 @@ class BigNum
 		};
 
 		/* Return codes */
-		static const int CRYPTO_BIGNUM_SUCCESS        = 0x00;
-		static const int CRYPTO_BIGNUM_INVALID_LENGTH = 0x01;
+		static const int CRYPTO_BIGNUM_SUCCESS              = 0x00;
+		static const int CRYPTO_BIGNUM_INVALID_LENGTH       = 0x01;
+		static const int CRYPTO_BIGNUM_SMALL_PRIME          = 0x02;
+		static const int CRYPTO_BIGNUM_PRIME_NOT_ACCEPTABLE = 0x03;
 	private:
 		int         s; // signed integer
 		std::size_t n; // number of limbs
@@ -133,11 +135,11 @@ class BigNum
 
 		/* Montgommery ladder helpers */
 		uint64_t mont_init(void) const;
-		BigNum mont_mul(const BigNum&, const BigNum&, uint64_t, const BigNum&) const;
+		void mont_mul(const BigNum&, const BigNum&, uint64_t, const BigNum&);
 
 		/* Random and prime helpers */
-		bool has_small_factors(void) const;
-		bool miller_rabin(int (*)(void *, unsigned char *, size_t), void*) const;
+		int check_small_factors(void) const;
+		int miller_rabin(int (*)(void *, unsigned char *, size_t), void*) const;
 
 		/* Constants */
 		static const std::size_t ciL         = sizeof(uint64_t);
