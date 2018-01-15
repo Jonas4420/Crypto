@@ -1089,8 +1089,10 @@ BigNum::gen_prime(std::size_t nbits, int (*f_rng)(void *, uint8_t*, std::size_t)
 			 * First, check small factors for X and Y
 			 * before doing Miller-Rabin on any of them
 			 */
-			if (       X.check_small_factors()      && Y.check_small_factors()
-				&& X.miller_rabin(f_rng, p_rng) && Y.miller_rabin(f_rng, p_rng) ) {
+			if (    (0 == X.check_small_factors())
+			     && (0 == Y.check_small_factors())
+			     && (0 == X.miller_rabin(f_rng, p_rng))
+			     && (0 == Y.miller_rabin(f_rng, p_rng)) ) {
 				break;
 			}
 
