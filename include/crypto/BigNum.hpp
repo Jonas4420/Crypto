@@ -133,7 +133,7 @@ class BigNum
 
 		/* Montgommery ladder helpers */
 		uint64_t mont_init(void) const;
-		BigNum mont_mul(const BigNum&, const BigNum&, uint64_t, const BigNum&) const;
+		void mont_mul(const BigNum&, const BigNum&, uint64_t, const BigNum&);
 
 		/* Random and prime helpers */
 		bool has_small_factors(void) const;

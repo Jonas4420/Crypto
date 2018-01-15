@@ -94,10 +94,17 @@ BigNum::BigNum(const BigNum& other)
 	s = other.s;
 
 	// Number of limbs
-	grow(other.n);
+	std::size_t i;
+	for ( i = other.n - 1 ; i > 0 ; --i ) {
+		if ( 0 != other.p[i] ) {
+			break;
+		}
+	}
+	++i;
+	grow(i);
 
 	// Content of limbs
-	memcpy(p, other.p, other.n * ciL);
+	memcpy(p, other.p, i * ciL);
 }
 
 BigNum::BigNum(BigNum&& other)
@@ -116,13 +123,20 @@ BigNum::operator=(const BigNum& other)
 		s = other.s;
 
 		// Number of limbs
-		grow(other.n);
+		std::size_t i;
+		for ( i = other.n - 1 ; i > 0 ; --i ) {
+			if ( 0 != other.p[i] ) {
+				break;
+			}
+		}
+		++i;
+		grow(i);
 
 		// Content of limbs
 		if ( NULL != p ) {
 			memset(p, 0x00, n * ciL);
 		}
-		memcpy(p, other.p, other.n * ciL);
+		memcpy(p, other.p, i * ciL);
 	}
 
 	return *this;
@@ -135,11 +149,19 @@ BigNum::operator=(BigNum&& other)
 		// Sign
 		std::swap(s, other.s);
 
-		// Number of limbs
-		std::swap(n, other.n);
+		// Swap only if more limbs in other destination
+		if ( other.n > n ) {
+			// Number of limbs
+			std::swap(n, other.n);
 
-		// Content of limbs
-		std::swap(p, other.p);
+			// Content of limbs
+			std::swap(p, other.p);
+		} else {
+			if ( NULL != p ) {
+				memset(p, 0x00, n * ciL);
+			}
+			memcpy(p, other.p, other.n * ciL);
+		}
 	}
 
 	return *this;
@@ -419,8 +441,7 @@ BigNum::operator%=(const BigNum& other)
 std::pair<BigNum, BigNum>
 BigNum::div_mod(const BigNum& other) const
 {
-	BigNum A, B, Q, R;
-	BigNum X, Y, Z, T1, T2, T3;
+	BigNum Q, R, X, Y, Z, T1, T2, T3;
 	std::size_t n, t, k;
 
 	if ( other == 0 ) {
@@ -431,14 +452,10 @@ BigNum::div_mod(const BigNum& other) const
 		return { 0, *this };
 	}
 
-	// TODO: A and B needed?
-	A = *this;
-	B = other;
+	X = this->abs();
+	Y = other.abs();
 
-	X = A.abs();
-	Y = B.abs();
-
-	Z.grow(A.n + 2);
+	Z.grow(this->n + 2);
 	T1.grow(2);
 	T2.grow(3);
 	T3.grow(1);
@@ -474,7 +491,7 @@ BigNum::div_mod(const BigNum& other) const
 		{
 			Z.p[i - t - 1]--;
 
-			T1 = 0;
+			memset(T1.p, 0, T1.n * ciL);
 			T1.p[0] = (t < 1) ? 0 : Y.p[t - 1];
 			T1.p[1] = Y.p[t];
 
@@ -482,7 +499,7 @@ BigNum::div_mod(const BigNum& other) const
 			T3.p[0] = Z.p[i - t - 1];
 			T1 = T1 * T3;
 
-			T2 = 0;
+			memset(T2.p, 0, T2.n * ciL);
 			T2.p[0] = (i < 2) ? 0 : X.p[i - 2];
 			T2.p[1] = (i < 1) ? 0 : X.p[i - 1];
 			T2.p[2] = X.p[i];
@@ -503,10 +520,10 @@ BigNum::div_mod(const BigNum& other) const
 	}
 
 	Q = Z;
-	Q.s = A.s * B.s;
+	Q.s = this->s * other.s;
 
 	X = X >> k;
-	X.s = A.s;
+	X.s = this->s;
 	R = X;
 
 	if ( R == 0 ) {
@@ -519,10 +536,12 @@ BigNum::div_mod(const BigNum& other) const
 BigNum
 BigNum::exp_mod(const BigNum &E, const BigNum &N, BigNum *_RR) const
 {
-	// TODO
-	BigNum X;
-	/*
-	mbedtls_mpi x, a, e, n, _rr;
+	std::size_t wbits, wsize, one = 1;
+	std::size_t i, j, nblimbs;
+	std::size_t bufsize, nbits;
+	uint64_t ei, mm, state;
+	BigNum X, RR, T, W[2 << WINDOW_SIZE];
+	int neg;
 
 	if ( N < 0 || 0 == (N.p[0] & 0x01) ) {
 		throw BigNum::Exception("Invalid value for modulus");
@@ -532,38 +551,140 @@ BigNum::exp_mod(const BigNum &E, const BigNum &N, BigNum *_RR) const
 		throw BigNum::Exception("Invalid value for exponent");
 	}
 
-	x.s = 1; x.n = 0;
-	x.p = NULL;
+	// Init temps and window size
+	mm = N.mont_init();
+	i = E.bitlen();
 
-	a.s = this->s; a.n = this->n;
-	a.p = (uint64_t*)calloc(a.n, ciL);
-	memcpy(a.p, this->p, a.n * ciL);
+	wsize = (i > 671) ? 6 : (i > 239) ? 5 :
+		(i >  79) ? 4 : (i >  23) ? 3 : 1;
 
-	e.s = E.s; e.n = E.n;
-	e.p = (uint64_t*)calloc(e.n, ciL);
-	memcpy(e.p, E.p, e.n * ciL);
-
-	n.s = N.s; n.n = N.n;
-	n.p = (uint64_t*)calloc(n.n, ciL);
-	memcpy(n.p, N.p, n.n * ciL);
-
-	if ( NULL != _RR ) {
-		_rr.s = _RR->s; _rr.n = _RR->n;
-		_rr.p = (uint64_t*)calloc(_rr.n, ciL);
-		memcpy(_rr.p, _RR->p, _rr.n * ciL);
+	if ( wsize > WINDOW_SIZE ) {
+		wsize = WINDOW_SIZE;
 	}
 
-	mbedtls_mpi_exp_mod(&x, &a, &e, &n, (NULL == _RR) ? NULL : &_rr);
+	j = N.n + 1;
+	X.grow(j);
+	W[1].grow(j);
+	T.grow(j * 2);
 
-	X.s = x.s;
-	X.grow(x.n);
-	memcpy(X.p, x.p, x.n * ciL);
+	// Compensate for negative A (and correct at the end)
+	neg = (this->s == -1);
 
-	free(a.p);
-	free(e.p);
-	free(n.p);
-	if ( NULL != _RR ) { free(_rr.p); }
-	*/
+	// If 1st call, pre-compute R^2 mod N
+	if ( NULL == _RR || NULL == _RR->p ) {
+		RR = 1;
+		RR <<= (N.n * 2 * biL);
+		RR = RR % N;
+
+		if ( NULL != _RR ) {
+			*_RR = RR;
+		}
+	} else {
+		RR = *_RR;
+	}
+
+	// W[1] = A * R^2 * R^-1 mod N = A * R mod N
+	if ( this->cmp_abs(N) >= 0 ) {
+		W[1] = this->abs() % N;
+	} else {
+		W[1] = this->abs();
+	}
+
+	W[1].mont_mul(RR, N, mm, T);
+
+	// X = R^2 * R^-1 mod N = R mod N
+	X = RR;
+	X.mont_mul(1, N, mm, T);
+
+	if ( wsize > 1 ) {
+		// W[1 << (wsize - 1)] = W[1] ^ (wsize - 1)
+		j = one << (wsize - 1);
+
+		W[j].grow(N.n + 1);
+		W[j] = W[1];
+
+		for ( i = 0 ; i < wsize - 1 ; ++i ) {
+			W[j].mont_mul(W[j], N, mm, T);
+		}
+
+		// W[i] = W[i - 1] * W[1]
+		for ( i = j + 1 ; i < (one << wsize) ; ++i ) {
+			W[i].grow(N.n + 1);
+			W[i] = W[i - 1];
+
+			W[i].mont_mul(W[1], N, mm, T);
+		}
+	}
+
+	nblimbs = E.n;
+	bufsize = 0;
+	nbits   = 0;
+	wbits   = 0;
+	state   = 0;
+
+	while ( true ) {
+		if ( 0 == bufsize ) {
+			if ( 0 == nblimbs ) {
+				break;
+			}
+
+			nblimbs--;
+			bufsize = sizeof(uint64_t) << 3;
+		}
+
+		bufsize--;
+		ei = (E.p[nblimbs] >> bufsize) & 0x01;
+
+		// skip leading 0s
+		if ( 0 == ei && 0 == state ) {
+			continue;
+		}
+
+		if ( 0 == ei && 1 == state ) {
+			// out of window, square X
+			X.mont_mul(X, N, mm, T);
+			continue;
+		}
+
+		// add ei to current window
+		state = 2;
+
+		nbits++;
+		wbits |= ( ei << (wsize - nbits));
+
+		if ( nbits == wsize ) {
+			// X = X^wsize R^-1 mod N
+			for ( i = 0 ; i < wsize ; ++i ) {
+				X.mont_mul(X, N, mm, T);
+			}
+
+			// X = X * W[wbits] R^-1 mod N
+			X.mont_mul(W[wbits], N, mm, T);
+
+			state--;
+			nbits = 0;
+			wbits = 0;
+		}
+	}
+
+	// process the remaining bits
+	for ( i = 0 ; i < nbits ; ++i ) {
+		X.mont_mul(X, N, mm, T);
+
+		wbits <<= 1;
+
+		if ( 0 != (wbits & (one << wsize)) ){
+			X.mont_mul(W[1], N, mm, T);
+		}
+	}
+
+	// X = A^E * R * R^-1 mod N = A^E mod N
+	X.mont_mul(1, N, mm, T);
+
+	if ( neg && 0 != E.n && 0 != (E.p[0] & 0x01) ) {
+		X.s = -1;
+		X = N + X;
+	}
 
 	return X;
 }
@@ -1003,29 +1124,29 @@ BigNum::raw(uint8_t* data, std::size_t& data_sz)
 void
 BigNum::grow(std::size_t new_size)
 {
-    uint64_t *tmp = NULL;
+	uint64_t *tmp = NULL;
 
-    if ( new_size > MAX_LIMBS ) {
-	    throw BigNum::Exception("Memory allocation failed");
-    }
+	if ( new_size > MAX_LIMBS ) {
+		throw BigNum::Exception("Memory allocation failed");
+	}
 
-    if ( n < new_size ) {
-	    try {
-		    tmp = new uint64_t[new_size];
-		    memset(tmp, 0, new_size * ciL);
-		    memcpy(tmp, p, n * ciL);
-	    } catch ( const std::bad_alloc& ba ) {
-		    throw BigNum::Exception("Memory allocation failed");
-	    }
+	if ( n < new_size ) {
+		try {
+			tmp = new uint64_t[new_size];
+			memset(tmp, 0, new_size * ciL);
+			memcpy(tmp, p, n * ciL);
+		} catch ( const std::bad_alloc& ba ) {
+			throw BigNum::Exception("Memory allocation failed");
+		}
 
-	    if ( NULL != p ) {
-		    Utils::zeroize(p, n * ciL);
-		    delete[] p;
-	    }
+		if ( NULL != p ) {
+			Utils::zeroize(p, n * ciL);
+			delete[] p;
+		}
 
-	    n = new_size;
-	    p = tmp;
-    }
+		n = new_size;
+		p = tmp;
+	}
 }
 
 std::size_t
@@ -1364,14 +1485,13 @@ BigNum::mont_init(void) const
 }
 
 // Montgomery multiplication: Q = A * B * R^-1 mod N  (HAC 14.36)
-BigNum
-BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T) const
+void
+BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 {
-	BigNum Q;
 	std::size_t i, n, m;
 	uint64_t u0, u1, *d;
 
-	if ( T.n < N.n + 1 || T.p == NULL ) {
+	if ( T.n < N.n + 1 || NULL == T.p ) {
 		throw BigNum::Exception("Invalid value");
 	}
 
@@ -1392,26 +1512,23 @@ BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 		*d++ = u0; d[n + 1] = 0;
 	}
 
-	Q.grow(n + 1);
-	memcpy(Q.p, d, (n + 1) * ciL);
+	memcpy(this->p, d, (n + 1) * ciL);
 
-	if ( Q.cmp_abs(N) >= 0 ) {
-		sub_hlp(n, N.p, Q.p);
+	if ( this->cmp_abs(N) >= 0 ) {
+		sub_hlp(n, N.p, this->p);
 	} else {
 		// prevent timing attacks
-		sub_hlp(n, Q.p, T.p);
+		sub_hlp(n, this->p, T.p);
 	}
-
-	return Q;
 }
 
 bool
 BigNum::has_small_factors(void) const
 {
 	static const std::vector<int> small_prime = {
-		  2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
-	      	 31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
-	      	 73,  79,  83,  89,  97, 101, 103, 107, 109, 113,
+		2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
+		31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
+		73,  79,  83,  89,  97, 101, 103, 107, 109, 113,
 		127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
 		179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
 		233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
@@ -1461,8 +1578,8 @@ BigNum::miller_rabin(int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 
 	// HAC, table 4.4
 	t = ((bl >= 1300) ?  2 : (bl >=  850) ?  3 :
-	     (bl >=  650) ?  4 : (bl >=  350) ?  8 :
-	     (bl >=  250) ? 12 : (bl >=  150) ? 18 : 27);
+			(bl >=  650) ?  4 : (bl >=  350) ?  8 :
+			(bl >=  250) ? 12 : (bl >=  150) ? 18 : 27);
 
 	for ( std::size_t i = 0 ; i < t ; ++i ) {
 		// pick a random A, 1 < A < |X| - 1
