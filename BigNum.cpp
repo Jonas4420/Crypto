@@ -556,6 +556,7 @@ BigNum::exp_mod(const BigNum &E, const BigNum &N, BigNum *_RR) const
 
 	wsize = (i > 671) ? 6 : (i > 239) ? 5 :
 		(i >  79) ? 4 : (i >  23) ? 3 : 1;
+<<<<<<< HEAD
 
 	if ( wsize > WINDOW_SIZE ) {
 		wsize = WINDOW_SIZE;
@@ -670,6 +671,122 @@ BigNum::exp_mod(const BigNum &E, const BigNum &N, BigNum *_RR) const
 	for ( i = 0 ; i < nbits ; ++i ) {
 		X.mont_mul(X, N, mm, T);
 
+=======
+
+	if ( wsize > WINDOW_SIZE ) {
+		wsize = WINDOW_SIZE;
+	}
+
+	j = N.n + 1;
+	X.grow(j);
+	W[1].grow(j);
+	T.grow(j * 2);
+
+	// Compensate for negative A (and correct at the end)
+	neg = (this->s == -1);
+
+	// If 1st call, pre-compute R^2 mod N
+	if ( NULL == _RR || NULL == _RR->p ) {
+		RR = 1;
+		RR <<= (N.n * 2 * biL);
+		RR = RR % N;
+
+		if ( NULL != _RR ) {
+			*_RR = RR;
+		}
+	} else {
+		RR = *_RR;
+	}
+
+	// W[1] = A * R^2 * R^-1 mod N = A * R mod N
+	if ( this->cmp_abs(N) >= 0 ) {
+		W[1] = this->abs() % N;
+	} else {
+		W[1] = this->abs();
+	}
+
+	W[1].mont_mul(RR, N, mm, T);
+
+	// X = R^2 * R^-1 mod N = R mod N
+	X = RR;
+	X.mont_mul(1, N, mm, T);
+
+	if ( wsize > 1 ) {
+		// W[1 << (wsize - 1)] = W[1] ^ (wsize - 1)
+		j = one << (wsize - 1);
+
+		W[j].grow(N.n + 1);
+		W[j] = W[1];
+
+		for ( i = 0 ; i < wsize - 1 ; ++i ) {
+			W[j].mont_mul(W[j], N, mm, T);
+		}
+
+		// W[i] = W[i - 1] * W[1]
+		for ( i = j + 1 ; i < (one << wsize) ; ++i ) {
+			W[i].grow(N.n + 1);
+			W[i] = W[i - 1];
+
+			W[i].mont_mul(W[1], N, mm, T);
+		}
+	}
+
+	nblimbs = E.n;
+	bufsize = 0;
+	nbits   = 0;
+	wbits   = 0;
+	state   = 0;
+
+	while ( true ) {
+		if ( 0 == bufsize ) {
+			if ( 0 == nblimbs ) {
+				break;
+			}
+
+			nblimbs--;
+			bufsize = sizeof(uint64_t) << 3;
+		}
+
+		bufsize--;
+		ei = (E.p[nblimbs] >> bufsize) & 0x01;
+
+		// skip leading 0s
+		if ( 0 == ei && 0 == state ) {
+			continue;
+		}
+
+		if ( 0 == ei && 1 == state ) {
+			// out of window, square X
+			X.mont_mul(X, N, mm, T);
+			continue;
+		}
+
+		// add ei to current window
+		state = 2;
+
+		nbits++;
+		wbits |= ( ei << (wsize - nbits));
+
+		if ( nbits == wsize ) {
+			// X = X^wsize R^-1 mod N
+			for ( i = 0 ; i < wsize ; ++i ) {
+				X.mont_mul(X, N, mm, T);
+			}
+
+			// X = X * W[wbits] R^-1 mod N
+			X.mont_mul(W[wbits], N, mm, T);
+
+			state--;
+			nbits = 0;
+			wbits = 0;
+		}
+	}
+
+	// process the remaining bits
+	for ( i = 0 ; i < nbits ; ++i ) {
+		X.mont_mul(X, N, mm, T);
+
+>>>>>>> 8ecfc3fc7c7447b6fa6d3c6d7f3673165361ac78
 		wbits <<= 1;
 
 		if ( 0 != (wbits & (one << wsize)) ){
@@ -1225,13 +1342,18 @@ BigNum::grow(std::size_t new_size)
 		}
 
 		if ( NULL != p ) {
+<<<<<<< HEAD
 			zeroize(p, n * ciL);
+=======
+			Utils::zeroize(p, n * ciL);
+>>>>>>> 8ecfc3fc7c7447b6fa6d3c6d7f3673165361ac78
 			delete[] p;
 		}
 
 		n = new_size;
 		p = tmp;
 	}
+<<<<<<< HEAD
 }
 
 void
@@ -1242,6 +1364,8 @@ BigNum::zeroize(void *v, std::size_t n)
 	while ( n-- ) {
 		*p++ = 0x00;
 	}
+=======
+>>>>>>> 8ecfc3fc7c7447b6fa6d3c6d7f3673165361ac78
 }
 
 std::size_t
