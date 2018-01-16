@@ -16,16 +16,20 @@ class SymmetricCipher
 		virtual void encrypt(const uint8_t*, uint8_t*) = 0;
 		virtual void decrypt(const uint8_t*, uint8_t*) = 0;
 
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_SUCCESS         = 0x00;
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH  = 0x01;
-
 		class Exception : public std::runtime_error
 		{
 			public:
 				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
 		};
+	protected:
+		void zeroize(void *v, std::size_t n)
+		{
+			volatile uint8_t *p = static_cast<uint8_t*>(v);
 
-		static const uint8_t CRYPTO_SYMMETRIC_CIPHER_NOT_FULL        = 0x02;
+			while ( n-- ) {
+				*p++ = 0x00;
+			}
+		}
 };
 
 }

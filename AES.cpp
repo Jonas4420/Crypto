@@ -1,7 +1,6 @@
-#include <cstring>
-
 #include "crypto/AES.hpp"
-#include "crypto/Utils.hpp"
+
+#include <cstring>
 
 #define GET_UINT32_LE(n,b,i)                            \
 {                                                       \
@@ -89,13 +88,13 @@ AES::AES(const uint8_t *key, std::size_t key_sz) : SymmetricCipher(key, key_sz)
 
 AES::~AES(void)
 {
-	Utils::zeroize(&nr, sizeof(nr));
+	zeroize(&nr, sizeof(nr));
 
-	Utils::zeroize(&rk_enc, sizeof(rk_enc));
-	Utils::zeroize(buf_enc, sizeof(buf_enc));
+	zeroize(&rk_enc, sizeof(rk_enc));
+	zeroize(buf_enc, sizeof(buf_enc));
 
-	Utils::zeroize(&rk_dec, sizeof(rk_dec));
-	Utils::zeroize(buf_dec, sizeof(buf_dec));
+	zeroize(&rk_dec, sizeof(rk_dec));
+	zeroize(buf_dec, sizeof(buf_dec));
 }
 
 void
@@ -295,7 +294,7 @@ AES::set_keydec(void)
 	*RK++ = *SK++;
 	*RK++ = *SK++;
 
-	Utils::zeroize(buf_tmp, sizeof(buf_tmp));
+	zeroize(buf_tmp, sizeof(buf_tmp));
 }
 
 const uint8_t AES::FSb[256] = {

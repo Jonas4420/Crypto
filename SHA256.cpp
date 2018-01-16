@@ -1,5 +1,4 @@
 #include "crypto/SHA256.hpp"
-#include "crypto/Utils.hpp"
 
 #include <cstring>
 
@@ -61,14 +60,14 @@ SHA256::SHA256(void)
 	state[6] = 0x1F83D9AB;
 	state[7] = 0x5BE0CD19;
 
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(buffer, sizeof(buffer));
 }
 
 SHA256::~SHA256(void)
 {
-	Utils::zeroize(total,  sizeof(total));
-	Utils::zeroize(state,  sizeof(state));
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(total,  sizeof(total));
+	zeroize(state,  sizeof(state));
+	zeroize(buffer, sizeof(buffer));
 }
 
 void 

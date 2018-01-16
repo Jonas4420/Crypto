@@ -1,5 +1,4 @@
 #include "crypto/RIPEMD160.hpp"
-#include "crypto/Utils.hpp"
 
 #include <cstring>
 
@@ -33,14 +32,14 @@ RIPEMD160::RIPEMD160(void)
 	state[3] = 0x10325476;
 	state[4] = 0xC3D2E1F0;
 
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(buffer, sizeof(buffer));
 }
 
 RIPEMD160::~RIPEMD160(void)
 {
-	Utils::zeroize(total,  sizeof(total));
-	Utils::zeroize(state,  sizeof(state));
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(total,  sizeof(total));
+	zeroize(state,  sizeof(state));
+	zeroize(buffer, sizeof(buffer));
 }
 
 void

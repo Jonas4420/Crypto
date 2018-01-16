@@ -1,5 +1,4 @@
 #include "crypto/SHA512.hpp"
-#include "crypto/Utils.hpp"
 
 #include <cstring>
 
@@ -53,9 +52,9 @@ SHA512::SHA512(void)
 
 SHA512::~SHA512(void)
 {
-	Utils::zeroize(total,  sizeof(total));
-	Utils::zeroize(state,  sizeof(state));
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(total,  sizeof(total));
+	zeroize(state,  sizeof(state));
+	zeroize(buffer, sizeof(buffer));
 }
 
 void

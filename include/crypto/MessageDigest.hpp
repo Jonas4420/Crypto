@@ -12,6 +12,15 @@ class MessageDigest
 	public:
 		virtual void update(const uint8_t*, std::size_t) = 0;
 		virtual void finish(uint8_t*) = 0;
+	protected:
+		void zeroize(void *v, std::size_t n)
+		{
+			volatile uint8_t *p = static_cast<uint8_t*>(v);
+
+			while ( n-- ) {
+				*p++ = 0x00;
+			}
+		}
 };
 
 template <class MD>

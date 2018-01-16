@@ -1,6 +1,5 @@
 #include "crypto/BigNum.hpp"
 #include "crypto/BigNum_Mul.hpp"
-#include "crypto/Utils.hpp"
 
 #include <vector>
 
@@ -213,7 +212,7 @@ BigNum::safe_cond_swap(BigNum& other, bool cond)
 BigNum::~BigNum(void)
 {
 	if ( NULL != p ) {
-		Utils::zeroize(p, n * ciL);
+		zeroize(p, n * ciL);
 		delete[] p;
 	}
 
@@ -1226,12 +1225,22 @@ BigNum::grow(std::size_t new_size)
 		}
 
 		if ( NULL != p ) {
-			Utils::zeroize(p, n * ciL);
+			zeroize(p, n * ciL);
 			delete[] p;
 		}
 
 		n = new_size;
 		p = tmp;
+	}
+}
+
+void
+BigNum::zeroize(void *v, std::size_t n)
+{
+	volatile uint8_t *p = static_cast<uint8_t*>(v);
+
+	while ( n-- ) {
+		*p++ = 0x00;
 	}
 }
 

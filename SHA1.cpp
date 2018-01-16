@@ -1,5 +1,4 @@
 #include "crypto/SHA1.hpp"
-#include "crypto/Utils.hpp"
 
 #include <cstring>
 
@@ -41,7 +40,7 @@ SHA1::SHA1(void)
 	total[0] = 0;
 	total[1] = 0;
 
-	Utils::zeroize(state,  sizeof(state));
+	zeroize(state,  sizeof(state));
 
 	state[0] = 0x67452301;
 	state[1] = 0xEFCDAB89;
@@ -52,9 +51,9 @@ SHA1::SHA1(void)
 
 SHA1::~SHA1(void)
 {
-	Utils::zeroize(total,  sizeof(total));
-	Utils::zeroize(state,  sizeof(state));
-	Utils::zeroize(buffer, sizeof(buffer));
+	zeroize(total,  sizeof(total));
+	zeroize(state,  sizeof(state));
+	zeroize(buffer, sizeof(buffer));
 }
 
 void 

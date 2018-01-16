@@ -1,16 +1,16 @@
 #ifndef CRYPTO_CFB_H
 #define CRYPTO_CFB_H
 
-#include <cstring>
-
+#include "crypto/CipherMode.hpp"
 #include "crypto/SymmetricCipher.hpp"
-#include "crypto/Utils.hpp"
+
+#include <cstring>
 
 namespace Crypto
 {
 
 template <class SC>
-class CFB final
+class CFB final : CipherMode
 {
 	public:
 		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = SC::BLOCK_SIZE, bool is_encrypt = true)
@@ -25,9 +25,9 @@ class CFB final
 
 		~CFB(void)
 		{
-			Utils::zeroize(buffer, sizeof(buffer));
-			Utils::zeroize(iv,     sizeof(iv));
-			Utils::zeroize(ov,     sizeof(ov));
+			zeroize(buffer, sizeof(buffer));
+			zeroize(iv,     sizeof(iv));
+			zeroize(ov,     sizeof(ov));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
@@ -42,7 +42,7 @@ class CFB final
 			need_sz = ((buffer_sz + input_sz) / STREAM_SIZE) * STREAM_SIZE;
 			if ( output_sz < need_sz ) {
 				output_sz = need_sz;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
+				return CRYPTO_CIPHER_MODE_INVALID_LENGTH;
 			}
 
 			// Process input
@@ -88,7 +88,7 @@ class CFB final
 				buffer_sz += input_sz;
 			}
 
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
+			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
 
 		int finish(std::size_t &pad_sz)
@@ -96,13 +96,13 @@ class CFB final
 			if ( ! is_finished ) {
 				if ( buffer_sz != 0 ) {
 					pad_sz = STREAM_SIZE - buffer_sz;
-					return SC::CRYPTO_SYMMETRIC_CIPHER_NOT_FULL;
+					return CRYPTO_CIPHER_MODE_NOT_FULL;
 				}
 
 				is_finished = true;
 			}
 
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
+			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;

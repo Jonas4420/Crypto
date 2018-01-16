@@ -24,9 +24,8 @@ class Base64
 		};
 	private:
 		static const char    encode_map[64];
-		static const char    pad;
-
 		static const uint8_t decode_map[128];
+		static const char    pad;
 };
 
 }

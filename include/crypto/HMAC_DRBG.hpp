@@ -2,7 +2,8 @@
 #define CRYPTO_HMAC_DRBG_H
 
 #include "crypto/HMAC.hpp"
-#include "crypto/Utils.hpp"
+
+#include <mutex>
 
 namespace Crypto
 {
@@ -14,7 +15,9 @@ class HMAC_DRBG final
 		HMAC_DRBG(const uint8_t *entropy, std::size_t entropy_sz,
 				const uint8_t *nonce = NULL, std::size_t nonce_sz = 0,
 				const uint8_t *perso = NULL, std::size_t perso_sz = 0,
-				bool prediction_resistance = false)
+				bool prediction_resistance = false,
+				bool thread_safe = false)
+			: thread_safe(thread_safe)
 		{
 			// Check inputs
 			security_strength = MD::SIZE <= 20 ? 16 : (MD::SIZE <= 28 ? 24 : 32);
@@ -67,11 +70,11 @@ class HMAC_DRBG final
 		
 		~HMAC_DRBG(void)
 		{
-			Utils::zeroize(V, sizeof(V));
-			Utils::zeroize(K, sizeof(K));
+			zeroize(V, sizeof(V));
+			zeroize(K, sizeof(K));
 		}
 
-		void reseed(const uint8_t *entropy, std::size_t entropy_sz,
+		int reseed(const uint8_t *entropy, std::size_t entropy_sz,
 				const uint8_t *add = NULL, std::size_t add_sz = 0)
 		{
 			// Check inputs
@@ -87,6 +90,11 @@ class HMAC_DRBG final
 				throw HMAC_DRBG::Exception("Additional input length is too big");
 			}
 
+			// Lock resources
+			if ( thread_safe && ! mutex.try_lock() ) {
+				return CRYPTO_HMAC_DRBG_LOCK_FAILED;
+			}
+
 			std::size_t seed_sz = 0;
 			seed_sz += entropy_sz;
 			seed_sz += (NULL != add && 0 != add_sz) ? add_sz : 0;
@@ -100,6 +108,11 @@ class HMAC_DRBG final
 
 			update(seed.data(), seed_sz);
 			reseed_counter = 0;
+
+			// Unlock resources
+			if ( thread_safe ) { mutex.unlock(); }
+
+			return CRYPTO_HMAC_DRBG_SUCCESS;
 		}
 
 		int generate(uint8_t *output, std::size_t output_sz,
@@ -107,12 +120,21 @@ class HMAC_DRBG final
 		{
 			std::size_t temp_sz;
 
-			if ( reseed_counter >= reseed_interval ) {
-				return CRYPTO_HMAC_DRBG_RESEED_REQUIRED;
-			}
-
+			// Check inputs
 			if ( output_sz > MAX_NUMBER_OF_BYTES_PER_REQUEST ) {
 				throw HMAC_DRBG::Exception("Requested number of bytes is too big");
+			}
+
+			// Lock resources
+			if ( thread_safe && ! mutex.try_lock() ) {
+				return CRYPTO_HMAC_DRBG_LOCK_FAILED;
+			}
+
+			if ( reseed_counter >= reseed_interval ) {
+				// Unlock resources
+				if ( thread_safe ) { mutex.unlock(); }
+
+				return CRYPTO_HMAC_DRBG_RESEED_REQUIRED;
 			}
 
 			if ( NULL != additional_input && 0 != additional_input_sz ) {
@@ -134,6 +156,9 @@ class HMAC_DRBG final
 			update(additional_input, additional_input_sz);
 			reseed_counter = reseed_counter + 1;
 
+			// Unlock resources
+			if ( thread_safe ) { mutex.unlock(); }
+
 			return CRYPTO_HMAC_DRBG_SUCCESS;
 		}
 
@@ -143,14 +168,17 @@ class HMAC_DRBG final
 				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
 		};
 
-		static const uint8_t CRYPTO_HMAC_DRBG_SUCCESS         = 0x00;
-		static const uint8_t CRYPTO_HMAC_DRBG_RESEED_REQUIRED = 0x01;
+		static const int CRYPTO_HMAC_DRBG_SUCCESS         = 0x00;
+		static const int CRYPTO_HMAC_DRBG_RESEED_REQUIRED = 0x01;
+		static const int CRYPTO_HMAC_DRBG_LOCK_FAILED     = 0x02;
 	private:
 		std::size_t security_strength;
 		uint8_t     V[MD::SIZE];
 		uint8_t     K[MD::SIZE];
 		uint64_t    reseed_counter;
 		uint64_t    reseed_interval;
+		bool        thread_safe;
+		std::mutex  mutex;
 
 		void update(const uint8_t *data, std::size_t data_sz)
 		{
@@ -166,6 +194,15 @@ class HMAC_DRBG final
 				HMAC<MD> ctx_2(K, sizeof(K));
 				ctx_2.update(V,   sizeof(V));
 				ctx_2.finish(V);
+			}
+		}
+
+		void zeroize(void *v, std::size_t n)
+		{
+			volatile uint8_t *p = static_cast<uint8_t*>(v);
+
+			while ( n-- ) {
+				*p++ = 0x00;
 			}
 		}
 

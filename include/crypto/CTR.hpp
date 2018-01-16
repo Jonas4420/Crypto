@@ -1,16 +1,16 @@
 #ifndef CRYPTO_CTR_H
 #define CRYPTO_CTR_H
 
-#include <cstring>
-
+#include "crypto/CipherMode.hpp"
 #include "crypto/SymmetricCipher.hpp"
-#include "crypto/Utils.hpp"
+
+#include <cstring>
 
 namespace Crypto
 {
 
 template <class SC>
-class CTR final
+class CTR final : CipherMode
 {
 	public:
 		CTR(const uint8_t *key, std::size_t key_sz, uint8_t counter[SC::BLOCK_SIZE])
@@ -25,8 +25,8 @@ class CTR final
 
 		~CTR(void)
 		{
-			Utils::zeroize(counter, sizeof(counter));
-			Utils::zeroize(stream,  sizeof(stream));
+			zeroize(counter, sizeof(counter));
+			zeroize(stream,  sizeof(stream));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
@@ -38,7 +38,7 @@ class CTR final
 			// Check that output is large enough
 			if ( output_sz < input_sz ) {
 				output_sz = input_sz;
-				return SC::CRYPTO_SYMMETRIC_CIPHER_INVALID_LENGTH;
+				return CRYPTO_CIPHER_MODE_INVALID_LENGTH;
 			}
 
 			// Process input
@@ -64,7 +64,7 @@ class CTR final
 
 			output_sz = input_sz;
 
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
+			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
 
 		int finish(std::size_t &pad_sz)
@@ -74,7 +74,7 @@ class CTR final
 				is_finished = true;
 			}
 
-			return SC::CRYPTO_SYMMETRIC_CIPHER_SUCCESS;
+			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
