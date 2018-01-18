@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class OFB final : CipherMode
+class OFB final : public CipherMode
 {
 	public:
 		OFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE])

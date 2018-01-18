@@ -64,7 +64,7 @@ BigNum::BigNum(std::string str, int radix)
 	}
 }
 
-BigNum::BigNum(const uint8_t* data, std::size_t data_sz)
+BigNum::BigNum(const uint8_t *data, std::size_t data_sz)
 	: BigNum()
 {
 	// Sign
@@ -86,7 +86,7 @@ BigNum::BigNum(const uint8_t* data, std::size_t data_sz)
 	}
 }
 
-BigNum::BigNum(const BigNum& other)
+BigNum::BigNum(const BigNum &other)
 	: BigNum()
 {
 	// Sign
@@ -106,7 +106,7 @@ BigNum::BigNum(const BigNum& other)
 	memcpy(p, other.p, i * ciL);
 }
 
-BigNum::BigNum(BigNum&& other)
+BigNum::BigNum(BigNum &&other)
 	: s(other.s), n(other.n), p(other.p)
 {
 	// Put other in a valid state for destruction
@@ -115,7 +115,7 @@ BigNum::BigNum(BigNum&& other)
 }
 
 BigNum&
-BigNum::operator=(const BigNum& other)
+BigNum::operator=(const BigNum &other)
 {
 	if ( &other != this ) {
 		// Sign
@@ -142,7 +142,7 @@ BigNum::operator=(const BigNum& other)
 }
 
 BigNum&
-BigNum::operator=(BigNum&& other)
+BigNum::operator=(BigNum &&other)
 {
 	if ( &other != this ) {
 		// Sign
@@ -167,7 +167,7 @@ BigNum::operator=(BigNum&& other)
 }
 
 void
-BigNum::safe_cond_assign(const BigNum& other, bool cond)
+BigNum::safe_cond_assign(const BigNum &other, bool cond)
 {
 	// Sign
 	s = s * (1 - cond) + other.s * cond;
@@ -186,7 +186,7 @@ BigNum::safe_cond_assign(const BigNum& other, bool cond)
 }
 
 void
-BigNum::safe_cond_swap(BigNum& other, bool cond)
+BigNum::safe_cond_swap(BigNum &other, bool cond)
 {
 	if ( *this == other ) {
 		return;
@@ -222,43 +222,43 @@ BigNum::~BigNum(void)
 }
 
 bool
-BigNum::operator==(const BigNum& other) const
+BigNum::operator==(const BigNum &other) const
 {
 	return cmp(other) == 0;
 }
 
 bool
-BigNum::operator!=(const BigNum& other) const
+BigNum::operator!=(const BigNum &other) const
 {
 	return cmp(other) != 0;
 }
 
 bool
-BigNum::operator<(const BigNum& other) const
+BigNum::operator<(const BigNum &other) const
 {
 	return cmp(other) < 0;
 }
 
 bool
-BigNum::operator>(const BigNum& other) const
+BigNum::operator>(const BigNum &other) const
 {
 	return cmp(other) > 0;
 }
 
 bool
-BigNum::operator<=(const BigNum& other) const
+BigNum::operator<=(const BigNum &other) const
 {
 	return cmp(other) <= 0;
 }
 
 bool
-BigNum::operator>=(const BigNum& other) const
+BigNum::operator>=(const BigNum &other) const
 {
 	return cmp(other) >= 0;
 }
 
 BigNum
-BigNum::operator+(const BigNum& other) const
+BigNum::operator+(const BigNum &other) const
 {
 	BigNum result(*this);
 
@@ -268,7 +268,7 @@ BigNum::operator+(const BigNum& other) const
 }
 
 BigNum&
-BigNum::operator+=(const BigNum& other)
+BigNum::operator+=(const BigNum &other)
 {
 	if ( s * other.s < 0 ) {
 		if ( cmp_abs(other) >= 0 ) {
@@ -302,7 +302,7 @@ BigNum::operator++(int)
 }
 
 BigNum
-BigNum::operator-(const BigNum& other) const
+BigNum::operator-(const BigNum &other) const
 {
 	BigNum result(*this);
 
@@ -312,7 +312,7 @@ BigNum::operator-(const BigNum& other) const
 }
 
 BigNum&
-BigNum::operator-=(const BigNum& other)
+BigNum::operator-=(const BigNum &other)
 {
 	if ( s * other.s > 0 ) {
 		if ( cmp_abs(other) >= 0 ) {
@@ -347,7 +347,7 @@ BigNum::operator--(int)
 }
 
 BigNum
-BigNum::operator*(const BigNum& other) const
+BigNum::operator*(const BigNum &other) const
 {
 	BigNum result(*this);
 
@@ -357,7 +357,7 @@ BigNum::operator*(const BigNum& other) const
 }
 
 BigNum&
-BigNum::operator*=(const BigNum& other)
+BigNum::operator*=(const BigNum &other)
 {
 	std::size_t i, j;
 	BigNum X;
@@ -387,7 +387,7 @@ BigNum::operator*=(const BigNum& other)
 }
 
 BigNum
-BigNum::operator/(const BigNum& other) const
+BigNum::operator/(const BigNum &other) const
 {
 	BigNum result(*this);
 
@@ -397,7 +397,7 @@ BigNum::operator/(const BigNum& other) const
 }
 
 BigNum&
-BigNum::operator/=(const BigNum& other)
+BigNum::operator/=(const BigNum &other)
 {
 	auto result = div_mod(other);
 
@@ -407,7 +407,7 @@ BigNum::operator/=(const BigNum& other)
 }
 
 BigNum
-BigNum::operator%(const BigNum& other) const
+BigNum::operator%(const BigNum &other) const
 {
 	BigNum result(*this);
 
@@ -417,7 +417,7 @@ BigNum::operator%(const BigNum& other) const
 }
 
 BigNum&
-BigNum::operator%=(const BigNum& other)
+BigNum::operator%=(const BigNum &other)
 {
 	if ( other < 0 ) {
 		throw BigNum::Exception("Invalid value for modulus");
@@ -438,7 +438,7 @@ BigNum::operator%=(const BigNum& other)
 }
 
 std::pair<BigNum, BigNum>
-BigNum::div_mod(const BigNum& other) const
+BigNum::div_mod(const BigNum &other) const
 {
 	BigNum Q, R, X, Y, Z, T1, T2, T3;
 	std::size_t n, t, k;
@@ -897,7 +897,7 @@ BigNum::set_bit(std::size_t pos, int flag)
 }
 
 BigNum
-BigNum::gcd(const BigNum& other) const
+BigNum::gcd(const BigNum &other) const
 {
 	std::size_t lz, lzt;
 	BigNum TA, TB;
@@ -934,13 +934,13 @@ BigNum::gcd(const BigNum& other) const
 }
 
 BigNum
-BigNum::lcm(const BigNum& other) const
+BigNum::lcm(const BigNum &other) const
 {
 	return (*this * other) / gcd(other);
 }
 
 BigNum
-BigNum::inv(const BigNum& other) const
+BigNum::inv(const BigNum &other) const
 {
 	BigNum G, TA, TU, U1, U2, TB, TV, V1, V2;
 
@@ -1175,7 +1175,7 @@ BigNum::str(int radix, bool lowercase) const
 }
 
 int
-BigNum::raw(uint8_t* data, std::size_t& data_sz)
+BigNum::raw(uint8_t *data, std::size_t &data_sz) const
 {
 	std::size_t need_sz;
 
@@ -1289,7 +1289,7 @@ BigNum::get_digit(char c, int radix)
 }
 
 int
-BigNum::cmp(const BigNum& other) const
+BigNum::cmp(const BigNum &other) const
 {
 	std::size_t i, j;
 
@@ -1324,7 +1324,7 @@ BigNum::cmp(const BigNum& other) const
 }
 
 int
-BigNum::cmp_abs(const BigNum& other) const
+BigNum::cmp_abs(const BigNum &other) const
 {
 	std::size_t i, j;
 

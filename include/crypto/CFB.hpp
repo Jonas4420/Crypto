@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class CFB final : CipherMode
+class CFB final : public CipherMode
 {
 	public:
 		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = SC::BLOCK_SIZE, bool is_encrypt = true)

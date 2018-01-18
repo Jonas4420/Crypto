@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class ECB final : CipherMode
+class ECB final : public CipherMode
 {
 	public:
 		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt = true)

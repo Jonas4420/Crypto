@@ -18,7 +18,7 @@ class BigNum
 	public:
 		/* Constructors and destructor */
 		BigNum(void);                               // Default constructor
-		BigNum(int);                                // Constructor from signed 64 bits int
+		BigNum(int);                                // Constructor from signed int
 		BigNum(std::string, int = 10);              // Constructor from string
 		BigNum(const uint8_t*, std::size_t);        // Constructor from array of uint8_t
 		BigNum(const BigNum&);                      // Copy Constructor
@@ -94,7 +94,7 @@ class BigNum
 		/* Cast and dump functions */
 		uint64_t limb(std::size_t = 0) const;
 		std::string str(int = 10, bool = true) const;
-		int raw(uint8_t*, std::size_t&);
+		int raw(uint8_t*, std::size_t&) const;
 
 		class Exception : public std::runtime_error
 		{

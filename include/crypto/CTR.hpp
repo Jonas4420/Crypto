@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class CTR final : CipherMode
+class CTR final : public CipherMode
 {
 	public:
 		CTR(const uint8_t *key, std::size_t key_sz, uint8_t counter[SC::BLOCK_SIZE])

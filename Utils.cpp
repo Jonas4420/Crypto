@@ -31,7 +31,7 @@ Utils::from_string(const std::string input, uint8_t *output, std::size_t &output
 }
 
 int
-Utils::to_string(const uint8_t* input, std::size_t input_sz, std::string &output)
+Utils::to_string(const uint8_t *input, std::size_t input_sz, std::string &output)
 {
 	output = "";
 
