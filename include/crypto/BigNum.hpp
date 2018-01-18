@@ -93,8 +93,8 @@ class BigNum
 
 		/* Cast and dump functions */
 		uint64_t limb(std::size_t = 0) const;
-		std::string str(int = 10, bool = true) const;
-		int raw(uint8_t*, std::size_t&) const;
+		std::string to_string(int = 10, bool = true) const;
+		int to_binary(uint8_t*, std::size_t&) const;
 
 		class Exception : public std::runtime_error
 		{

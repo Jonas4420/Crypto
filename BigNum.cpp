@@ -1114,7 +1114,7 @@ BigNum::limb(std::size_t pos) const
 }
 
 std::string
-BigNum::str(int radix, bool lowercase) const
+BigNum::to_string(int radix, bool lowercase) const
 {
 	std::string result;
 
@@ -1175,7 +1175,7 @@ BigNum::str(int radix, bool lowercase) const
 }
 
 int
-BigNum::raw(uint8_t *data, std::size_t &data_sz) const
+BigNum::to_binary(uint8_t *data, std::size_t &data_sz) const
 {
 	std::size_t need_sz;
 

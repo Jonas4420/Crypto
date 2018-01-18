@@ -17,7 +17,7 @@ class RIPEMD160 : public MessageDigest
 
 		static const std::size_t SIZE =  20;
 		static const std::size_t BLOCK_SIZE = 64;
-	private:
+	protected:
 		uint32_t total[2];
 		uint32_t state[5];
 		uint8_t  buffer[64];
