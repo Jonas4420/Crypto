@@ -3,7 +3,7 @@
 namespace Crypto
 {
 
-void
+int
 Base64::encode(const uint8_t *input, std::size_t input_sz, std::string &output)
 {
 	std::size_t n = (input_sz / 3) * 3;
@@ -31,9 +31,11 @@ Base64::encode(const uint8_t *input, std::size_t input_sz, std::string &output)
 
 		output += pad;
 	}
+
+	return CRYPTO_BASE64_SUCCESS;
 }
 
-void
+int
 Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 {
 	std::size_t i, n;
@@ -88,7 +90,7 @@ Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 
 	if ( 0 == n ) {
 		output_sz = 0;
-		return;
+		return CRYPTO_BASE64_SUCCESS;
 	}
 
 	/* The following expression is to calculate the following formula without
@@ -98,9 +100,9 @@ Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 	n = ( 6 * ( n >> 3 ) ) + ( ( 6 * ( n & 0x7 ) + 7 ) >> 3 );
 	n -= j;
 
-	if ( n > output_sz ) {
+	if ( output_sz < n ) {
 		output_sz = n;
-		return;
+		return CRYPTO_BASE64_INVALID_LENGTH;
 	}
 
 	x = 0;
@@ -124,6 +126,8 @@ Base64::decode(const std::string input, uint8_t *output, std::size_t &output_sz)
 	}
 
 	output_sz = p - output;
+
+	return CRYPTO_BASE64_SUCCESS;
 }
 
 const char

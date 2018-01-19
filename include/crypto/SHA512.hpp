@@ -18,9 +18,9 @@ class SHA512 : public MessageDigest
 		static const std::size_t SIZE       =  64;
 		static const std::size_t BLOCK_SIZE = 128;
 	protected:
-		uint64_t    total[2];
-		uint64_t    state[8];
-		uint8_t     buffer[128];
+		uint64_t total[2];
+		uint64_t state[8];
+		uint8_t  buffer[128];
 
 		virtual void process(const uint8_t[128]);
 

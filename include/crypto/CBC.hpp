@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class CBC final : public CipherMode
+class CBC : public CipherMode
 {
 	public:
 		CBC(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], bool is_encrypt = true)
@@ -106,7 +106,7 @@ class CBC final : public CipherMode
 		}
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
-	private:
+	protected:
 		SC sc_ctx;
 
 		uint8_t     buffer[BLOCK_SIZE];

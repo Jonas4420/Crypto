@@ -1,5 +1,5 @@
-#ifndef ECCURVE_H
-#define ECCURVE_H
+#ifndef CRYPTO_ECCURVE_H
+#define CRYPTO_ECCURVE_H
 
 
 namespace Crypto

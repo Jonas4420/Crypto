@@ -11,7 +11,7 @@ namespace Crypto
 {
 
 template <class MD>
-class HMAC final
+class HMAC
 {
 	public:
 		HMAC(const uint8_t *key, std::size_t key_sz)
@@ -80,7 +80,7 @@ class HMAC final
 		}
 
 		static const std::size_t SIZE = MD::SIZE;
-	private:
+	protected:
 		MD md_ctx;
 		uint8_t hmac_ctx[2 * MD::BLOCK_SIZE];
 

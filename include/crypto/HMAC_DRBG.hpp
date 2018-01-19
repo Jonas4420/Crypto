@@ -9,7 +9,7 @@ namespace Crypto
 {
 
 template <class MD>
-class HMAC_DRBG final
+class HMAC_DRBG
 {
 	public:
 		HMAC_DRBG(const uint8_t *entropy, std::size_t entropy_sz,
@@ -171,7 +171,7 @@ class HMAC_DRBG final
 		static const int CRYPTO_HMAC_DRBG_SUCCESS         = 0x00;
 		static const int CRYPTO_HMAC_DRBG_RESEED_REQUIRED = 0x01;
 		static const int CRYPTO_HMAC_DRBG_LOCK_FAILED     = 0x02;
-	private:
+	protected:
 		std::size_t security_strength;
 		uint8_t     V[MD::SIZE];
 		uint8_t     K[MD::SIZE];

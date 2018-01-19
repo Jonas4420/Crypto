@@ -1,25 +1,25 @@
-#ifndef CRYPTO_RIPEMD160_H
-#define CRYPTO_RIPEMD160_H
+#ifndef CRYPTO_MD5_H
+#define CRYPTO_MD5_H
 
 #include "crypto/MessageDigest.hpp"
 
 namespace Crypto
 {
 
-class RIPEMD160 : public MessageDigest
+class MD5 : public MessageDigest
 {
 	public:
-		RIPEMD160(void);
-		~RIPEMD160(void);
+		MD5(void);
+		~MD5(void);
 
 		void update(const uint8_t*, std::size_t);
 		void finish(uint8_t*);
 
-		static const std::size_t SIZE       = 20;
+		static const std::size_t SIZE       = 16;
 		static const std::size_t BLOCK_SIZE = 64;
 	protected:
 		uint32_t total[2];
-		uint32_t state[5];
+		uint32_t state[4];
 		uint8_t  buffer[64];
 
 		void process(const uint8_t[64]);

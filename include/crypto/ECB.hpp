@@ -10,7 +10,7 @@ namespace Crypto
 {
 
 template <class SC>
-class ECB final : public CipherMode
+class ECB : public CipherMode
 {
 	public:
 		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt = true)
@@ -90,7 +90,7 @@ class ECB final : public CipherMode
 		}
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
-	private:
+	protected:
 		SC sc_ctx;
 
 		uint8_t     buffer[BLOCK_SIZE];
