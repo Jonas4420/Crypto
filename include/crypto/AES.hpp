@@ -12,8 +12,8 @@ class AES : public SymmetricCipher
 		AES(const uint8_t*, std::size_t);
 		~AES(void);
 
-		virtual void encrypt(const uint8_t*, uint8_t*);
-		virtual void decrypt(const uint8_t*, uint8_t*);
+		virtual void encrypt(const uint8_t*, uint8_t*) const;
+		virtual void decrypt(const uint8_t*, uint8_t*) const;
 
 		class Exception : public std::runtime_error
 		{

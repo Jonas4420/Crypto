@@ -13,8 +13,8 @@ class SymmetricCipher
 {
 	public:
 		SymmetricCipher(const uint8_t*, std::size_t) {};
-		virtual void encrypt(const uint8_t*, uint8_t*) = 0;
-		virtual void decrypt(const uint8_t*, uint8_t*) = 0;
+		virtual void encrypt(const uint8_t*, uint8_t*) const = 0;
+		virtual void decrypt(const uint8_t*, uint8_t*) const = 0;
 
 		class Exception : public std::runtime_error
 		{

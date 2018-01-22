@@ -67,7 +67,8 @@
 namespace Crypto
 {
 
-AES::AES(const uint8_t *key, std::size_t key_sz) : SymmetricCipher(key, key_sz)
+AES::AES(const uint8_t *key, std::size_t key_sz)
+	: SymmetricCipher(key, key_sz)
 {
 	switch ( key_sz ) {
 		case 16 : nr = 10; break;
@@ -98,7 +99,7 @@ AES::~AES(void)
 }
 
 void
-AES::encrypt(const uint8_t *plaintext, uint8_t *ciphertext)
+AES::encrypt(const uint8_t *plaintext, uint8_t *ciphertext) const
 {
 	uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
@@ -147,7 +148,7 @@ AES::encrypt(const uint8_t *plaintext, uint8_t *ciphertext)
 }
 
 void
-AES::decrypt(const uint8_t *ciphertext, uint8_t *plaintext)
+AES::decrypt(const uint8_t *ciphertext, uint8_t *plaintext) const
 {
 	uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
