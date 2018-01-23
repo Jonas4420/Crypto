@@ -23,16 +23,7 @@ namespace Crypto
 
 RIPEMD160::RIPEMD160(void)
 {
-	total[0] = 0;
-	total[1] = 0;
-
-	state[0] = 0x67452301;
-	state[1] = 0xEFCDAB89;
-	state[2] = 0x98BADCFE;
-	state[3] = 0x10325476;
-	state[4] = 0xC3D2E1F0;
-
-	zeroize(buffer, sizeof(buffer));
+	reset();
 }
 
 RIPEMD160::~RIPEMD160(void)
@@ -108,6 +99,21 @@ RIPEMD160::finish(uint8_t *output)
 	PUT_UINT32_LE(state[2], output,  8);
 	PUT_UINT32_LE(state[3], output, 12);
 	PUT_UINT32_LE(state[4], output, 16);
+}
+
+void
+RIPEMD160::reset(void)
+{
+	total[0] = 0;
+	total[1] = 0;
+
+	state[0] = 0x67452301;
+	state[1] = 0xEFCDAB89;
+	state[2] = 0x98BADCFE;
+	state[3] = 0x10325476;
+	state[4] = 0xC3D2E1F0;
+
+	zeroize(buffer, sizeof(buffer));
 }
 
 void

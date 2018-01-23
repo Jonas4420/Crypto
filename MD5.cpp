@@ -23,15 +23,7 @@ namespace Crypto
 
 MD5::MD5(void)
 {
-	total[0] = 0;
-	total[1] = 0;
-
-	state[0] = 0x67452301;
-	state[1] = 0xEFCDAB89;
-	state[2] = 0x98BADCFE;
-	state[3] = 0x10325476;
-
-	zeroize(buffer, sizeof(buffer));
+	reset();
 }
 
 MD5::~MD5(void)
@@ -106,6 +98,20 @@ MD5::finish(uint8_t *output)
 	PUT_UINT32_LE(state[1], output,  4);
 	PUT_UINT32_LE(state[2], output,  8);
 	PUT_UINT32_LE(state[3], output, 12);
+}
+
+void
+MD5::reset(void)
+{
+	total[0] = 0;
+	total[1] = 0;
+
+	state[0] = 0x67452301;
+	state[1] = 0xEFCDAB89;
+	state[2] = 0x98BADCFE;
+	state[3] = 0x10325476;
+
+	zeroize(buffer, sizeof(buffer));
 }
 
 void

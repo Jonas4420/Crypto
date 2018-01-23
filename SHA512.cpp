@@ -37,17 +37,7 @@ namespace Crypto
 
 SHA512::SHA512(void)
 {
-	total[0] = 0;
-	total[1] = 0;
-
-	state[0] = UL64(0x6A09E667F3BCC908);
-	state[1] = UL64(0xBB67AE8584CAA73B);
-	state[2] = UL64(0x3C6EF372FE94F82B);
-	state[3] = UL64(0xA54FF53A5F1D36F1);
-	state[4] = UL64(0x510E527FADE682D1);
-	state[5] = UL64(0x9B05688C2B3E6C1F);
-	state[6] = UL64(0x1F83D9ABFB41BD6B);
-	state[7] = UL64(0x5BE0CD19137E2179);
+	reset();
 }
 
 SHA512::~SHA512(void)
@@ -124,6 +114,24 @@ SHA512::finish(uint8_t *output)
 	PUT_UINT64_BE(state[5], output, 40);
 	PUT_UINT64_BE(state[6], output, 48);
 	PUT_UINT64_BE(state[7], output, 56);
+}
+
+void
+SHA512::reset(void)
+{
+	total[0] = 0;
+	total[1] = 0;
+
+	state[0] = UL64(0x6A09E667F3BCC908);
+	state[1] = UL64(0xBB67AE8584CAA73B);
+	state[2] = UL64(0x3C6EF372FE94F82B);
+	state[3] = UL64(0xA54FF53A5F1D36F1);
+	state[4] = UL64(0x510E527FADE682D1);
+	state[5] = UL64(0x9B05688C2B3E6C1F);
+	state[6] = UL64(0x1F83D9ABFB41BD6B);
+	state[7] = UL64(0x5BE0CD19137E2179);
+
+	zeroize(buffer, sizeof(buffer));
 }
 
 void

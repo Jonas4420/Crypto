@@ -7,6 +7,21 @@ namespace Crypto
 
 SHA224::SHA224(void)
 {
+	reset();
+}
+
+void 
+SHA224::finish(uint8_t *output)
+{
+	uint8_t tmp[32];
+
+	SHA256::finish(tmp);
+	memcpy(output, tmp, 28);
+}
+
+void
+SHA224::reset(void)
+{
 	total[0] = 0;
 	total[1] = 0;
 
@@ -18,15 +33,8 @@ SHA224::SHA224(void)
 	state[5] = 0x68581511;
 	state[6] = 0x64F98FA7;
 	state[7] = 0xBEFA4FA4;
-}
 
-void 
-SHA224::finish(uint8_t *output)
-{
-	uint8_t tmp[32];
-
-	SHA256::finish(tmp);
-	memcpy(output, tmp, 28);
+	zeroize(buffer, sizeof(buffer));
 }
 
 }

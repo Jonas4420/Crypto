@@ -12,8 +12,9 @@ class RIPEMD160 : public MessageDigest
 		RIPEMD160(void);
 		~RIPEMD160(void);
 
-		void update(const uint8_t*, std::size_t);
-		void finish(uint8_t*);
+		virtual void update(const uint8_t*, std::size_t);
+		virtual void finish(uint8_t*);
+		virtual void reset(void);
 
 		static const std::size_t SIZE       = 20;
 		static const std::size_t BLOCK_SIZE = 64;

@@ -48,19 +48,7 @@ namespace Crypto
 
 SHA256::SHA256(void)
 {
-	total[0] = 0;
-	total[1] = 0;
-
-	state[0] = 0x6A09E667;
-	state[1] = 0xBB67AE85;
-	state[2] = 0x3C6EF372;
-	state[3] = 0xA54FF53A;
-	state[4] = 0x510E527F;
-	state[5] = 0x9B05688C;
-	state[6] = 0x1F83D9AB;
-	state[7] = 0x5BE0CD19;
-
-	zeroize(buffer, sizeof(buffer));
+	reset();
 }
 
 SHA256::~SHA256(void)
@@ -139,6 +127,24 @@ SHA256::finish(uint8_t *output)
 	PUT_UINT32_BE(state[5], output, 20);
 	PUT_UINT32_BE(state[6], output, 24);
 	PUT_UINT32_BE(state[7], output, 28);
+}
+
+void
+SHA256::reset(void)
+{
+	total[0] = 0;
+	total[1] = 0;
+
+	state[0] = 0x6A09E667;
+	state[1] = 0xBB67AE85;
+	state[2] = 0x3C6EF372;
+	state[3] = 0xA54FF53A;
+	state[4] = 0x510E527F;
+	state[5] = 0x9B05688C;
+	state[6] = 0x1F83D9AB;
+	state[7] = 0x5BE0CD19;
+
+	zeroize(buffer, sizeof(buffer));
 }
 
 void
