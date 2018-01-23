@@ -14,7 +14,7 @@ class CTR : public CipherMode
 {
 	public:
 		CTR(const uint8_t *key, std::size_t key_sz, uint8_t counter[SC::BLOCK_SIZE])
-			: sc_ctx(key, key_sz), is_finished(false)
+			: sc_ctx(key, key_sz)
 		{
 			memcpy(this->begin,   counter, BLOCK_SIZE);
 			memcpy(this->counter, counter, BLOCK_SIZE);
@@ -31,10 +31,6 @@ class CTR : public CipherMode
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
-			if ( is_finished ) {
-				throw SymmetricCipher::Exception("Cipher has finished processing data");
-			}
-
 			// Check that output is large enough
 			if ( output_sz < input_sz ) {
 				output_sz = input_sz;
@@ -69,10 +65,7 @@ class CTR : public CipherMode
 
 		int finish(std::size_t &pad_sz)
 		{
-			if ( ! is_finished ) {
-				pad_sz = 0;
-				is_finished = true;
-			}
+			pad_sz = 0;
 
 			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
@@ -85,7 +78,6 @@ class CTR : public CipherMode
 		uint8_t     counter[BLOCK_SIZE];
 		uint8_t     stream[BLOCK_SIZE];
 		std::size_t stream_sz;
-		bool        is_finished;
 };
 
 }

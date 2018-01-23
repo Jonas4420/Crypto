@@ -14,7 +14,7 @@ class CFB : public CipherMode
 {
 	public:
 		CFB(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], std::size_t STREAM_SIZE = SC::BLOCK_SIZE, bool is_encrypt = true)
-			: sc_ctx(key, key_sz), buffer_sz(0), STREAM_SIZE(STREAM_SIZE), is_encrypt(is_encrypt), is_finished(false)
+			: sc_ctx(key, key_sz), buffer_sz(0), STREAM_SIZE(STREAM_SIZE), is_encrypt(is_encrypt)
 		{
 			if ( STREAM_SIZE < 1 || STREAM_SIZE > BLOCK_SIZE ) {
 				throw SymmetricCipher::Exception("Invalid data segment size");
@@ -33,10 +33,6 @@ class CFB : public CipherMode
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
 			std::size_t need_sz, total_sz, write_sz;
-
-			if ( is_finished ) {
-				throw SymmetricCipher::Exception("Cipher has finished processing data");
-			}
 
 			// Check that output is large enough
 			need_sz = ((buffer_sz + input_sz) / STREAM_SIZE) * STREAM_SIZE;
@@ -93,13 +89,9 @@ class CFB : public CipherMode
 
 		int finish(std::size_t &pad_sz)
 		{
-			if ( ! is_finished ) {
-				if ( buffer_sz != 0 ) {
-					pad_sz = STREAM_SIZE - buffer_sz;
-					return CRYPTO_CIPHER_MODE_NOT_FULL;
-				}
-
-				is_finished = true;
+			if ( buffer_sz != 0 ) {
+				pad_sz = STREAM_SIZE - buffer_sz;
+				return CRYPTO_CIPHER_MODE_NOT_FULL;
 			}
 
 			return CRYPTO_CIPHER_MODE_SUCCESS;
@@ -115,7 +107,6 @@ class CFB : public CipherMode
 		uint8_t     iv[BLOCK_SIZE];
 		uint8_t     ov[BLOCK_SIZE];
 		bool        is_encrypt;
-		bool        is_finished;
 };
 
 }
