@@ -2,6 +2,7 @@
 #define ASN1_H
 
 #include "crypto/BigNum.hpp"
+#include "crypto/OID.hpp"
 
 #include <stdexcept>
 
@@ -14,30 +15,22 @@
 namespace Crypto
 {
 
-class OID
-{
-	// TODO
-};
-
 class ASN1
 {
 	public:
-		enum class Tag;
-
-		static int get_tag(const uint8_t*, std::size_t, Tag&);
-		static int get_len(const uint8_t*, std::size_t, std::size_t&);
+		enum class Tag : uint8_t;
 
 		static int get_boolean(const uint8_t*, std::size_t, std::size_t&, bool&);
 		static int get_integer(const uint8_t*, std::size_t, std::size_t&, BigNum&);
-		static int get_bit_string(const uint8_t*, std::size_t, std::size_t&, uint8_t*, std::size_t&);
+		static int get_bit_string(const uint8_t*, std::size_t, std::size_t&, uint8_t*, std::size_t&, uint8_t&);
 		static int get_octet_string(const uint8_t*, std::size_t, std::size_t&, uint8_t*, std::size_t&);
 		static int get_null(const uint8_t*, std::size_t, std::size_t&);
 		static int get_oid(const uint8_t*, std::size_t, std::size_t&, OID&);
 		static int get_sequence(const uint8_t*, std::size_t, std::size_t&, std::vector<std::pair<const uint8_t*, std::size_t>>&);
 		static int get_set(const uint8_t*, std::size_t, std::size_t&, std::vector<std::pair<const uint8_t*, std::size_t>>&);
-		static int get_data(const uint8_t*, std::size_t, Tag&, std::size_t&, uint8_t*, std::size_t&);
+		static int get_data(const uint8_t*, std::size_t, std::size_t&, const Tag&, uint8_t*, std::size_t&);
 
-		enum class Tag {
+		enum class Tag : uint8_t {
 			BOOLEAN			= 0x01,
 			INTEGER			= 0x02,
 			BIT_STRING		= 0x03,
@@ -65,7 +58,7 @@ class ASN1
 			GENERAL_STRING		= 0x1B,
 			UNIVERSAL_STRING	= 0x1C,
 			CHARACTER_STRING	= 0x1D,
-			BMPString		= 0x1E
+			BMP_STRING		= 0x1E
 		};
 
 		class Exception : public std::runtime_error
@@ -76,6 +69,14 @@ class ASN1
 
 		static const int CRYPTO_ASN1_SUCCESS        = 0x00;
 		static const int CRYPTO_ASN1_INVALID_LENGTH = 0x01;
+		static const int CRYPTO_ASN1_OUT_OF_DATA    = 0x02;
+		static const int CRYPTO_ASN1_TAG_ERROR      = 0x03;
+		static const int CRYPTO_ASN1_LENGTH_ERROR   = 0x04;
+		static const int CRYPTO_ASN1_VALUE_ERROR    = 0x05;
+	private:
+		static int get_tag(const uint8_t*, std::size_t, std::size_t&, Tag&);
+		static int get_len(const uint8_t*, std::size_t, std::size_t&, std::size_t&);
+		static int get_header(const uint8_t*&, std::size_t&, std::size_t&, const Tag&, std::size_t&);
 };
 
 }
