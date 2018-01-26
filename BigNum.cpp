@@ -1179,6 +1179,21 @@ BigNum::to_binary(uint8_t *data, std::size_t &data_sz) const
 {
 	std::size_t need_sz;
 
+	// Special case if integer is zero
+	if ( *this == 0 ) {
+		need_sz = 1;
+
+		if ( data_sz < need_sz ) {
+			data_sz = need_sz;
+			return CRYPTO_BIGNUM_INVALID_LENGTH;
+		}
+
+		data[0] = 0x00;
+		data_sz = 1;
+
+		return CRYPTO_BIGNUM_SUCCESS;
+	}
+
 	need_sz = size();
 	if ( data_sz < need_sz ) {
 		data_sz = need_sz;

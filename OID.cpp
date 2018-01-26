@@ -1,5 +1,7 @@
 #include "crypto/OID.hpp"
 
+#include <cstring>
+
 namespace Crypto
 {
 
@@ -15,7 +17,7 @@ OID::OID(const uint8_t *data, std::size_t data_sz)
 	std::size_t bytes_sz;
 	uint32_t node;
 
-	if ( data_sz < 1 ) {
+	if ( 0 == data_sz ) {
 		throw OID::Exception("Invalid data");
 	}
 
@@ -208,7 +210,7 @@ OID::fill_bytes(const uint8_t *&data, std::size_t &data_sz, uint8_t bytes[5], st
 int
 OID::decode_node(uint8_t data[5], std::size_t data_sz, uint32_t &node)
 {
-	if ( data_sz < 1 ) {
+	if ( 0 == data_sz ) {
 		return CRYPTO_OID_VALUE_ERROR;
 	}
 
@@ -219,6 +221,7 @@ OID::decode_node(uint8_t data[5], std::size_t data_sz, uint32_t &node)
 
 	// Check for overflow
 	if ( 5 == data_sz && data[0] >= 0x90 ) {
+		return CRYPTO_OID_VALUE_ERROR;
 	}
 
 	node = data[0] & 0x7F;
