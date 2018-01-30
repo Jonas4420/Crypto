@@ -26,9 +26,7 @@ class ECPrivateKey
 		ECPrivateKey(const BigNum&, const ECDomainParameters* = NULL, const SubjectPublicKeyInfo* = NULL);
 		ECPrivateKey(const uint8_t*, std::size_t);
 		ECPrivateKey(const ECPrivateKey&);
-		ECPrivateKey(ECPrivateKey&&);
 		ECPrivateKey& operator=(const ECPrivateKey&);
-		ECPrivateKey& operator=(ECPrivateKey&&);
 
 		~ECPrivateKey(void);
 
@@ -56,9 +54,7 @@ class SubjectPublicKeyInfo
 		SubjectPublicKeyInfo(const ECPoint&);
 		SubjectPublicKeyInfo(const ECDomainParameters&, const uint8_t*, std::size_t);
 		SubjectPublicKeyInfo(const SubjectPublicKeyInfo&);
-		SubjectPublicKeyInfo(SubjectPublicKeyInfo&&);
 		SubjectPublicKeyInfo& operator=(const SubjectPublicKeyInfo&);
-		SubjectPublicKeyInfo& operator=(SubjectPublicKeyInfo&&);
 
 		~SubjectPublicKeyInfo(void);
 
@@ -84,9 +80,7 @@ class ECDomainParameters
 		ECDomainParameters(const ECCurve&, const ECPoint&, const BigNum&, const BigNum& = BigNum(0));
 		ECDomainParameters(const uint8_t*, std::size_t);
 		ECDomainParameters(const ECDomainParameters&);
-		ECDomainParameters(ECDomainParameters&&);
 		ECDomainParameters& operator=(const ECDomainParameters&);
-		ECDomainParameters& operator=(ECDomainParameters&&);
 
 		~ECDomainParameters(void);
 

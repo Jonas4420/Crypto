@@ -17,6 +17,7 @@ class OID
 {
 	public:
 		/* Constructors and destructors */
+		OID(void);
 		OID(uint32_t);
 		OID(const uint8_t*, std::size_t);
 		OID(const OID&);

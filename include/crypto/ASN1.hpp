@@ -1,5 +1,5 @@
-#ifndef ASN1_H
-#define ASN1_H
+#ifndef CRYPTO_ASN1_H
+#define CRYPTO_ASN1_H
 
 #include "crypto/BigNum.hpp"
 #include "crypto/OID.hpp"
@@ -20,25 +20,25 @@ class ASN1
 	public:
 		enum class Tag : uint8_t;
 
-		static int read_boolean(const uint8_t*&, std::size_t&, bool&);
-		static int read_integer(const uint8_t*&, std::size_t&, BigNum&);
-		static int read_bit_string(const uint8_t*&, std::size_t&, uint8_t*, std::size_t&, uint8_t&);
-		static int read_octet_string(const uint8_t*&, std::size_t&, uint8_t*, std::size_t&);
-		static int read_null(const uint8_t*&, std::size_t&);
-		static int read_oid(const uint8_t*&, std::size_t&, OID&);
-		static int read_sequence(const uint8_t*&, std::size_t&, std::vector<std::pair<const uint8_t*, std::size_t>>&);
-		static int read_set(const uint8_t*&, std::size_t&, std::vector<std::pair<const uint8_t*, std::size_t>>&);
-		static int read_data(const uint8_t*&, std::size_t&, const Tag&, uint8_t*, std::size_t&);
+		static int read_boolean(const uint8_t*, std::size_t, bool&, std::size_t&);
+		static int read_integer(const uint8_t*, std::size_t, BigNum&, std::size_t&);
+		static int read_bit_string(const uint8_t*, std::size_t, uint8_t*, std::size_t&, uint8_t&, std::size_t&);
+		static int read_octet_string(const uint8_t*, std::size_t, uint8_t*, std::size_t&, std::size_t&);
+		static int read_null(const uint8_t*, std::size_t, std::size_t&);
+		static int read_oid(const uint8_t*, std::size_t, OID&, std::size_t&);
+		static int read_sequence(const uint8_t*, std::size_t, std::vector<std::pair<const uint8_t*, std::size_t>>&, std::size_t&);
+		static int read_set(const uint8_t*, std::size_t, std::vector<std::pair<const uint8_t*, std::size_t>>&, std::size_t&);
+		static int read_data(const uint8_t*, std::size_t, const Tag&, uint8_t*, std::size_t&, std::size_t&);
 
-		static int write_boolean(bool, uint8_t*&, std::size_t&);
-		static int write_integer(const BigNum&, uint8_t*&, std::size_t&);
-		static int write_bit_string(const uint8_t*, std::size_t, uint8_t, uint8_t*&, std::size_t&);
-		static int write_octet_string(const uint8_t*, std::size_t, uint8_t*&, std::size_t&);
-		static int write_null(uint8_t*&, std::size_t&);
-		static int write_oid(const OID&, uint8_t*&, std::size_t&);
-		static int write_sequence(const std::vector<std::pair<const uint8_t*, std::size_t>>&, uint8_t*&, std::size_t&);
-		static int write_set(const std::vector<std::pair<const uint8_t*, std::size_t>>&, uint8_t*&, std::size_t&);
-		static int write_data(const Tag&, const uint8_t*, std::size_t, uint8_t*&, std::size_t&);
+		static int write_boolean(bool, uint8_t*, std::size_t, std::size_t&);
+		static int write_integer(const BigNum&, uint8_t*, std::size_t, std::size_t&);
+		static int write_bit_string(const uint8_t*, std::size_t, uint8_t, uint8_t*, std::size_t, std::size_t&);
+		static int write_octet_string(const uint8_t*, std::size_t, uint8_t*, std::size_t, std::size_t&);
+		static int write_null(uint8_t*, std::size_t, std::size_t&);
+		static int write_oid(const OID&, uint8_t*, std::size_t, std::size_t&);
+		static int write_sequence(const std::vector<std::pair<const uint8_t*, std::size_t>>&, uint8_t*, std::size_t, std::size_t&);
+		static int write_set(const std::vector<std::pair<const uint8_t*, std::size_t>>&, uint8_t*, std::size_t, std::size_t&);
+		static int write_data(const Tag&, const uint8_t*, std::size_t, uint8_t*, std::size_t, std::size_t&);
 
 		enum class Tag : uint8_t {
 			RESERVED                = 0x00,
@@ -85,13 +85,13 @@ class ASN1
 		static const int CRYPTO_ASN1_LENGTH_ERROR   = 0x04;
 		static const int CRYPTO_ASN1_VALUE_ERROR    = 0x05;
 	private:
-		static int read_header(const uint8_t*&, std::size_t&, Tag&, std::size_t&);
-		static int read_tag(const uint8_t*&, std::size_t&, Tag&);
-		static int read_len(const uint8_t*&, std::size_t&, std::size_t&);
+		static int read_header(const uint8_t*, std::size_t, Tag&, std::size_t&, std::size_t&);
+		static int read_tag(const uint8_t*, std::size_t, Tag&, std::size_t&);
+		static int read_len(const uint8_t*, std::size_t, std::size_t&, std::size_t&);
 
-		static int write_header(const Tag&, std::size_t, uint8_t*&, std::size_t&);
-		static int write_tag(const Tag&, uint8_t*&, std::size_t&);
-		static int write_len(std::size_t, uint8_t*&, std::size_t&);
+		static int write_header(const Tag&, std::size_t, uint8_t*, std::size_t, std::size_t&);
+		static int write_tag(const Tag&, uint8_t*, std::size_t, std::size_t&);
+		static int write_len(std::size_t, uint8_t*, std::size_t, std::size_t&);
 };
 
 }

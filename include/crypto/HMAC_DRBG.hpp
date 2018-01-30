@@ -66,6 +66,9 @@ class HMAC_DRBG
 
 			// Update state of DRBG
 			update(seed.data(), seed_sz);
+
+			// Zeroize seed
+			zeroize(seed.data(), seed_sz);
 		}
 		
 		~HMAC_DRBG(void)
@@ -108,6 +111,9 @@ class HMAC_DRBG
 
 			update(seed.data(), seed_sz);
 			reseed_counter = 0;
+
+			// Zeroize seed
+			zeroize(seed.data(), seed_sz);
 
 			// Unlock resources
 			if ( thread_safe ) { mutex.unlock(); }

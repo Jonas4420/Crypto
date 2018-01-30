@@ -1,5 +1,5 @@
-#ifndef DES_H
-#define DES_H
+#ifndef CRYPTO_DES_H
+#define CRYPTO_DES_H
 
 #include "crypto/SymmetricCipher.hpp"
 

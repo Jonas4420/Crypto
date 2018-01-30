@@ -7,34 +7,29 @@ ECPrivateKey::ECPrivateKey(const BigNum &privateKey,
 		const ECDomainParameters *parameters,
 		const SubjectPublicKeyInfo *publicKey)
 {
+	((void)privateKey);
+	((void)parameters);
+	((void)publicKey);
 	// TODO
 }
 
 ECPrivateKey::ECPrivateKey(const uint8_t *data, std::size_t data_sz)
 {
+	((void)data);
+	((void)data_sz);
 	// TODO
 }
 
 ECPrivateKey::ECPrivateKey(const ECPrivateKey &other)
 {
-	// TODO
-}
-
-ECPrivateKey::ECPrivateKey(ECPrivateKey &&other)
-{
+	((void)other);
 	// TODO
 }
 
 ECPrivateKey&
 ECPrivateKey::operator=(const ECPrivateKey &other)
 {
-	// TODO
-	return *this;
-}
-
-ECPrivateKey&
-ECPrivateKey::operator=(ECPrivateKey &&other)
-{
+	((void)other);
 	// TODO
 	return *this;
 }
@@ -54,40 +49,38 @@ int
 ECPrivateKey::to_binary(const ECDomainParameters &parameters,
 		uint8_t *data, std::size_t &data_sz, bool write_all_infos) const
 {
+	((void)parameters);
+	((void)data);
+	((void)data_sz);
+	((void)write_all_infos);
 	// TODO
 	return 0;
 }
 
 SubjectPublicKeyInfo::SubjectPublicKeyInfo(const ECPoint &subjectPublicKey)
 {
+	((void)subjectPublicKey);
 	// TODO
 }
 
 SubjectPublicKeyInfo::SubjectPublicKeyInfo(const ECDomainParameters &parameters, const uint8_t *data, std::size_t data_sz)
 {
+	((void)parameters);
+	((void)data);
+	((void)data_sz);
 	// TODO
 }
 
 SubjectPublicKeyInfo::SubjectPublicKeyInfo(const SubjectPublicKeyInfo &other)
 {
-	// TODO
-}
-
-SubjectPublicKeyInfo::SubjectPublicKeyInfo(SubjectPublicKeyInfo &&other)
-{
+	((void)other);
 	// TODO
 }
 
 SubjectPublicKeyInfo&
 SubjectPublicKeyInfo::operator=(const SubjectPublicKeyInfo &other)
 {
-	// TODO
-	return *this;
-}
-
-SubjectPublicKeyInfo&
-SubjectPublicKeyInfo::operator=(SubjectPublicKeyInfo &&other)
-{
+	((void)other);
 	// TODO
 	return *this;
 }
@@ -110,39 +103,40 @@ SubjectPublicKeyInfo::getSubjectPublicKey(void) const
 int
 SubjectPublicKeyInfo::to_binary(const ECDomainParameters &parameters, uint8_t *data, std::size_t &data_sz, bool compress) const
 {
+	((void)parameters);
+	((void)data);
+	((void)data_sz);
+	((void)compress);
 	// TODO
 	return 0;
 }
 
 ECDomainParameters::ECDomainParameters(const ECCurve &curve, const ECPoint &base, const BigNum &order, const BigNum &cofactor)
 {
+	((void)curve);
+	((void)base);
+	((void)order);
+	((void)cofactor);
 	// TODO
 }
 
 ECDomainParameters::ECDomainParameters(const uint8_t *data, std::size_t data_sz)
 {
+	((void)data);
+	((void)data_sz);
 	// TODO
 }
 
 ECDomainParameters::ECDomainParameters(const ECDomainParameters &other)
 {
-	// TODO
-}
-
-ECDomainParameters::ECDomainParameters(ECDomainParameters &&other)
-{
+	((void)other);
 	// TODO
 }
 
 ECDomainParameters&
 ECDomainParameters::operator=(const ECDomainParameters &other)
 {
-	// TODO
-}
-
-ECDomainParameters&
-ECDomainParameters::operator=(ECDomainParameters &&other)
-{
+	((void)other);
 	// TODO
 }
 
@@ -160,42 +154,52 @@ ECDomainParameters::getECDomainParametersList(void)
 ECDomainParameters
 ECDomainParameters::getECDomainParametersByCurveName(std::string curve_name)
 {
+	((void)curve_name);
 	// TODO
 }
 
 std::pair<ECPrivateKey, SubjectPublicKeyInfo>
 ECDomainParameters::generateKeyPair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng) const
 {
+	((void)f_rng);
+	((void)p_rng);
 	// TODO
 }
 
 SubjectPublicKeyInfo
 ECDomainParameters::makeSubjectPublicKeyInfo(const ECPrivateKey &privateKey) const
 {
+	((void)privateKey);
 	// TODO
 }
 
 SubjectPublicKeyInfo
 ECDomainParameters::loadSubjectPublicKeyInfo(uint8_t *data, std::size_t data_sz) const
 {
+	((void)data);
+	((void)data_sz);
 	// TODO
 }
 
 bool
 ECDomainParameters::isValidKeyPair(const ECPrivateKey &privateKey, const SubjectPublicKeyInfo &publicKey)
 {
+	((void)privateKey);
+	((void)publicKey);
 	// TODO
 }
 
 bool
 ECDomainParameters::isValidECPrivateKey(const ECPrivateKey &privateKey) const
 {
+	((void)privateKey);
 	// TODO
 }
 
 bool
 ECDomainParameters::isValidSubjectPublicKeyInfo(const ECPrivateKey &privateKey) const
 {
+	((void)privateKey);
 	// TODO
 }
 
@@ -232,6 +236,10 @@ ECDomainParameters::getCofactor(void) const
 int
 ECDomainParameters::to_binary(uint8_t *data, std::size_t &data_sz, bool write_curve_name, bool compress) const
 {
+	((void)data);
+	((void)data_sz);
+	((void)write_curve_name);
+	((void)compress);
 	// TODO
 }
 

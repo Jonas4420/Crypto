@@ -72,7 +72,7 @@ BigNum::BigNum(const uint8_t *data, std::size_t data_sz)
 
 	// Number of limbs
 	for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
-		if ( 0 != data[i] ) {
+		if ( 0x00 != data[i] ) {
 			data    += i;
 			data_sz -= i;
 			break;

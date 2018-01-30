@@ -5,6 +5,10 @@
 namespace Crypto
 {
 
+OID::OID(void)
+{
+}
+
 OID::OID(uint32_t n)
 	: nodes(1, n)
 {
@@ -114,6 +118,10 @@ std::string
 OID::to_string(void) const
 {
 	std::string result;
+
+	if ( 0 == nodes.size() ) {
+		return "";
+	}
 
 	result = std::to_string(nodes[0]);
 	for ( std::size_t i = 1 ; i < nodes.size() ; ++i ) {
