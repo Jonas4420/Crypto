@@ -848,7 +848,7 @@ BigNum::bitlen(void) const
 std::size_t
 BigNum::size(void) const
 {
-	return (bitlen() + 7) >> 3;
+	return (*this == 0) ? 1 : (bitlen() + 7) >> 3;
 }
 
 std::size_t
@@ -1179,29 +1179,16 @@ BigNum::to_binary(uint8_t *data, std::size_t &data_sz) const
 {
 	std::size_t need_sz;
 
-	// Special case if integer is zero
-	if ( *this == 0 ) {
-		need_sz = 1;
-
-		if ( data_sz < need_sz ) {
-			data_sz = need_sz;
-			return CRYPTO_BIGNUM_INVALID_LENGTH;
-		}
-
-		data[0] = 0x00;
-		data_sz = 1;
-
-		return CRYPTO_BIGNUM_SUCCESS;
-	}
-
 	need_sz = size();
 	if ( data_sz < need_sz ) {
 		data_sz = need_sz;
 		return CRYPTO_BIGNUM_INVALID_LENGTH;
 	}
 
+	data_sz = need_sz;
+	memset(data, 0x00, data_sz);
+
 	bool first = true;
-	data_sz = 0;
 	for ( std::size_t i = n ; i > 0 ; --i ) {
 		for ( std::size_t j = ciL ; j > 0 ; --j ) {
 			int c = (p[i - 1] >> ((j - 1) << 3)) & 0xFF;
@@ -1212,7 +1199,6 @@ BigNum::to_binary(uint8_t *data, std::size_t &data_sz) const
 
 			*data = (uint8_t)c;
 			++data;
-			++data_sz;
 			first = false;
 		}
 	}

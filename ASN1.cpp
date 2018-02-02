@@ -16,7 +16,8 @@ ASN1::read_boolean(const uint8_t *data, std::size_t data_sz,
 	if ( 0 != res )            { return res; }
 	if ( Tag::BOOLEAN != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	if ( 1 != len )            { return CRYPTO_ASN1_VALUE_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Read Value
 	boolean  = static_cast<bool>(data[0]);
@@ -38,10 +39,11 @@ ASN1::read_integer(const uint8_t *data, std::size_t data_sz,
 	if ( 0 != res )            { return res; }
 	if ( Tag::INTEGER != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	if ( 0 == len )            { return CRYPTO_ASN1_VALUE_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Check for minimal encoding
-	if ( 2 < len ) {
+	if ( 2 <= len ) {
 		if ( (0x00 == data[0]) && (0x00 == (data[1] & 0x80)) ) {
 			return CRYPTO_ASN1_VALUE_ERROR;
 		}
@@ -52,27 +54,24 @@ ASN1::read_integer(const uint8_t *data, std::size_t data_sz,
 	}
 
 	// Read value
-	if ( 0x00 == (data[0] & 0x80) ) {
+	try {
 		integer = BigNum(data, len);
-	} else {
-		// Get two's complement of X (of n-1 bits), named Y
-		integer = BigNum(data, len);
+	} catch ( ... ) {
+		return CRYPTO_ASN1_VALUE_ERROR;
+	}
 
-		// Check for overflow
-		std::size_t mask = -1;
-		mask ^= (mask >> 3);
-
-		if ( 0x00 != (mask & integer.size()) ) {
+	// If negative number encoded
+	if ( 0x00 != (data[0] & 0x80) ) {
+		try {
+			// Compute two complement of integer
+			BigNum pow_two(0);
+			pow_two.set_bit(integer.size() * 8, 1);
+			integer -= pow_two;
+		} catch ( ... ) {
 			return CRYPTO_ASN1_VALUE_ERROR;
 		}
-
-		// Compute 2^n (as data starts with 0x80, log2(Y) = size * 8
-		BigNum pow_two(1);
-		pow_two <<= (integer.size() << 3);
-
-		// X = -(2^n - Y) = Y - 2^n
-		integer -= pow_two;
 	}
+
 	read_sz += len;
 
 	return CRYPTO_ASN1_SUCCESS;
@@ -92,7 +91,8 @@ ASN1::read_bit_string(const uint8_t *data, std::size_t data_sz,
 	if ( 0 != res )               { return res; }
 	if ( Tag::BIT_STRING != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	if ( 0 == len )               { return CRYPTO_ASN1_VALUE_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Check that unused bits is <= 7
 	if ( 7 < data[0] ) { return CRYPTO_ASN1_VALUE_ERROR; }
@@ -125,7 +125,8 @@ ASN1::read_octet_string(const uint8_t *data, std::size_t data_sz,
 	res = read_header(data, data_sz, tag, len, read_sz);
 	if ( 0 != res )                 { return res; }
 	if ( Tag::OCTET_STRING != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Check if size is large enough
 	if ( octet_string_sz < len ) {
@@ -153,7 +154,8 @@ ASN1::read_null(const uint8_t *data, std::size_t data_sz,
 	res = read_header(data, data_sz, tag, len, read_sz);
 	if ( 0 != res )             { return res; }
 	if ( Tag::TAG_NULL != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Ensure that the length was encoded as 1 byte only and is 0
 	if ( 2 != read_sz ) { return CRYPTO_ASN1_VALUE_ERROR; }
@@ -175,7 +177,8 @@ ASN1::read_oid(const uint8_t *data, std::size_t data_sz,
 	if ( 0 != res )                      { return res; }
 	if ( Tag::OBJECT_IDENTIFIER != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	if ( 0 == len )                      { return CRYPTO_ASN1_VALUE_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Read value
 	try {
@@ -201,25 +204,29 @@ ASN1::read_sequence(const uint8_t *data, std::size_t data_sz,
 	res = read_header(data, data_sz, tag, len, read_sz);
 	if ( 0 != res )             { return res; }
 	if ( Tag::SEQUENCE != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Clear content
 	sequence.clear();
 
 	// Read Values
 	while ( 0 < len ) {
-		std::size_t tmp_sz;
+		std::size_t hdr_sz, item_sz, total_sz;
 
 		// Read Tag and Length
-		res = read_header(data, data_sz, tag, len, tmp_sz);
+		res = read_header(data, data_sz, tag, item_sz, hdr_sz);
 		if ( 0 != res ) { return res; }
+		total_sz = hdr_sz + item_sz;
 
 		// Push result and move to next item
-		sequence.push_back({ data, tmp_sz });
+		sequence.push_back({ data, total_sz });
 
-		data    += len;
-		data_sz -= len;
-		read_sz += len;
+		// Move data
+		data    += total_sz;
+		data_sz -= total_sz;
+		len     -= total_sz;
+		read_sz += total_sz;
 	}
 
 	return CRYPTO_ASN1_SUCCESS;
@@ -236,27 +243,31 @@ ASN1::read_set(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )        { return res; }
+	if ( 0 != res )             { return res; }
 	if ( Tag::SET != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	// Clear content
 	set.clear();
 
 	// Read Values
 	while ( 0 < len ) {
-		std::size_t tmp_sz;
+		std::size_t hdr_sz, item_sz, total_sz;
 
 		// Read Tag and Length
-		res = read_header(data, data_sz, tag, len, read_sz);
+		res = read_header(data, data_sz, tag, item_sz, hdr_sz);
 		if ( 0 != res ) { return res; }
+		total_sz = hdr_sz + item_sz;
 
 		// Push result and move to next item
-		set.push_back({ data, tmp_sz });
+		set.push_back({ data, total_sz });
 
-		data    += len;
-		data_sz -= len;
-		read_sz += len;
+		// Move data
+		data    += total_sz;
+		data_sz -= total_sz;
+		len     -= total_sz;
+		read_sz += total_sz;
 	}
 
 	return CRYPTO_ASN1_SUCCESS;
@@ -275,7 +286,8 @@ ASN1::read_data(const uint8_t *data, std::size_t data_sz,
 	res = read_header(data, data_sz, tag, len, read_sz);
 	if ( 0 != res )        { return res; }
 	if ( expected != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	data += read_sz;
+	data    += read_sz;
+	data_sz -= read_sz;
 
 	if ( value_sz < len ) {
 		value_sz = len;
@@ -310,9 +322,52 @@ int
 ASN1::write_integer(const BigNum &integer, uint8_t *data, std::size_t data_sz, std::size_t &write_sz)
 {
 	int res;
-	std::size_t integer_sz;
+	const BigNum *n = NULL;
+	BigNum two_cpt(0);
+	uint8_t pad = 0x00;
+	std::size_t pad_sz = 0;
 
-	// TODO (+check overflow)
+	// Set value
+	if ( integer >= 0 ) {
+		n = &integer;
+	} else {
+		try {
+			// Compute two complement of integer
+			BigNum pow_two(0);
+			pow_two.set_bit(integer.size() * 8, 1);
+			two_cpt = pow_two + integer;
+		} catch ( ... ) {
+			return CRYPTO_ASN1_VALUE_ERROR;
+		}
+
+		n = &two_cpt;
+	}
+
+	// Check if padding is needed
+	if ( integer == 0 ) {
+		pad    = 0x00;
+		pad_sz = 0;
+	} else if ( integer > 0 ) {
+		pad    = 0x00;
+		pad_sz = (0 == (n->bitlen() % 8));
+	} else {
+		pad    = 0xFF;
+		pad_sz = (0 != (n->bitlen() % 8));
+	}
+
+	// Write Tag and Len
+	res = write_header(Tag::INTEGER, pad_sz + n->size(), data, data_sz, write_sz);
+	if ( 0 != res ) { return res; }
+	data += write_sz;
+
+	// Write data
+	memset(data, pad, pad_sz);
+	data     += pad_sz;
+	write_sz += pad_sz;
+
+	res = n->to_binary(data, data_sz);
+	if ( 0 != res ) { return res; }
+	write_sz += data_sz;
 
 	return CRYPTO_ASN1_SUCCESS;
 }
