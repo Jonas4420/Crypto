@@ -90,8 +90,8 @@ class ASN1
 		static int read_len(const uint8_t*, std::size_t, std::size_t&, std::size_t&);
 
 		static int write_header(const Tag&, std::size_t, uint8_t*, std::size_t, std::size_t&);
-		static int write_tag(const Tag&, uint8_t*, std::size_t, std::size_t&);
-		static int write_len(std::size_t, uint8_t*, std::size_t, std::size_t&);
+		static int write_tag(const Tag&, uint8_t[1], std::size_t&);
+		static int write_len(std::size_t, uint8_t[5], std::size_t&);
 };
 
 }

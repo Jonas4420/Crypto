@@ -631,24 +631,30 @@ int
 ASN1::write_header(const Tag &tag, std::size_t len, uint8_t *data, std::size_t data_sz, std::size_t &write_sz)
 {
 	int res;
-	std::size_t tag_sz, len_sz;
+	uint8_t buf[5];
+	std::size_t need_sz, tag_sz, len_sz;
+
+	// Get length encoding
+	res = write_len(len, buf, len_sz);
+	if ( 0 != res ) { return res; }
+
+	// Ensure that data size is large enough
+	need_sz = 1 + len_sz + len;
+	if ( data_sz < need_sz ) {
+		write_sz = need_sz;
+		return CRYPTO_ASN1_INVALID_LENGTH;
+	}
 
 	// Write Tag
-	res = write_tag(tag, data, data_sz, tag_sz);
+	res = write_tag(tag, data, tag_sz);
 	if ( 0 != res ) { return res; }
 	data    += tag_sz;
 	data_sz -= tag_sz;
 
 	// Write Length
-	res = write_len(len, data, data_sz, len_sz);
-	if ( 0 != res ) { return res; }
+	memcpy(data, buf, len_sz);
 	data    += len_sz;
 	data_sz -= len_sz;
-
-	// Check if data is long enough
-	if ( data_sz < len ) {
-		return CRYPTO_ASN1_OUT_OF_DATA;
-	}
 
 	write_sz = tag_sz + len_sz;
 
@@ -656,13 +662,8 @@ ASN1::write_header(const Tag &tag, std::size_t len, uint8_t *data, std::size_t d
 }
 
 int
-ASN1::write_tag(const Tag &tag, uint8_t *data, std::size_t data_sz, std::size_t &write_sz)
+ASN1::write_tag(const Tag &tag, uint8_t data[1], std::size_t &write_sz)
 {
-	// Check if data is long enough
-	if ( 0 == data_sz ) {
-		return CRYPTO_ASN1_OUT_OF_DATA;
-	}
-
 	// Write tag
 	data[0] = static_cast<uint8_t>(tag);
 	write_sz = 1;
@@ -671,14 +672,10 @@ ASN1::write_tag(const Tag &tag, uint8_t *data, std::size_t data_sz, std::size_t 
 }
 
 int
-ASN1::write_len(std::size_t len, uint8_t *data, std::size_t data_sz, std::size_t &write_sz)
+ASN1::write_len(std::size_t len, uint8_t data[5], std::size_t &write_sz)
 {
 	uint8_t buf[4];
 	std::size_t len_sz;
-
-	if ( 0 == data_sz ) {
-		return CRYPTO_ASN1_OUT_OF_DATA;
-	}
 
 	// Length encoded on 1 byte
 	if ( 0x80 > len ) {
@@ -706,11 +703,6 @@ ASN1::write_len(std::size_t len, uint8_t *data, std::size_t data_sz, std::size_t
 			len_sz = 4 - i;
 			break;
 		}
-	}
-
-	// Check that enough data
-	if ( data_sz < 1 + len_sz ) {
-		return CRYPTO_ASN1_OUT_OF_DATA;
 	}
 
 	// Write length size
