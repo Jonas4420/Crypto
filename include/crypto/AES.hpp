@@ -38,7 +38,6 @@ class AES : public SymmetricCipher
 		static const uint32_t FT0[256], FT1[256], FT2[256], FT3[256];
 		static const uint8_t  RSb[256];
 		static const uint32_t RT0[256], RT1[256], RT2[256], RT3[256];
-
 		static const uint32_t RCON[10];
 };
 
