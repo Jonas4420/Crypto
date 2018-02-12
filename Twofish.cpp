@@ -5,7 +5,7 @@
 #define GET_BYTE(n, i)                             \
 	((uint8_t)((n) >> (8*(i))))
 
-#define GET_UINT32_BE(n, b, i)                     \
+#define GET_UINT32(n, b, i)                        \
 {                                                  \
 	(n) = ((uint32_t)(b)[(i)    ]      )       \
 	    | ((uint32_t)(b)[(i) + 1] <<  8)       \
@@ -13,7 +13,7 @@
 	    | ((uint32_t)(b)[(i) + 3] << 24);      \
 }
 
-#define PUT_UINT32_BE(n, b, i)                     \
+#define PUT_UINT32(n, b, i)                        \
 {                                                  \
 	(b)[(i)    ] = GET_BYTE((n),0);            \
 	(b)[(i) + 1] = GET_BYTE((n),1);            \
@@ -82,9 +82,10 @@ Twofish::Twofish(const uint8_t *key, std::size_t key_sz)
 	memcpy(m, key, key_sz);
 
 	// Construct M
-	for ( std::size_t i = 0 ; i < 2 * k ; ++i ) {
-		GET_UINT32_BE(M[i], m, 4 * i);
-	}
+	GET_UINT32(M[0], m,  0); GET_UINT32(M[1], m,  4);
+	GET_UINT32(M[2], m,  8); GET_UINT32(M[3], m, 12);
+	GET_UINT32(M[4], m, 16); GET_UINT32(M[5], m, 20);
+	GET_UINT32(M[6], m, 24); GET_UINT32(M[7], m, 28);
 
 	// Construct Expanded Key Words
 	for ( std::size_t i = 0 ; i < 40 ; i += 2 ) {
@@ -101,10 +102,8 @@ Twofish::Twofish(const uint8_t *key, std::size_t key_sz)
 
 	for ( std::size_t x = 0 ; x < 256 ; ++x ) {
 		h0(x, S, k, y);
-		s[0][x] = y[0];
-		s[1][x] = y[1];
-		s[2][x] = y[2];
-		s[3][x] = y[3];
+		s[0][x] = y[0]; s[1][x] = y[1];
+		s[2][x] = y[2]; s[3][x] = y[3];
 	}
 
 	// Zeroization
@@ -127,10 +126,10 @@ Twofish::encrypt(const uint8_t *plaintext, uint8_t *ciphertext) const
 	uint32_t R0, R1, R2, R3, F0, F1;
 
 	// Plaintext conversion and whitening
-	GET_UINT32_BE(R0, plaintext,  0); R0 ^= K[0];
-	GET_UINT32_BE(R1, plaintext,  4); R1 ^= K[1];
-	GET_UINT32_BE(R2, plaintext,  8); R2 ^= K[2];
-	GET_UINT32_BE(R3, plaintext, 12); R3 ^= K[3];
+	GET_UINT32(R0, plaintext,  0); R0 ^= K[0];
+	GET_UINT32(R1, plaintext,  4); R1 ^= K[1];
+	GET_UINT32(R2, plaintext,  8); R2 ^= K[2];
+	GET_UINT32(R3, plaintext, 12); R3 ^= K[3];
 
 	// 16 Twofish rounds
 	ENCCYCLE(0);
@@ -143,10 +142,10 @@ Twofish::encrypt(const uint8_t *plaintext, uint8_t *ciphertext) const
 	ENCCYCLE(7);
 
 	// Whitening and ciphertext conversion
-	R2 ^= K[4]; PUT_UINT32_BE(R2, ciphertext,  0);
-	R3 ^= K[5]; PUT_UINT32_BE(R3, ciphertext,  4);
-	R0 ^= K[6]; PUT_UINT32_BE(R0, ciphertext,  8);
-	R1 ^= K[7]; PUT_UINT32_BE(R1, ciphertext, 12);
+	R2 ^= K[4]; PUT_UINT32(R2, ciphertext,  0);
+	R3 ^= K[5]; PUT_UINT32(R3, ciphertext,  4);
+	R0 ^= K[6]; PUT_UINT32(R0, ciphertext,  8);
+	R1 ^= K[7]; PUT_UINT32(R1, ciphertext, 12);
 }
 
 void
@@ -155,10 +154,10 @@ Twofish::decrypt(const uint8_t *ciphertext, uint8_t *plaintext) const
 	uint32_t R0, R1, R2, R3, F0, F1;
 
 	// Ciphertext conversion and whitening
-	GET_UINT32_BE(R2, ciphertext,  0); R2 ^= K[4];
-	GET_UINT32_BE(R3, ciphertext,  4); R3 ^= K[5];
-	GET_UINT32_BE(R0, ciphertext,  8); R0 ^= K[6];
-	GET_UINT32_BE(R1, ciphertext, 12); R1 ^= K[7];
+	GET_UINT32(R2, ciphertext,  0); R2 ^= K[4];
+	GET_UINT32(R3, ciphertext,  4); R3 ^= K[5];
+	GET_UINT32(R0, ciphertext,  8); R0 ^= K[6];
+	GET_UINT32(R1, ciphertext, 12); R1 ^= K[7];
 
 	// 16 Rounds of Twofish
 	DECCYCLE(7);
@@ -171,10 +170,10 @@ Twofish::decrypt(const uint8_t *ciphertext, uint8_t *plaintext) const
 	DECCYCLE(0);
 
 	// Whitening and plaintext conversion
-	R0 ^= K[0]; PUT_UINT32_BE(R0, plaintext,  0);
-	R1 ^= K[1]; PUT_UINT32_BE(R1, plaintext,  4);
-	R2 ^= K[2]; PUT_UINT32_BE(R2, plaintext,  8);
-	R3 ^= K[3]; PUT_UINT32_BE(R3, plaintext, 12);
+	R0 ^= K[0]; PUT_UINT32(R0, plaintext,  0);
+	R1 ^= K[1]; PUT_UINT32(R1, plaintext,  4);
+	R2 ^= K[2]; PUT_UINT32(R2, plaintext,  8);
+	R3 ^= K[3]; PUT_UINT32(R3, plaintext, 12);
 }
 
 void
@@ -231,10 +230,15 @@ Twofish::RS_Mod(uint32_t c)
 uint32_t
 Twofish::RS(uint32_t high, uint32_t low)
 {
-	for ( std::size_t i = 0 ; i < 8 ; ++i ) {
-		high = RS_Mod(high >> 24) ^ (high << 8) ^ (low >> 24);
-		low <<= 8;
-	}
+	high = RS_Mod(high >> 24) ^ (high << 8) ^ (low >> 24); low <<= 8;
+	high = RS_Mod(high >> 24) ^ (high << 8) ^ (low >> 24); low <<= 8;
+	high = RS_Mod(high >> 24) ^ (high << 8) ^ (low >> 24); low <<= 8;
+	high = RS_Mod(high >> 24) ^ (high << 8) ^ (low >> 24); low <<= 8;
+
+	high = RS_Mod(high >> 24) ^ (high << 8);
+	high = RS_Mod(high >> 24) ^ (high << 8);
+	high = RS_Mod(high >> 24) ^ (high << 8);
+	high = RS_Mod(high >> 24) ^ (high << 8);
 
 	return high;
 }

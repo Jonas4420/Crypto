@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#define GET_UINT32_BE(n,b,i)                    \
+#define GET_UINT32(n,b,i)                       \
 do {                                            \
     (n) = ( (uint32_t) (b)[(i)    ] << 24 )     \
         | ( (uint32_t) (b)[(i) + 1] << 16 )     \
@@ -10,7 +10,7 @@ do {                                            \
         | ( (uint32_t) (b)[(i) + 3]       );    \
 } while( 0 )
 
-#define PUT_UINT32_BE(n,b,i)                    \
+#define PUT_UINT32(n,b,i)                       \
 do {                                            \
 	(b)[(i)    ] = (uint8_t) ( (n) >> 24 ); \
 	(b)[(i) + 1] = (uint8_t) ( (n) >> 16 ); \
@@ -110,8 +110,8 @@ SHA256::finish(uint8_t *output)
 	high = (total[0] >> 29) | (total[1] << 3);
 	low  = (total[0] <<  3);
 
-	PUT_UINT32_BE(high, msglen, 0);
-	PUT_UINT32_BE(low,  msglen, 4);
+	PUT_UINT32(high, msglen, 0);
+	PUT_UINT32(low,  msglen, 4);
 
 	last = total[0] & 0x3F;
 	padn = (last < 56) ? (56 - last) : (120 - last);
@@ -119,14 +119,14 @@ SHA256::finish(uint8_t *output)
 	update(padding, padn);
 	update(msglen, 8);
 
-	PUT_UINT32_BE(state[0], output,  0);
-	PUT_UINT32_BE(state[1], output,  4);
-	PUT_UINT32_BE(state[2], output,  8);
-	PUT_UINT32_BE(state[3], output, 12);
-	PUT_UINT32_BE(state[4], output, 16);
-	PUT_UINT32_BE(state[5], output, 20);
-	PUT_UINT32_BE(state[6], output, 24);
-	PUT_UINT32_BE(state[7], output, 28);
+	PUT_UINT32(state[0], output,  0);
+	PUT_UINT32(state[1], output,  4);
+	PUT_UINT32(state[2], output,  8);
+	PUT_UINT32(state[3], output, 12);
+	PUT_UINT32(state[4], output, 16);
+	PUT_UINT32(state[5], output, 20);
+	PUT_UINT32(state[6], output, 24);
+	PUT_UINT32(state[7], output, 28);
 }
 
 void
@@ -159,7 +159,7 @@ SHA256::process(const uint8_t data[64])
 	}
 
 	for ( i = 0 ; i < 16 ; ++i ) {
-		GET_UINT32_BE(W[i], data, 4 * i);
+		GET_UINT32(W[i], data, 4 * i);
 	}
 
 	for ( i = 0 ; i < 16 ; i += 8 ) {

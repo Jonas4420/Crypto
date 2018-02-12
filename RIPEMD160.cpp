@@ -2,21 +2,24 @@
 
 #include <cstring>
 
-#define GET_UINT32_LE(n,b,i)                    \
-do {                                            \
-    (n) = ( (uint32_t) (b)[(i)    ]       )     \
-	| ( (uint32_t) (b)[(i) + 1] <<  8 )     \
-	| ( (uint32_t) (b)[(i) + 2] << 16 )     \
-	| ( (uint32_t) (b)[(i) + 3] << 24 );    \
-} while( 0 )
+#define GET_BYTE(n, i)                             \
+	((uint8_t)((n) >> (8*(i))))
 
-#define PUT_UINT32_LE(n,b,i)                               \
-do {                                                       \
-	(b)[(i)    ] = (uint8_t) ( ( (n)       ) & 0xFF ); \
-	(b)[(i) + 1] = (uint8_t) ( ( (n) >>  8 ) & 0xFF ); \
-	(b)[(i) + 2] = (uint8_t) ( ( (n) >> 16 ) & 0xFF ); \
-	(b)[(i) + 3] = (uint8_t) ( ( (n) >> 24 ) & 0xFF ); \
-} while( 0 )
+#define GET_UINT32(n, b, i)                        \
+{                                                  \
+	(n) = ((uint32_t)(b)[(i)    ]      )       \
+	    | ((uint32_t)(b)[(i) + 1] <<  8)       \
+	    | ((uint32_t)(b)[(i) + 2] << 16)       \
+	    | ((uint32_t)(b)[(i) + 3] << 24);      \
+}
+
+#define PUT_UINT32(n, b, i)                        \
+{                                                  \
+	(b)[(i)    ] = GET_BYTE((n),0);            \
+	(b)[(i) + 1] = GET_BYTE((n),1);            \
+	(b)[(i) + 2] = GET_BYTE((n),2);            \
+	(b)[(i) + 3] = GET_BYTE((n),3);            \
+}
 
 namespace Crypto
 {
@@ -85,8 +88,8 @@ RIPEMD160::finish(uint8_t *output)
 	high = (total[0] >> 29) | (total[1] << 3);
 	low  = (total[0] <<  3);
 
-	PUT_UINT32_LE(low,  msglen, 0);
-	PUT_UINT32_LE(high, msglen, 4);
+	PUT_UINT32(low,  msglen, 0);
+	PUT_UINT32(high, msglen, 4);
 
 	last = total[0] & 0x3F;
 	padn = (last < 56) ? (56 - last) : (120 - last);
@@ -94,11 +97,11 @@ RIPEMD160::finish(uint8_t *output)
 	update(padding, padn);
 	update(msglen, 8);
 
-	PUT_UINT32_LE(state[0], output,  0);
-	PUT_UINT32_LE(state[1], output,  4);
-	PUT_UINT32_LE(state[2], output,  8);
-	PUT_UINT32_LE(state[3], output, 12);
-	PUT_UINT32_LE(state[4], output, 16);
+	PUT_UINT32(state[0], output,  0);
+	PUT_UINT32(state[1], output,  4);
+	PUT_UINT32(state[2], output,  8);
+	PUT_UINT32(state[3], output, 12);
+	PUT_UINT32(state[4], output, 16);
 }
 
 void
@@ -121,22 +124,22 @@ RIPEMD160::process(const uint8_t data[64])
 {
 	uint32_t A, B, C, D, E, Ap, Bp, Cp, Dp, Ep, X[16];
 
-	GET_UINT32_LE(X[ 0], data,  0);
-	GET_UINT32_LE(X[ 1], data,  4);
-	GET_UINT32_LE(X[ 2], data,  8);
-	GET_UINT32_LE(X[ 3], data, 12);
-	GET_UINT32_LE(X[ 4], data, 16);
-	GET_UINT32_LE(X[ 5], data, 20);
-	GET_UINT32_LE(X[ 6], data, 24);
-	GET_UINT32_LE(X[ 7], data, 28);
-	GET_UINT32_LE(X[ 8], data, 32);
-	GET_UINT32_LE(X[ 9], data, 36);
-	GET_UINT32_LE(X[10], data, 40);
-	GET_UINT32_LE(X[11], data, 44);
-	GET_UINT32_LE(X[12], data, 48);
-	GET_UINT32_LE(X[13], data, 52);
-	GET_UINT32_LE(X[14], data, 56);
-	GET_UINT32_LE(X[15], data, 60);
+	GET_UINT32(X[ 0], data,  0);
+	GET_UINT32(X[ 1], data,  4);
+	GET_UINT32(X[ 2], data,  8);
+	GET_UINT32(X[ 3], data, 12);
+	GET_UINT32(X[ 4], data, 16);
+	GET_UINT32(X[ 5], data, 20);
+	GET_UINT32(X[ 6], data, 24);
+	GET_UINT32(X[ 7], data, 28);
+	GET_UINT32(X[ 8], data, 32);
+	GET_UINT32(X[ 9], data, 36);
+	GET_UINT32(X[10], data, 40);
+	GET_UINT32(X[11], data, 44);
+	GET_UINT32(X[12], data, 48);
+	GET_UINT32(X[13], data, 52);
+	GET_UINT32(X[14], data, 56);
+	GET_UINT32(X[15], data, 60);
 
 	A = Ap = state[0];
 	B = Bp = state[1];

@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#define GET_UINT32_BE(n,b,i)               \
+#define GET_UINT32(n,b,i)                  \
 {                                          \
     (n) = ( (uint32_t)(b)[(i)    ] << 24)  \
         | ( (uint32_t)(b)[(i) + 1] << 16)  \
@@ -10,7 +10,7 @@
         | ( (uint32_t)(b)[(i) + 3]      ); \
 }
 
-#define PUT_UINT32_BE(n,b,i)                   \
+#define PUT_UINT32(n,b,i)                      \
 {                                              \
     (b)[(i)    ] = (unsigned char)((n) >> 24); \
     (b)[(i) + 1] = (unsigned char)((n) >> 16); \
@@ -99,8 +99,8 @@ SHA1::finish(uint8_t *output)
     high = (total[0] >> 29) | (total[1] <<  3);
     low  = (total[0] <<  3);
 
-    PUT_UINT32_BE(high, msglen, 0);
-    PUT_UINT32_BE(low,  msglen, 4);
+    PUT_UINT32(high, msglen, 0);
+    PUT_UINT32(low,  msglen, 4);
 
     last = total[0] & 0x3F;
     padn = (last < 56) ? (56 - last) : (120 - last);
@@ -108,11 +108,11 @@ SHA1::finish(uint8_t *output)
     update(padding, padn);
     update(msglen, 8);
 
-    PUT_UINT32_BE(state[0], output,  0);
-    PUT_UINT32_BE(state[1], output,  4);
-    PUT_UINT32_BE(state[2], output,  8);
-    PUT_UINT32_BE(state[3], output, 12);
-    PUT_UINT32_BE(state[4], output, 16);
+    PUT_UINT32(state[0], output,  0);
+    PUT_UINT32(state[1], output,  4);
+    PUT_UINT32(state[2], output,  8);
+    PUT_UINT32(state[3], output, 12);
+    PUT_UINT32(state[4], output, 16);
 }
 
 void
@@ -135,22 +135,22 @@ SHA1::process(const uint8_t data[64])
 {
 	uint32_t temp, W[16], A, B, C, D, E;
 
-	GET_UINT32_BE(W[ 0], data,  0);
-	GET_UINT32_BE(W[ 1], data,  4);
-	GET_UINT32_BE(W[ 2], data,  8);
-	GET_UINT32_BE(W[ 3], data, 12);
-	GET_UINT32_BE(W[ 4], data, 16);
-	GET_UINT32_BE(W[ 5], data, 20);
-	GET_UINT32_BE(W[ 6], data, 24);
-	GET_UINT32_BE(W[ 7], data, 28);
-	GET_UINT32_BE(W[ 8], data, 32);
-	GET_UINT32_BE(W[ 9], data, 36);
-	GET_UINT32_BE(W[10], data, 40);
-	GET_UINT32_BE(W[11], data, 44);
-	GET_UINT32_BE(W[12], data, 48);
-	GET_UINT32_BE(W[13], data, 52);
-	GET_UINT32_BE(W[14], data, 56);
-	GET_UINT32_BE(W[15], data, 60);
+	GET_UINT32(W[ 0], data,  0);
+	GET_UINT32(W[ 1], data,  4);
+	GET_UINT32(W[ 2], data,  8);
+	GET_UINT32(W[ 3], data, 12);
+	GET_UINT32(W[ 4], data, 16);
+	GET_UINT32(W[ 5], data, 20);
+	GET_UINT32(W[ 6], data, 24);
+	GET_UINT32(W[ 7], data, 28);
+	GET_UINT32(W[ 8], data, 32);
+	GET_UINT32(W[ 9], data, 36);
+	GET_UINT32(W[10], data, 40);
+	GET_UINT32(W[11], data, 44);
+	GET_UINT32(W[12], data, 48);
+	GET_UINT32(W[13], data, 52);
+	GET_UINT32(W[14], data, 56);
+	GET_UINT32(W[15], data, 60);
 
 	A = state[0];
 	B = state[1];

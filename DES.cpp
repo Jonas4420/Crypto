@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-#define GET_UINT32_BE(n,b,i)                       \
+#define GET_UINT32(n,b,i)                          \
 {                                                  \
 	(n) = ((uint32_t)(b)[(i)    ] << 24)       \
 	    | ((uint32_t)(b)[(i) + 1] << 16)       \
@@ -12,7 +12,7 @@
 	    | ((uint32_t)(b)[(i) + 3]      );      \
 }
 
-#define PUT_UINT32_BE(n,b,i)                       \
+#define PUT_UINT32(n,b,i)                          \
 {                                                  \
 	(b)[(i)    ] = (unsigned char)((n) >> 24); \
 	(b)[(i) + 1] = (unsigned char)((n) >> 16); \
@@ -181,8 +181,8 @@ DES::set_key(uint32_t sk[32], const uint8_t key[8])
 {
 	uint32_t X, Y, T;
 
-	GET_UINT32_BE(X, key, 0);
-	GET_UINT32_BE(Y, key, 4);
+	GET_UINT32(X, key, 0);
+	GET_UINT32(Y, key, 4);
 
 	// Permuted Choice 1
 	T = ((Y >>  4) ^ X) & 0x0F0F0F0F; X ^= T; Y ^= (T <<  4);
@@ -242,8 +242,8 @@ DES::process(const uint32_t *sk, const uint8_t *input, uint8_t *output) const
 {
     uint32_t X, Y, T;
 
-    GET_UINT32_BE(X, input, 0);
-    GET_UINT32_BE(Y, input, 4);
+    GET_UINT32(X, input, 0);
+    GET_UINT32(Y, input, 4);
 
     DES_IP(X, Y);
 
@@ -254,8 +254,8 @@ DES::process(const uint32_t *sk, const uint8_t *input, uint8_t *output) const
 
     DES_FP(Y, X);
 
-    PUT_UINT32_BE(Y, output, 0);
-    PUT_UINT32_BE(X, output, 4);
+    PUT_UINT32(Y, output, 0);
+    PUT_UINT32(X, output, 4);
 }
 
 const uint8_t DES::odd_parity_table[128] = {
@@ -548,8 +548,8 @@ TripleDES::process(const uint32_t *sk, const uint8_t *input, uint8_t *output) co
 {
 	uint32_t X, Y, T;
 
-	GET_UINT32_BE(X, input, 0);
-	GET_UINT32_BE(Y, input, 4);
+	GET_UINT32(X, input, 0);
+	GET_UINT32(Y, input, 4);
 
 	DES_IP(X, Y);
 
@@ -570,8 +570,8 @@ TripleDES::process(const uint32_t *sk, const uint8_t *input, uint8_t *output) co
 
 	DES_FP(Y, X);
 
-	PUT_UINT32_BE(Y, output, 0);
-	PUT_UINT32_BE(X, output, 4);
+	PUT_UINT32(Y, output, 0);
+	PUT_UINT32(X, output, 4);
 }
 
 }

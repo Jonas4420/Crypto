@@ -2,20 +2,23 @@
 
 #include <cstring>
 
-#define GET_UINT32_LE(n,b,i)                            \
-{                                                       \
-    (n) = ((uint32_t)(b)[(i)    ]      )                \
-        | ((uint32_t)(b)[(i) + 1] <<  8)                \
-        | ((uint32_t)(b)[(i) + 2] << 16)                \
-        | ((uint32_t)(b)[(i) + 3] << 24);               \
+#define GET_BYTE(n, i)                             \
+	((uint8_t)((n) >> (8*(i))))
+
+#define GET_UINT32(n, b, i)                        \
+{                                                  \
+	(n) = ((uint32_t)(b)[(i)    ]      )       \
+	    | ((uint32_t)(b)[(i) + 1] <<  8)       \
+	    | ((uint32_t)(b)[(i) + 2] << 16)       \
+	    | ((uint32_t)(b)[(i) + 3] << 24);      \
 }
 
-#define PUT_UINT32_LE(n,b,i)                            \
-{                                                       \
-    (b)[(i)    ] = (unsigned char)(((n)      ) & 0xFF); \
-    (b)[(i) + 1] = (unsigned char)(((n) >>  8) & 0xFF); \
-    (b)[(i) + 2] = (unsigned char)(((n) >> 16) & 0xFF); \
-    (b)[(i) + 3] = (unsigned char)(((n) >> 24) & 0xFF); \
+#define PUT_UINT32(n, b, i)                        \
+{                                                  \
+	(b)[(i)    ] = GET_BYTE((n),0);            \
+	(b)[(i) + 1] = GET_BYTE((n),1);            \
+	(b)[(i) + 2] = GET_BYTE((n),2);            \
+	(b)[(i) + 3] = GET_BYTE((n),3);            \
 }
 
 #define AES_FROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3)  \
@@ -80,7 +83,7 @@ AES::AES(const uint8_t *key, std::size_t key_sz)
 	uint32_t *RK = buf_enc;
 
 	for ( std::size_t i = 0 ; i < ((key_sz * 8) >> 5); ++i ) {
-		GET_UINT32_LE(RK[i], key, i << 2);
+		GET_UINT32(RK[i], key, i << 2);
 	}
 
 	set_keyenc();
@@ -105,10 +108,10 @@ AES::encrypt(const uint8_t *plaintext, uint8_t *ciphertext) const
 
 	RK = rk_enc;
 
-	GET_UINT32_LE(X0, plaintext,  0); X0 ^= *RK++;
-	GET_UINT32_LE(X1, plaintext,  4); X1 ^= *RK++;
-	GET_UINT32_LE(X2, plaintext,  8); X2 ^= *RK++;
-	GET_UINT32_LE(X3, plaintext, 12); X3 ^= *RK++;
+	GET_UINT32(X0, plaintext,  0); X0 ^= *RK++;
+	GET_UINT32(X1, plaintext,  4); X1 ^= *RK++;
+	GET_UINT32(X2, plaintext,  8); X2 ^= *RK++;
+	GET_UINT32(X3, plaintext, 12); X3 ^= *RK++;
 
 	for ( std::size_t i = (nr >> 1) - 1 ; i > 0 ; --i ) {
 		AES_FROUND(Y0, Y1, Y2, Y3, X0, X1, X2, X3);
@@ -141,10 +144,10 @@ AES::encrypt(const uint8_t *plaintext, uint8_t *ciphertext) const
 	     ^ ((uint32_t)FSb[(Y1 >> 16) & 0xFF] << 16)
 	     ^ ((uint32_t)FSb[(Y2 >> 24) & 0xFF] << 24);
 
-	PUT_UINT32_LE(X0, ciphertext,  0);
-	PUT_UINT32_LE(X1, ciphertext,  4);
-	PUT_UINT32_LE(X2, ciphertext,  8);
-	PUT_UINT32_LE(X3, ciphertext, 12);
+	PUT_UINT32(X0, ciphertext,  0);
+	PUT_UINT32(X1, ciphertext,  4);
+	PUT_UINT32(X2, ciphertext,  8);
+	PUT_UINT32(X3, ciphertext, 12);
 }
 
 void
@@ -154,10 +157,10 @@ AES::decrypt(const uint8_t *ciphertext, uint8_t *plaintext) const
 
 	RK = rk_dec;
 
-	GET_UINT32_LE(X0, ciphertext,  0); X0 ^= *RK++;
-	GET_UINT32_LE(X1, ciphertext,  4); X1 ^= *RK++;
-	GET_UINT32_LE(X2, ciphertext,  8); X2 ^= *RK++;
-	GET_UINT32_LE(X3, ciphertext, 12); X3 ^= *RK++;
+	GET_UINT32(X0, ciphertext,  0); X0 ^= *RK++;
+	GET_UINT32(X1, ciphertext,  4); X1 ^= *RK++;
+	GET_UINT32(X2, ciphertext,  8); X2 ^= *RK++;
+	GET_UINT32(X3, ciphertext, 12); X3 ^= *RK++;
 
 	for ( std::size_t i = (nr >> 1) - 1 ; i > 0 ; --i ) {
 		AES_RROUND(Y0, Y1, Y2, Y3, X0, X1, X2, X3);
@@ -190,10 +193,10 @@ AES::decrypt(const uint8_t *ciphertext, uint8_t *plaintext) const
 	     ^ ((uint32_t)RSb[(Y1 >> 16) & 0xFF] << 16)
 	     ^ ((uint32_t)RSb[(Y0 >> 24) & 0xFF] << 24);
 
-	PUT_UINT32_LE(X0, plaintext,  0);
-	PUT_UINT32_LE(X1, plaintext,  4);
-	PUT_UINT32_LE(X2, plaintext,  8);
-	PUT_UINT32_LE(X3, plaintext, 12);
+	PUT_UINT32(X0, plaintext,  0);
+	PUT_UINT32(X1, plaintext,  4);
+	PUT_UINT32(X2, plaintext,  8);
+	PUT_UINT32(X3, plaintext, 12);
 }
 
 void
