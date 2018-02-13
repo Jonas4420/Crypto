@@ -29,21 +29,21 @@ class SHA3 : public MessageDigest
 		std::size_t buffer_sz;
 		const std::size_t r;
 
-		static void keccakf(uint64_t[25]);
-		static void absorb(uint8_t*, std::size_t, const uint8_t*, std::size_t);
+		virtual void absorb(const uint8_t*, std::size_t);
 
+		static void keccakf(uint64_t[25]);
 		static inline uint64_t ROL(uint64_t, std::size_t);
 
 		static const uint64_t RC[24];
 };
 
-template<std::size_t DS>
+template<std::size_t DigestSize>
 class SHA3_Final : public SHA3
 {
 	public:
-		SHA3_Final(void) : SHA3(DS) {}
-		static const std::size_t SIZE       = DS;
-		static const std::size_t BLOCK_SIZE = 200 - 2 * DS;
+		SHA3_Final(void) : SHA3(DigestSize) {}
+		static const std::size_t SIZE       = DigestSize;
+		static const std::size_t BLOCK_SIZE = 200 - 2 * DigestSize;
 };
 
 typedef SHA3_Final<28> SHA3_224;
