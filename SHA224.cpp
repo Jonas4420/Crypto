@@ -17,13 +17,14 @@ SHA224::finish(uint8_t *output)
 
 	SHA256::finish(tmp);
 	memcpy(output, tmp, 28);
+
+	reset();
 }
 
 void
 SHA224::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = 0xC1059ED8;
 	state[1] = 0x367CD507;

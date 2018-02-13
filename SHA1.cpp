@@ -92,34 +92,35 @@ SHA1::update(const uint8_t *input, std::size_t input_sz)
 void 
 SHA1::finish(uint8_t *output)
 {
-    uint32_t last, padn;
-    uint32_t high, low;
-    uint8_t  msglen[8];
+	uint32_t last, padn;
+	uint32_t high, low;
+	uint8_t  msglen[8];
 
-    high = (total[0] >> 29) | (total[1] <<  3);
-    low  = (total[0] <<  3);
+	high = (total[0] >> 29) | (total[1] <<  3);
+	low  = (total[0] <<  3);
 
-    PUT_UINT32(high, msglen, 0);
-    PUT_UINT32(low,  msglen, 4);
+	PUT_UINT32(high, msglen, 0);
+	PUT_UINT32(low,  msglen, 4);
 
-    last = total[0] & 0x3F;
-    padn = (last < 56) ? (56 - last) : (120 - last);
+	last = total[0] & 0x3F;
+	padn = (last < 56) ? (56 - last) : (120 - last);
 
-    update(padding, padn);
-    update(msglen, 8);
+	update(padding, padn);
+	update(msglen, 8);
 
-    PUT_UINT32(state[0], output,  0);
-    PUT_UINT32(state[1], output,  4);
-    PUT_UINT32(state[2], output,  8);
-    PUT_UINT32(state[3], output, 12);
-    PUT_UINT32(state[4], output, 16);
+	PUT_UINT32(state[0], output,  0);
+	PUT_UINT32(state[1], output,  4);
+	PUT_UINT32(state[2], output,  8);
+	PUT_UINT32(state[3], output, 12);
+	PUT_UINT32(state[4], output, 16);
+
+	reset();
 }
 
 void
 SHA1::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = 0x67452301;
 	state[1] = 0xEFCDAB89;

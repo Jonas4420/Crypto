@@ -127,13 +127,14 @@ SHA256::finish(uint8_t *output)
 	PUT_UINT32(state[5], output, 20);
 	PUT_UINT32(state[6], output, 24);
 	PUT_UINT32(state[7], output, 28);
+
+	reset();
 }
 
 void
 SHA256::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = 0x6A09E667;
 	state[1] = 0xBB67AE85;

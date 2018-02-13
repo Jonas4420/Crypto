@@ -24,7 +24,6 @@ class HMAC
 			if ( key_sz > MD::BLOCK_SIZE ) {
 				md_ctx.update(key, key_sz);
 				md_ctx.finish(K0);
-				md_ctx.reset();
 			} else {
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					K0[i] = key[i];
@@ -65,10 +64,11 @@ class HMAC
 			opad = hmac_ctx + MD::BLOCK_SIZE;
 			md_ctx.finish(tmp);
 
-			md_ctx.reset();
 			md_ctx.update(opad, MD::BLOCK_SIZE);
 			md_ctx.update(tmp,  MD::SIZE);
 			md_ctx.finish(output);
+
+			reset();
 		}
 
 		void reset(void)

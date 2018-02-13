@@ -8,7 +8,7 @@
 	#define UL64(x) x##ULL
 #endif
 
-#define GET_UINT64_BE(n,b,i)                      \
+#define GET_UINT64(n,b,i)                         \
 {                                                 \
     (n) = ( (uint64_t) (b)[(i)    ] << 56 )       \
         | ( (uint64_t) (b)[(i) + 1] << 48 )       \
@@ -20,7 +20,7 @@
         | ( (uint64_t) (b)[(i) + 7]       );      \
 }
 
-#define PUT_UINT64_BE(n,b,i)                      \
+#define PUT_UINT64(n,b,i)                         \
 {                                                 \
     (b)[(i)    ] = (unsigned char) ( (n) >> 56 ); \
     (b)[(i) + 1] = (unsigned char) ( (n) >> 48 ); \
@@ -97,8 +97,8 @@ SHA512::finish(uint8_t *output)
 	high = (total[0] >> 61) | (total[1] <<  3);
 	low  = (total[0] <<  3);
 
-	PUT_UINT64_BE(high, msglen, 0);
-	PUT_UINT64_BE(low,  msglen, 8);
+	PUT_UINT64(high, msglen, 0);
+	PUT_UINT64(low,  msglen, 8);
 
 	last = (std::size_t)(total[0] & 0x7F);
 	padn = (last < 112) ? (112 - last) : (240 - last);
@@ -106,21 +106,22 @@ SHA512::finish(uint8_t *output)
 	update(padding, padn);
 	update(msglen, 16);
 
-	PUT_UINT64_BE(state[0], output,  0);
-	PUT_UINT64_BE(state[1], output,  8);
-	PUT_UINT64_BE(state[2], output, 16);
-	PUT_UINT64_BE(state[3], output, 24);
-	PUT_UINT64_BE(state[4], output, 32);
-	PUT_UINT64_BE(state[5], output, 40);
-	PUT_UINT64_BE(state[6], output, 48);
-	PUT_UINT64_BE(state[7], output, 56);
+	PUT_UINT64(state[0], output,  0);
+	PUT_UINT64(state[1], output,  8);
+	PUT_UINT64(state[2], output, 16);
+	PUT_UINT64(state[3], output, 24);
+	PUT_UINT64(state[4], output, 32);
+	PUT_UINT64(state[5], output, 40);
+	PUT_UINT64(state[6], output, 48);
+	PUT_UINT64(state[7], output, 56);
+
+	reset();
 }
 
 void
 SHA512::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = UL64(0x6A09E667F3BCC908);
 	state[1] = UL64(0xBB67AE8584CAA73B);
@@ -161,7 +162,7 @@ SHA512::process(const uint8_t data[128])
 	}
 
 	for ( i = 0 ; i < 16 ; ++i ) {
-		GET_UINT64_BE(W[i], data, i << 3);
+		GET_UINT64(W[i], data, i << 3);
 	}
 
 	for ( ; i < 80 ; ++i ) {

@@ -101,13 +101,14 @@ MD5::finish(uint8_t *output)
 	PUT_UINT32(state[1], output,  4);
 	PUT_UINT32(state[2], output,  8);
 	PUT_UINT32(state[3], output, 12);
+
+	reset();
 }
 
 void
 MD5::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = 0x67452301;
 	state[1] = 0xEFCDAB89;

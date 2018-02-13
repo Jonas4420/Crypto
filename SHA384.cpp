@@ -23,13 +23,14 @@ SHA384::finish(uint8_t *output)
 
 	SHA512::finish(tmp);
 	memcpy(output, tmp, 48);
+
+	reset();
 }
 
 void
 SHA384::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = UL64(0xCBBB9D5DC1059ED8);
 	state[1] = UL64(0x629A292A367CD507);

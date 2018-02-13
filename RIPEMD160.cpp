@@ -102,13 +102,14 @@ RIPEMD160::finish(uint8_t *output)
 	PUT_UINT32(state[2], output,  8);
 	PUT_UINT32(state[3], output, 12);
 	PUT_UINT32(state[4], output, 16);
+
+	reset();
 }
 
 void
 RIPEMD160::reset(void)
 {
-	total[0] = 0;
-	total[1] = 0;
+	zeroize(total, sizeof(total));
 
 	state[0] = 0x67452301;
 	state[1] = 0xEFCDAB89;
