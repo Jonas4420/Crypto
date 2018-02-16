@@ -25,6 +25,7 @@ class CTR : public CipherMode
 
 		~CTR(void)
 		{
+			zeroize(begin,   sizeof(begin));
 			zeroize(counter, sizeof(counter));
 			zeroize(stream,  sizeof(stream));
 		}
