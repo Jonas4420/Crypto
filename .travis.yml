@@ -1,9 +1,43 @@
 language: cpp
-compiler:
-        - clang
-        - gcc
+dist: trusty
 sudo: false
+
+matrix:
+        include:
+                # Linux GCC builds
+                - os: linux
+                  compiler: gcc
+                  addons:
+                          apt:
+                                  sources:
+                                          - ubuntu-toolchain-r-test
+                                  packages:
+                                          - g++-4.9
+                  env: COMPILER='g++-4.9' BUILD_TYPE='Release'
+                # Linux Clang builds
+                - os: linux
+                  compiler: clang
+                  addons:
+                          apt:
+                                  sources:
+                                          - ubuntu-toolchain-r-test
+                                          - llvm-toolchain-precise-3.8
+                                  packages:
+                                          - clang-3.8
+                  env: COMPILER='clang++-3.8' BUILD_TYPE='Release'
+                  # OSX Clang builds
+                - os: osx
+                  osx_image: xcode8.3
+                  compiler: clang
+                  env: COMPILER='clang++' BUILD_TYPE='Release'
+
+before_script:
+        - export CXX=${COMPILER}
+        - cd ${TRAVIS_BUILD_DIR}
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+
 script:
-        - cmake -D CMAKE_BUILD_TYPE:String="Release" .
-        - make
-        - make test
+        - make -j 2
+        - ctest -V -j 2

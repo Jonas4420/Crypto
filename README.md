@@ -5,6 +5,10 @@ Use at your own risk.
 CMake configuration targets only GNU g++ and Clang compilers.
 Microsoft Visual Studio might works but is not tested because of lack of testing environment.
 
+# Build Status
+
+[![Build Status](https://travis-ci.org/Jonas4420/Crypto.svg?branch=master)](https://travis-ci.org/Jonas4420/Crypto)
+
 # Credits
 
 [Crypto++](https://www.cryptopp.com)
