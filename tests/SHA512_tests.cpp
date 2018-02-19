@@ -1,0 +1,179 @@
+#include <vector>
+
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+
+#include "crypto/Utils.hpp"
+#include "crypto/SHA512.hpp"
+
+TEST(SHA512, digest_test_vector)
+{
+	const std::vector<std::vector<std::string>> test = {
+		{
+			"",
+			"cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
+			"47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+		}, {
+			"8f",
+			"e4cd2d19931b5aad9c920f45f56f6ce34e3d38c6d319a6e11d0588ab8b838576"
+			"d6ce6d68eea7c830de66e2bd96458bfa7aafbcbec981d4ed040498c3dd95f22a"
+		}, {
+			"e724",
+			"7dbb520221a70287b23dbcf62bfc1b73136d858e86266732a7fffa875ecaa2c1"
+			"b8f673b5c065d360c563a7b9539349f5f59bef8c0c593f9587e3cd50bb26a231"
+		}, {
+			"de4c90",
+			"33ce98281045a5c4c9df0363d8196f1d7dfcd5ee46ac89776fd8a4344c12f123"
+			"a66788af5bd41ceff1941aa5637654b4064c88c14e00465ab79a2fc6c97e1014"
+		}, {
+			"a801e94b",
+			"dadb1b5a27f9fece8d86adb2a51879beb1787ff28f4e8ce162cad7fee0f942ef"
+			"cabbf738bc6f797fc7cc79a3a75048cd4c82ca0757a324695bfb19a557e56e2f"
+		}, {
+			"94390d3502",
+			"b6175c4c4cccf69e0ce5f0312010886ea6b34d43673f942ae42483f9cbb7da81"
+			"7de4e11b5d58e25a3d9bd721a22cdffe1c40411cc45df1911fa5506129b69297"
+		}, {
+			"49297dd63e5f",
+			"1fcc1e6f6870859d11649f5e5336a9cd16329c029baf04d5a6edf257889a2e95"
+			"22b497dd656bb402da461307c4ee382e2e89380c8e6e6e7697f1e439f650fa94"
+		}, {
+			"990d1ae71a62d7bda9bfdaa1762a68d296eee72a4cd946f287a898fbabc002ea"
+			"941fd8d4d991030b4d27a637cce501a834bb95eab1b7889a3e784c7968e67cbf"
+			"552006b206b68f76d9191327524fcc251aeb56af483d10b4e0c6c5e599ee8c0f"
+			"e4faeca8293844a8547c6a9a90d093f2526873a19ad4a5e776794c68c742fb83"
+			"4793d2dfcb7fea46c63af4b70fd11cb6e41834e72ee40edb067b292a794990c2"
+			"88d5007e73f349fb383af6a756b8301ad6e5e0aa8cd614399bb3a452376b1575"
+			"afa6bdaeaafc286cb064bb91edef97c632b6c1113d107fa93a0905098a105043"
+			"c2f05397f702514439a08a9e5ddc196100721d45c8fc17d2ed659376f8a00bd5"
+			"cb9a0860e26d8a29d8d6aaf52de97e9346033d6db501a35dbbaf97c20b830cd2"
+			"d18c2532f3a59cc497ee64c0e57d8d060e5069b28d86edf1adcf59144b221ce3"
+			"ddaef134b3124fbc7dd000240eff0f5f5f41e83cd7f5bb37c9ae21953fe302b0"
+			"f6e8b68fa91c6ab99265c64b2fd9cd4942be04321bb5d6d71932376c6f2f88e0"
+			"2422ba6a5e2cb765df93fd5dd0728c6abdaf03bce22e0678a544e2c3636f741b"
+			"6f4447ee58a8fc656b43ef817932176adbfc2e04b2c812c273cd6cbfa4098f0b"
+			"e036a34221fa02643f5ee2e0b38135f2a18ecd2f16ebc45f8eb31b8ab967a156"
+			"7ee016904188910861ca1fa205c7adaa194b286893ffe2f4fbe0384c2aef72a4"
+			"522aeafd3ebc71f9db71eeeef86c48394a1c86d5b36c352cc33a0a2c800bc99e"
+			"62fd65b3a2fd69e0b53996ec13d8ce483ce9319efd9a85acefabdb5342226feb"
+			"b83fd1daf4b24265f50c61c6de74077ef89b6fecf9f29a1f871af1e9f89b2d34"
+			"5cda7499bd45c42fa5d195a1e1a6ba84851889e730da3b2b916e96152ae0c921"
+			"54b49719841db7e7cc707ba8a5d7b101eb4ac7b629bb327817910fff61580b59"
+			"aab78182d1a2e33473d05b00b170b29e331870826cfe45af206aa7d0246bbd85"
+			"66ca7cfb2d3c10bfa1db7dd48dd786036469ce7282093d78b5e1a5b0fc81a54c"
+			"8ed4ceac1e5305305e78284ac276f5d7862727aff246e17addde50c670028d57"
+			"2cbfc0be2e4f8b2eb28fa68ad7b4c6c2a239c460441bfb5ea049f23b08563b4e"
+			"47729a59e5986a61a6093dbd54f8c36ebe87edae01f251cb060ad1364ce677d7"
+			"e8d5a4a4ca966a7241cc360bc2acb280e5f9e9c1b032ad6a180a35e0c5180b9d"
+			"16d026c865b252098cc1d99ba7375ca31c7702c0d943d5e3dd2f6861fa55bd46"
+			"d94b67ed3e52eccd8dd06d968e01897d6de97ed3058d91dd",
+			"8e4bc6f8b8c60fe4d68c61d9b159c8693c3151c46749af58da228442d927f233"
+			"59bd6ccd6c2ec8fa3f00a86cecbfa728e1ad60b821ed22fcd309ba91a4138bc9"
+		}
+	};
+
+	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+		uint8_t in[2048];
+		std::size_t in_sz = sizeof(in);
+		uint8_t out[Crypto::SHA512::SIZE];
+		std::string output;
+
+		Crypto::Utils::from_hex(test[i][0], in, in_sz);
+		Crypto::MessageDigest_get<Crypto::SHA512>(in, in_sz, out);
+		Crypto::Utils::to_hex(out, sizeof(out), output, false);
+
+		EXPECT_THAT(output, test[i][1]);
+	}
+}
+
+TEST(SHA512, reset_ctx)
+{
+	const std::vector<std::vector<std::string>> test = {
+		{
+			"",
+			"cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
+			"47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+		}, {
+			"8f",
+			"e4cd2d19931b5aad9c920f45f56f6ce34e3d38c6d319a6e11d0588ab8b838576"
+			"d6ce6d68eea7c830de66e2bd96458bfa7aafbcbec981d4ed040498c3dd95f22a"
+		}, {
+			"e724",
+			"7dbb520221a70287b23dbcf62bfc1b73136d858e86266732a7fffa875ecaa2c1"
+			"b8f673b5c065d360c563a7b9539349f5f59bef8c0c593f9587e3cd50bb26a231"
+		}, {
+			"de4c90",
+			"33ce98281045a5c4c9df0363d8196f1d7dfcd5ee46ac89776fd8a4344c12f123"
+			"a66788af5bd41ceff1941aa5637654b4064c88c14e00465ab79a2fc6c97e1014"
+		}, {
+			"a801e94b",
+			"dadb1b5a27f9fece8d86adb2a51879beb1787ff28f4e8ce162cad7fee0f942ef"
+			"cabbf738bc6f797fc7cc79a3a75048cd4c82ca0757a324695bfb19a557e56e2f"
+		}, {
+			"94390d3502",
+			"b6175c4c4cccf69e0ce5f0312010886ea6b34d43673f942ae42483f9cbb7da81"
+			"7de4e11b5d58e25a3d9bd721a22cdffe1c40411cc45df1911fa5506129b69297"
+		}, {
+			"49297dd63e5f",
+			"1fcc1e6f6870859d11649f5e5336a9cd16329c029baf04d5a6edf257889a2e95"
+			"22b497dd656bb402da461307c4ee382e2e89380c8e6e6e7697f1e439f650fa94"
+		}, {
+			"990d1ae71a62d7bda9bfdaa1762a68d296eee72a4cd946f287a898fbabc002ea"
+			"941fd8d4d991030b4d27a637cce501a834bb95eab1b7889a3e784c7968e67cbf"
+			"552006b206b68f76d9191327524fcc251aeb56af483d10b4e0c6c5e599ee8c0f"
+			"e4faeca8293844a8547c6a9a90d093f2526873a19ad4a5e776794c68c742fb83"
+			"4793d2dfcb7fea46c63af4b70fd11cb6e41834e72ee40edb067b292a794990c2"
+			"88d5007e73f349fb383af6a756b8301ad6e5e0aa8cd614399bb3a452376b1575"
+			"afa6bdaeaafc286cb064bb91edef97c632b6c1113d107fa93a0905098a105043"
+			"c2f05397f702514439a08a9e5ddc196100721d45c8fc17d2ed659376f8a00bd5"
+			"cb9a0860e26d8a29d8d6aaf52de97e9346033d6db501a35dbbaf97c20b830cd2"
+			"d18c2532f3a59cc497ee64c0e57d8d060e5069b28d86edf1adcf59144b221ce3"
+			"ddaef134b3124fbc7dd000240eff0f5f5f41e83cd7f5bb37c9ae21953fe302b0"
+			"f6e8b68fa91c6ab99265c64b2fd9cd4942be04321bb5d6d71932376c6f2f88e0"
+			"2422ba6a5e2cb765df93fd5dd0728c6abdaf03bce22e0678a544e2c3636f741b"
+			"6f4447ee58a8fc656b43ef817932176adbfc2e04b2c812c273cd6cbfa4098f0b"
+			"e036a34221fa02643f5ee2e0b38135f2a18ecd2f16ebc45f8eb31b8ab967a156"
+			"7ee016904188910861ca1fa205c7adaa194b286893ffe2f4fbe0384c2aef72a4"
+			"522aeafd3ebc71f9db71eeeef86c48394a1c86d5b36c352cc33a0a2c800bc99e"
+			"62fd65b3a2fd69e0b53996ec13d8ce483ce9319efd9a85acefabdb5342226feb"
+			"b83fd1daf4b24265f50c61c6de74077ef89b6fecf9f29a1f871af1e9f89b2d34"
+			"5cda7499bd45c42fa5d195a1e1a6ba84851889e730da3b2b916e96152ae0c921"
+			"54b49719841db7e7cc707ba8a5d7b101eb4ac7b629bb327817910fff61580b59"
+			"aab78182d1a2e33473d05b00b170b29e331870826cfe45af206aa7d0246bbd85"
+			"66ca7cfb2d3c10bfa1db7dd48dd786036469ce7282093d78b5e1a5b0fc81a54c"
+			"8ed4ceac1e5305305e78284ac276f5d7862727aff246e17addde50c670028d57"
+			"2cbfc0be2e4f8b2eb28fa68ad7b4c6c2a239c460441bfb5ea049f23b08563b4e"
+			"47729a59e5986a61a6093dbd54f8c36ebe87edae01f251cb060ad1364ce677d7"
+			"e8d5a4a4ca966a7241cc360bc2acb280e5f9e9c1b032ad6a180a35e0c5180b9d"
+			"16d026c865b252098cc1d99ba7375ca31c7702c0d943d5e3dd2f6861fa55bd46"
+			"d94b67ed3e52eccd8dd06d968e01897d6de97ed3058d91dd",
+			"8e4bc6f8b8c60fe4d68c61d9b159c8693c3151c46749af58da228442d927f233"
+			"59bd6ccd6c2ec8fa3f00a86cecbfa728e1ad60b821ed22fcd309ba91a4138bc9"
+		}
+	};
+
+	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+		uint8_t in[2048];
+		std::size_t in_sz = sizeof(in);
+
+		uint8_t out_1[Crypto::SHA512::SIZE];
+		uint8_t out_2[Crypto::SHA512::SIZE];
+		std::string output_1, output_2;
+
+		Crypto::Utils::from_hex(test[i][0], in, in_sz);
+
+		Crypto::SHA512 ctx;
+		ctx.update(in, in_sz);
+		ctx.reset();
+		ctx.update(in, in_sz);
+		ctx.finish(out_1);
+		Crypto::Utils::to_hex(out_1, sizeof(out_1), output_1, false);
+
+		ctx.update(in, in_sz);
+		ctx.finish(out_2);
+		Crypto::Utils::to_hex(out_2, sizeof(out_2), output_2, false);
+
+		EXPECT_THAT(output_1, test[i][1]);
+		EXPECT_THAT(output_2, test[i][1]);
+	}
+}

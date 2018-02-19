@@ -137,7 +137,7 @@ OID::to_binary(uint8_t *data, std::size_t &data_sz) const
 	int res;
 	std::vector<uint8_t> result;
 	uint8_t node[5];
-	std::size_t node_sz;
+	std::size_t node_sz = sizeof(node);
 
 	// Check that the OID can be encoded in binary
 	if ( nodes.size() < 2 ) {
@@ -167,7 +167,7 @@ OID::to_binary(uint8_t *data, std::size_t &data_sz) const
 
 	// Encode following nodes
 	for ( std::size_t i = 2 ; i < nodes.size() ; ++i ) {
-		encode_node(nodes[i], node, node_sz);
+		res = encode_node(nodes[i], node, node_sz);
 		if ( 0 != res ) { return res; }
 
 		result.insert(result.end(), node, node + node_sz);

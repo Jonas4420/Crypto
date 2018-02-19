@@ -1,0 +1,20 @@
+Project
+	Fix bug with OID
+	Fix warnings for tests
+	Tests on Linux environment (g++)
+	Migrate to an external repository
+	CI-Travis (valgrind, asan, gcov, ...)
+	Add one test suite per Object (AES, DES, ...)
+	NIST & NESSIE MCT and KAT
+Sym
+	reset for cipher modes (+ tests, do reset on finish)
+	GCM mode
+Asym
+	ECDomainParameters + tests
+	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
+	ECDSA
+	DH
+	ECDH
+	DSA
+	RSA (enc, sign, load keys, paddings)
+	EC GF(2m)

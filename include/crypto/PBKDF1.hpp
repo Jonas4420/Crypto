@@ -32,7 +32,6 @@ class PBKDF1
 			ctx.finish(buffer);
 
 			for ( std::size_t i = 0 ; i < iterations ; ++i ) {
-				MD ctx;
 				ctx.update(buffer, sizeof(buffer));
 				ctx.finish(buffer);
 			}

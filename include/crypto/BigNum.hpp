@@ -114,7 +114,7 @@ class BigNum
 
 		/* Memory helpers */
 		void grow(std::size_t);
-		void zeroize(void*, std::size_t);
+		static void zeroize(void*, std::size_t);
 
 		static inline std::size_t clz(uint64_t);
 		static inline std::size_t bits_to_limbs(std::size_t);

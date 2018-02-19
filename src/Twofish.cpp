@@ -181,12 +181,10 @@ Twofish::h0(uint8_t x, const uint32_t *L, std::size_t k, uint8_t y[4]) const
 {
 	memset(y, x, 4);
 	
-	switch ( k ) {
-		case 4:  Q(y, 1, 0, 0, 1, L[6]);
-		case 3:  Q(y, 1, 1, 0, 0, L[4]);
-		default: Q(y, 0, 1, 0, 1, L[2]);
-			 Q(y, 0, 0, 1, 1, L[0]);
-	}
+	if ( k >= 4 ) { Q(y, 1, 0, 0, 1, L[6]); }
+	if ( k >= 3 ) { Q(y, 1, 1, 0, 0, L[4]); }
+	                Q(y, 0, 1, 0, 1, L[2]);
+	                Q(y, 0, 0, 1, 1, L[0]);
 }
 
 uint32_t

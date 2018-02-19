@@ -1,7 +1,183 @@
 #include "crypto/BigNum.hpp"
-#include "crypto/BigNum_Mul.hpp"
 
 #include <vector>
+
+#if defined(CRYPTO_BIGNUM_HAVE_ASM)
+
+#ifndef asm
+#define asm __asm
+#endif
+
+#if defined(__GNUC__)
+
+#if defined(__i386__)
+
+#define MULADDC_INIT                        \
+    asm(                                    \
+        "movl   %%ebx, %0           \n\t"   \
+        "movl   %5, %%esi           \n\t"   \
+        "movl   %6, %%edi           \n\t"   \
+        "movl   %7, %%ecx           \n\t"   \
+        "movl   %8, %%ebx           \n\t"
+
+#define MULADDC_CORE                        \
+        "lodsl                      \n\t"   \
+        "mull   %%ebx               \n\t"   \
+        "addl   %%ecx,   %%eax      \n\t"   \
+        "adcl   $0,      %%edx      \n\t"   \
+        "addl   (%%edi), %%eax      \n\t"   \
+        "adcl   $0,      %%edx      \n\t"   \
+        "movl   %%edx,   %%ecx      \n\t"   \
+        "stosl                      \n\t"
+
+#if defined(CRYPTO_BIGNUM_HAVE_SSE2)
+
+#define MULADDC_HUIT                            \
+        "movd     %%ecx,     %%mm1      \n\t"   \
+        "movd     %%ebx,     %%mm0      \n\t"   \
+        "movd     (%%edi),   %%mm3      \n\t"   \
+        "paddq    %%mm3,     %%mm1      \n\t"   \
+        "movd     (%%esi),   %%mm2      \n\t"   \
+        "pmuludq  %%mm0,     %%mm2      \n\t"   \
+        "movd     4(%%esi),  %%mm4      \n\t"   \
+        "pmuludq  %%mm0,     %%mm4      \n\t"   \
+        "movd     8(%%esi),  %%mm6      \n\t"   \
+        "pmuludq  %%mm0,     %%mm6      \n\t"   \
+        "movd     12(%%esi), %%mm7      \n\t"   \
+        "pmuludq  %%mm0,     %%mm7      \n\t"   \
+        "paddq    %%mm2,     %%mm1      \n\t"   \
+        "movd     4(%%edi),  %%mm3      \n\t"   \
+        "paddq    %%mm4,     %%mm3      \n\t"   \
+        "movd     8(%%edi),  %%mm5      \n\t"   \
+        "paddq    %%mm6,     %%mm5      \n\t"   \
+        "movd     12(%%edi), %%mm4      \n\t"   \
+        "paddq    %%mm4,     %%mm7      \n\t"   \
+        "movd     %%mm1,     (%%edi)    \n\t"   \
+        "movd     16(%%esi), %%mm2      \n\t"   \
+        "pmuludq  %%mm0,     %%mm2      \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "movd     20(%%esi), %%mm4      \n\t"   \
+        "pmuludq  %%mm0,     %%mm4      \n\t"   \
+        "paddq    %%mm3,     %%mm1      \n\t"   \
+        "movd     24(%%esi), %%mm6      \n\t"   \
+        "pmuludq  %%mm0,     %%mm6      \n\t"   \
+        "movd     %%mm1,     4(%%edi)   \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "movd     28(%%esi), %%mm3      \n\t"   \
+        "pmuludq  %%mm0,     %%mm3      \n\t"   \
+        "paddq    %%mm5,     %%mm1      \n\t"   \
+        "movd     16(%%edi), %%mm5      \n\t"   \
+        "paddq    %%mm5,     %%mm2      \n\t"   \
+        "movd     %%mm1,     8(%%edi)   \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "paddq    %%mm7,     %%mm1      \n\t"   \
+        "movd     20(%%edi), %%mm5      \n\t"   \
+        "paddq    %%mm5,     %%mm4      \n\t"   \
+        "movd     %%mm1,     12(%%edi)  \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "paddq    %%mm2,     %%mm1      \n\t"   \
+        "movd     24(%%edi), %%mm5      \n\t"   \
+        "paddq    %%mm5,     %%mm6      \n\t"   \
+        "movd     %%mm1,     16(%%edi)  \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "paddq    %%mm4,     %%mm1      \n\t"   \
+        "movd     28(%%edi), %%mm5      \n\t"   \
+        "paddq    %%mm5,     %%mm3      \n\t"   \
+        "movd     %%mm1,     20(%%edi)  \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "paddq    %%mm6,     %%mm1      \n\t"   \
+        "movd     %%mm1,     24(%%edi)  \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "paddq    %%mm3,     %%mm1      \n\t"   \
+        "movd     %%mm1,     28(%%edi)  \n\t"   \
+        "addl     $32,       %%edi      \n\t"   \
+        "addl     $32,       %%esi      \n\t"   \
+        "psrlq    $32,       %%mm1      \n\t"   \
+        "movd     %%mm1,     %%ecx      \n\t"
+
+#define MULADDC_STOP                    \
+        "emms                   \n\t"   \
+        "movl   %4, %%ebx       \n\t"   \
+        "movl   %%ecx, %1       \n\t"   \
+        "movl   %%edi, %2       \n\t"   \
+        "movl   %%esi, %3       \n\t"   \
+        : "=m" (t), "=m" (c), "=m" (d), "=m" (s)        \
+        : "m" (t), "m" (s), "m" (d), "m" (c), "m" (b)   \
+        : "eax", "ecx", "edx", "esi", "edi"             \
+    );
+
+#else
+
+#define MULADDC_STOP                    \
+        "movl   %4, %%ebx       \n\t"   \
+        "movl   %%ecx, %1       \n\t"   \
+        "movl   %%edi, %2       \n\t"   \
+        "movl   %%esi, %3       \n\t"   \
+        : "=m" (t), "=m" (c), "=m" (d), "=m" (s)        \
+        : "m" (t), "m" (s), "m" (d), "m" (c), "m" (b)   \
+        : "eax", "ecx", "edx", "esi", "edi"             \
+    );
+
+#endif /* CRYPTO_BIGNUM_HAVE_SSE2 */
+
+#endif /* i386 */
+
+#if defined(__amd64__) || defined (__x86_64__)
+
+#define MULADDC_INIT                        \
+    asm(                                    \
+        "xorq   %%r8, %%r8          \n\t"
+
+#define MULADDC_CORE                        \
+        "movq   (%%rsi), %%rax      \n\t"   \
+        "mulq   %%rbx               \n\t"   \
+        "addq   $8,      %%rsi      \n\t"   \
+        "addq   %%rcx,   %%rax      \n\t"   \
+        "movq   %%r8,    %%rcx      \n\t"   \
+        "adcq   $0,      %%rdx      \n\t"   \
+        "nop                        \n\t"   \
+        "addq   %%rax,   (%%rdi)    \n\t"   \
+        "adcq   %%rdx,   %%rcx      \n\t"   \
+        "addq   $8,      %%rdi      \n\t"
+
+#define MULADDC_STOP                        \
+        : "+c" (c), "+D" (d), "+S" (s)      \
+        : "b" (b)                           \
+        : "rax", "rdx", "r8"                \
+    );
+
+#endif /* AMD64 */
+
+#endif /* GNUC */
+
+#else /* CRYPTO_BIGNUM_HAVE_ASM */
+
+#define MULADDC_INIT                        \
+{                                           \
+	uint64_t s0, s1, b0, b1;            \
+	uint64_t r0, r1, rx, ry;            \
+	b0 = ( b << biH ) >> biH;           \
+	b1 = ( b >> biH );
+
+#define MULADDC_CORE                        \
+	s0 = ( *s << biH ) >> biH;          \
+	s1 = ( *s >> biH ); s++;            \
+	rx = s0 * b1; r0 = s0 * b0;         \
+	ry = s1 * b0; r1 = s1 * b1;         \
+	r1 += ( rx >> biH );                \
+	r1 += ( ry >> biH );                \
+	rx <<= biH; ry <<= biH;             \
+	r0 += rx; r1 += (r0 < rx);          \
+	r0 += ry; r1 += (r0 < ry);          \
+	r0 +=  c; r1 += (r0 <  c);          \
+	r0 += *d; r1 += (r0 < *d);          \
+	c = r1; *(d++) = r0;
+
+#define MULADDC_STOP                        \
+}
+
+#endif /* C */
+
 
 namespace Crypto
 {
@@ -193,9 +369,9 @@ BigNum::safe_cond_swap(BigNum &other, bool cond)
 	}
 
 	// Sign
-	int s    = this->s;
-	this->s  = this->s * (1 - cond) + other.s * cond;
-	other.s  = other.s * (1 - cond) +       s * cond;
+	int s_tmp = this->s;
+	this->s   = this->s * (1 - cond) + other.s * cond;
+	other.s   = other.s * (1 - cond) +   s_tmp * cond;
 
 	// Number of limbs
 	this->grow(other.n);
@@ -441,7 +617,7 @@ std::pair<BigNum, BigNum>
 BigNum::div_mod(const BigNum &other) const
 {
 	BigNum Q, R, X, Y, Z, T1, T2, T3;
-	std::size_t n, t, k;
+	std::size_t n_tmp, t, k;
 
 	if ( other == 0 ) {
 		throw BigNum::Exception("Illegal division by 0");
@@ -468,17 +644,17 @@ BigNum::div_mod(const BigNum &other) const
 		k = 0;
 	}
 
-	n = X.n - 1;
-	t = Y.n - 1;
-	Y = Y << (biL * (n - t));
+	n_tmp = X.n - 1;
+	t     = Y.n - 1;
+	Y     = Y << (biL * (n_tmp - t));
 
 	while ( X >= Y ) {
-		Z.p[n - t]++;
+		Z.p[n_tmp - t]++;
 		X = X - Y;
 	}
-	Y = Y >> (biL * (n - t));
+	Y = Y >> (biL * (n_tmp - t));
 
-	for ( std::size_t i = n ; i > t ; --i ) {
+	for ( std::size_t i = n_tmp ; i > t ; --i ) {
 		if ( X.p[i] >= Y.p[t] ) {
 			Z.p[i - t - 1] = ~0;
 		} else {
@@ -1583,7 +1759,7 @@ BigNum::mont_init(void) const
 void
 BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 {
-	std::size_t i, n, m;
+	std::size_t i, n_tmp, m;
 	uint64_t u0, u1, *d;
 
 	if ( T.n < N.n + 1 || NULL == T.p ) {
@@ -1592,35 +1768,35 @@ BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 
 	memset(T.p, 0, T.n * ciL);
 
-	d = T.p;
-	n = N.n;
-	m = (B.n < n) ? B.n : n;
+	d     = T.p;
+	n_tmp = N.n;
+	m     = (B.n < n_tmp) ? B.n : n_tmp;
 
-	for ( i = 0 ; i < n ; ++i ) {
+	for ( i = 0 ; i < n_tmp ; ++i ) {
 		// T = (T + u0*B + u1*N) / 2^biL
 		u0 = this->p[i];
 		u1 = (d[0] + u0 * B.p[0]) * mm;
 
-		mul_hlp(m, B.p, d, u0);
-		mul_hlp(n, N.p, d, u1);
+		mul_hlp(m,     B.p, d, u0);
+		mul_hlp(n_tmp, N.p, d, u1);
 
-		*d++ = u0; d[n + 1] = 0;
+		*d++ = u0; d[n_tmp + 1] = 0;
 	}
 
-	memcpy(this->p, d, (n + 1) * ciL);
+	memcpy(this->p, d, (n_tmp + 1) * ciL);
 
 	if ( this->cmp_abs(N) >= 0 ) {
-		sub_hlp(n, N.p, this->p);
+		sub_hlp(n_tmp, N.p, this->p);
 	} else {
 		// prevent timing attacks
-		sub_hlp(n, this->p, T.p);
+		sub_hlp(n_tmp, this->p, T.p);
 	}
 }
 
 int
 BigNum::check_small_factors(void) const
 {
-	static const std::vector<int> small_prime = {
+	static const std::vector<int> small_primes = {
 		2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
 		31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
 		73,  79,  83,  89,  97, 101, 103, 107, 109, 113,
@@ -1644,9 +1820,9 @@ BigNum::check_small_factors(void) const
 		return CRYPTO_BIGNUM_PRIME_NOT_ACCEPTABLE;
 	}
 
-	for ( auto s : small_prime ) {
-		if ( *this == s )       { return CRYPTO_BIGNUM_SMALL_PRIME; }
-		if ( (*this % s) == 0 ) { return CRYPTO_BIGNUM_PRIME_NOT_ACCEPTABLE; }
+	for ( auto sp : small_primes ) {
+		if (  *this == sp       ) { return CRYPTO_BIGNUM_SMALL_PRIME; }
+		if ( (*this %  sp) == 0 ) { return CRYPTO_BIGNUM_PRIME_NOT_ACCEPTABLE; }
 	}
 
 	return CRYPTO_BIGNUM_SUCCESS;
