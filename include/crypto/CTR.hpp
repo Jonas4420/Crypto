@@ -44,8 +44,8 @@ class CTR : public CipherMode
 				++stream_sz;
 
 				if ( BLOCK_SIZE == stream_sz ) {
-					for ( std::size_t i = BLOCK_SIZE - 1 ; i < BLOCK_SIZE ; --i ) {
-						if ( ++counter[i] != 0 ) {
+					for ( std::size_t j = BLOCK_SIZE - 1 ; j < BLOCK_SIZE ; --j ) {
+						if ( ++counter[j] != 0 ) {
 							break;
 						}
 					}

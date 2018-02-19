@@ -11,7 +11,7 @@
 TEST(ECB, encrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"edfdb257cb37cdf182c5455b0c0efebb",
 			"1695fe475421cace3557daca01f445ff",
@@ -64,7 +64,7 @@ TEST(ECB, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -78,8 +78,8 @@ TEST(ECB, encrypt_test_vector)
 		uint8_t pad[16];
 		std::size_t pad_sz = sizeof(pad);
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::ECB<Crypto::AES> ctx(key, key_sz, true);
 
@@ -98,14 +98,14 @@ TEST(ECB, encrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(ECB, decrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"54b760dd2968f079ac1d5dd20626445d",
 			"065bd5a9540d22d5d7b0f75d66cb8b30",
@@ -158,7 +158,7 @@ TEST(ECB, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -170,8 +170,8 @@ TEST(ECB, decrypt_test_vector)
 
 		std::size_t pad_sz;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::ECB<Crypto::AES> ctx(key, key_sz, false);
 
@@ -190,14 +190,14 @@ TEST(ECB, decrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 
 TEST(ECB, encrypt_update)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"00000000000000000000000000000000"
@@ -211,7 +211,7 @@ TEST(ECB, encrypt_update)
 	       	}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -222,8 +222,8 @@ TEST(ECB, encrypt_update)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::ECB<Crypto::AES> ctx(key, key_sz, true);
 
@@ -283,14 +283,14 @@ TEST(ECB, encrypt_update)
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(ECB, decrypt_update)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"66e94bd4ef8a2c3b884cfa59ca342b2e"
@@ -304,7 +304,7 @@ TEST(ECB, decrypt_update)
 	       	}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -315,8 +315,8 @@ TEST(ECB, decrypt_update)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::ECB<Crypto::AES> ctx(key, key_sz, false);
 
@@ -379,7 +379,7 @@ TEST(ECB, decrypt_update)
 		Crypto::ANSIX923Padding::unpad(plain, plain_sz, current_sz);
 		Crypto::Utils::to_hex(plain, current_sz, plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 

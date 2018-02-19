@@ -10,7 +10,7 @@
 TEST(CFB8, encrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"c57d699d89df7cfbef71c080a6b10ac3",
 			"fcb2bc4c006b87483978796a2ae2c42e",
@@ -64,7 +64,7 @@ TEST(CFB8, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -78,9 +78,9 @@ TEST(CFB8, encrypt_test_vector)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,    iv_sz);
-		Crypto::Utils::from_hex(test[i][2], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], iv,    iv_sz);
+		Crypto::Utils::from_hex(test[2], plain, plain_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 1, true);
 
@@ -100,14 +100,14 @@ TEST(CFB8, encrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[i][3]);
+		EXPECT_THAT(ciphertext, test[3]);
 	}
 }
 
 TEST(CFB8, decrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"03edfe082550bd5ac8ddf64f42a0547f",
 			"52acd8dab62c981da08e51939cc08dab",
@@ -161,7 +161,7 @@ TEST(CFB8, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -175,9 +175,9 @@ TEST(CFB8, decrypt_test_vector)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,     iv_sz);
-		Crypto::Utils::from_hex(test[i][2], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], iv,     iv_sz);
+		Crypto::Utils::from_hex(test[2], cipher, cipher_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 1, false);
 
@@ -197,14 +197,14 @@ TEST(CFB8, decrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[i][3]);
+		EXPECT_THAT(plaintext, test[3]);
 	}
 }
 
 TEST(CFB128, encrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"085b8af6788fa6bc1a0b47dcf50fbd35",
 			"58cb2b12bb52c6f14b56da9210524864",
@@ -267,7 +267,7 @@ TEST(CFB128, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -281,9 +281,9 @@ TEST(CFB128, encrypt_test_vector)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,    iv_sz);
-		Crypto::Utils::from_hex(test[i][2], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], iv,    iv_sz);
+		Crypto::Utils::from_hex(test[2], plain, plain_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 16, true);
 
@@ -303,14 +303,14 @@ TEST(CFB128, encrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[i][3]);
+		EXPECT_THAT(ciphertext, test[3]);
 	}
 }
 
 TEST(CFB128, decrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"beb622d0228cde29b342bbcf4c1c83b4",
 			"75c282fa581d9c671edf5d540951b680",
@@ -373,7 +373,7 @@ TEST(CFB128, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -387,9 +387,9 @@ TEST(CFB128, decrypt_test_vector)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,     iv_sz);
-		Crypto::Utils::from_hex(test[i][2], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], iv,     iv_sz);
+		Crypto::Utils::from_hex(test[2], cipher, cipher_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 16, false);
 
@@ -409,7 +409,7 @@ TEST(CFB128, decrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[i][3]);
+		EXPECT_THAT(plaintext, test[3]);
 	}
 }
 
@@ -453,7 +453,7 @@ TEST(CFB, stream_size)
 TEST(CFB, encrypt_update)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"00000000000000000000000000000000",
@@ -464,7 +464,7 @@ TEST(CFB, encrypt_update)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -478,9 +478,9 @@ TEST(CFB, encrypt_update)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,    iv_sz);
-		Crypto::Utils::from_hex(test[i][2], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], iv,    iv_sz);
+		Crypto::Utils::from_hex(test[2], plain, plain_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 8, true);
 
@@ -534,14 +534,14 @@ TEST(CFB, encrypt_update)
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][3]);
+		EXPECT_THAT(ciphertext, test[3]);
 	}
 }
 
 TEST(CFB, decrypt_update)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"00000000000000000000000000000000",
@@ -552,7 +552,7 @@ TEST(CFB, decrypt_update)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -566,9 +566,9 @@ TEST(CFB, decrypt_update)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,     iv_sz);
-		Crypto::Utils::from_hex(test[i][2], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], iv,     iv_sz);
+		Crypto::Utils::from_hex(test[2], cipher, cipher_sz);
 
 		Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 8, false);
 
@@ -622,7 +622,7 @@ TEST(CFB, decrypt_update)
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][3]);
+		EXPECT_THAT(plaintext, test[3]);
 	}
 }
 

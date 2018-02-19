@@ -10,7 +10,7 @@
 TEST(CTR, encrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"edfdb257cb37cdf182c5455b0c0efebb",
 			"1695fe475421cace3557daca01f445ff",
@@ -25,7 +25,7 @@ TEST(CTR, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -40,9 +40,9 @@ TEST(CTR, encrypt_test_vector)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,     key_sz);
-		Crypto::Utils::from_hex(test[i][1], counter, counter_sz);
-		Crypto::Utils::from_hex(test[i][2], plain,   plain_sz);
+		Crypto::Utils::from_hex(test[0], key,     key_sz);
+		Crypto::Utils::from_hex(test[1], counter, counter_sz);
+		Crypto::Utils::from_hex(test[2], plain,   plain_sz);
 
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
@@ -62,14 +62,14 @@ TEST(CTR, encrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[i][3]);
+		EXPECT_THAT(ciphertext, test[3]);
 	}
 }
 
 TEST(CTR, decrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"54b760dd2968f079ac1d5dd20626445d",
 			"46f2c98932349c338e9d67f744a1c988",
@@ -84,7 +84,7 @@ TEST(CTR, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -98,9 +98,9 @@ TEST(CTR, decrypt_test_vector)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,     key_sz);
-		Crypto::Utils::from_hex(test[i][1], counter, counter_sz);
-		Crypto::Utils::from_hex(test[i][2], cipher,  cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,     key_sz);
+		Crypto::Utils::from_hex(test[1], counter, counter_sz);
+		Crypto::Utils::from_hex(test[2], cipher,  cipher_sz);
 
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
@@ -120,7 +120,7 @@ TEST(CTR, decrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[i][3]);
+		EXPECT_THAT(plaintext, test[3]);
 	}
 }
 

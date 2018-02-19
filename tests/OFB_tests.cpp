@@ -10,7 +10,7 @@
 TEST(OFB, encrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"d7d57bd847154af9722a8df096e61a42",
 			"fdde201c91e401d9723868c2a612b77a",
@@ -73,7 +73,7 @@ TEST(OFB, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -87,9 +87,9 @@ TEST(OFB, encrypt_test_vector)
 		std::size_t cipher_sz = sizeof(cipher);
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,    iv_sz);
-		Crypto::Utils::from_hex(test[i][2], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], iv,    iv_sz);
+		Crypto::Utils::from_hex(test[2], plain, plain_sz);
 
 		Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
 
@@ -109,14 +109,14 @@ TEST(OFB, encrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[i][3]);
+		EXPECT_THAT(ciphertext, test[3]);
 	}
 }
 
 TEST(OFB, decrypt_test_vector)
 {
 	int res;
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"8368189d41eaa20d06a3a2d2a91e43f7",
 			"cf04ac0e4733952ba538711f79eef8ca",
@@ -179,7 +179,7 @@ TEST(OFB, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -193,9 +193,9 @@ TEST(OFB, decrypt_test_vector)
 		std::size_t plain_sz = sizeof(plain);
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], iv,     iv_sz);
-		Crypto::Utils::from_hex(test[i][2], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], iv,     iv_sz);
+		Crypto::Utils::from_hex(test[2], cipher, cipher_sz);
 
 		Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
 
@@ -215,7 +215,7 @@ TEST(OFB, decrypt_test_vector)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[i][3]);
+		EXPECT_THAT(plaintext, test[3]);
 	}
 }
 

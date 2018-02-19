@@ -37,7 +37,7 @@ class PBKDF2
 				memcpy(acc, buffer, MD::SIZE);
 
 				for ( std::size_t i = 1 ; i < iterations ; ++i ) {
-					HMAC<MD> ctx(password, password_sz);
+					//HMAC<MD> ctx(password, password_sz);
 					ctx.update(buffer, MD::SIZE);
 					ctx.finish(buffer);
 
