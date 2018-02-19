@@ -1,9 +1,8 @@
 Project
 	CI-Travis (valgrind, asan, gcov, ...)
-	Add one test suite per Object (AES, DES, ...)
 	NIST & NESSIE MCT and KAT
+	Add one test suite per Object (AES, DES, ...)
 Sym
-	reset for cipher modes (+ tests, do reset on finish)
 	GCM mode
 Asym
 	ECDomainParameters + tests

@@ -1,0 +1,9 @@
+language: cpp
+compiler:
+        - clang
+        - gcc
+sudo: false
+script:
+        - cmake -D CMAKE_BUILD_TYPE:String="Release" .
+        - make
+        - make test
