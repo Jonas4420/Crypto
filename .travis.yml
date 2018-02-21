@@ -22,10 +22,12 @@ matrix:
                   compiler: clang
                   env: BUILD_TYPE=Debug
 
-                - os: osx
-                  osx_image: xcode8.3
-                  compiler: clang
-                  env: BUILD_TYPE=ASan
+                  # Disable as googletest as an unused function (StackGrowsDown) which makes the build to fail
+                  # Waiting for the pull request to be performed
+                  #- os: osx
+                  #- osx_image: xcode8.3
+                  #- compiler: clang
+                  #- env: BUILD_TYPE=ASan
 
                 ##########################################################################
                 # Clang on Linux
@@ -69,9 +71,9 @@ before_script:
         - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 
 script:
-        - make -j2
-        - ctest -V
+        - make -j 2
+        - ctest -V -j 2
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-                ctest -T memcheck
+                ctest -V -j 2 --timeout 4500 -T memcheck
           fi

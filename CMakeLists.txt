@@ -27,6 +27,7 @@ set ( CMAKE_CXX_FLAGS_COVERAGE "-O0 -g3 --coverage" )
 if ( CMAKE_COMPILER_IS_CLANG )
 	set ( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -Wpointer-arith -Wimplicit-fallthrough" )
 	set ( CMAKE_CXX_FLAGS_ASAN   "${CMAKE_CXX_FLAGS_ASAN} -fsanitize=undefined -fno-sanitize-recover=all" )
+	set ( CMAKE_EXE_LINKER_FLAGS_ASAN "${CMAKE_EXE_LINKER_FLAGS_ASAN} -fsanitize=address,undefined")
 endif ()
 
 if ( CMAKE_BUILD_TYPE STREQUAL "Coverage" )

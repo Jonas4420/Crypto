@@ -1,5 +1,6 @@
 Travis-CI
-	Add valgrind tests
+	Restore OSX ASan tests when googletest fixed
+	Fix ASan tests
 	Add coverage tests
 Tests
 	NIST & NESSIE MCT and KAT
