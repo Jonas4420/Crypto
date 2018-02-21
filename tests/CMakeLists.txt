@@ -40,10 +40,10 @@ set ( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
 
 file ( GLOB SOURCES *.cpp )
 
-add_executable ( test_libcrypto ${SOURCES} )
-add_dependencies ( test_libcrypto gtest gmock )
+add_executable ( test_crypto ${SOURCES} )
+add_dependencies ( test_crypto gtest gmock )
 
-target_link_libraries ( test_libcrypto crypto )
-target_link_libraries ( test_libcrypto gtest gmock )
+target_link_libraries ( test_crypto crypto )
+target_link_libraries ( test_crypto gtest gmock )
 
-add_test ( NAME "LibCrypto" COMMAND test_libcrypto )
+add_test ( NAME "Crypto" COMMAND test_crypto )

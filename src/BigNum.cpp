@@ -369,9 +369,9 @@ BigNum::safe_cond_swap(BigNum &other, bool cond)
 	}
 
 	// Sign
-	int s_tmp = this->s;
-	this->s   = this->s * (1 - cond) + other.s * cond;
-	other.s   = other.s * (1 - cond) +   s_tmp * cond;
+	int s   = this->s;
+	this->s = this->s * (1 - cond) + other.s * cond;
+	other.s = other.s * (1 - cond) +       s * cond;
 
 	// Number of limbs
 	this->grow(other.n);
@@ -617,7 +617,7 @@ std::pair<BigNum, BigNum>
 BigNum::div_mod(const BigNum &other) const
 {
 	BigNum Q, R, X, Y, Z, T1, T2, T3;
-	std::size_t n_tmp, t, k;
+	std::size_t n, t, k;
 
 	if ( other == 0 ) {
 		throw BigNum::Exception("Illegal division by 0");
@@ -644,17 +644,17 @@ BigNum::div_mod(const BigNum &other) const
 		k = 0;
 	}
 
-	n_tmp = X.n - 1;
-	t     = Y.n - 1;
-	Y     = Y << (biL * (n_tmp - t));
+	n = X.n - 1;
+	t = Y.n - 1;
+	Y = Y << (biL * (n - t));
 
 	while ( X >= Y ) {
-		Z.p[n_tmp - t]++;
+		Z.p[n - t]++;
 		X = X - Y;
 	}
-	Y = Y >> (biL * (n_tmp - t));
+	Y = Y >> (biL * (n - t));
 
-	for ( std::size_t i = n_tmp ; i > t ; --i ) {
+	for ( std::size_t i = n ; i > t ; --i ) {
 		if ( X.p[i] >= Y.p[t] ) {
 			Z.p[i - t - 1] = ~0;
 		} else {
@@ -1759,7 +1759,7 @@ BigNum::mont_init(void) const
 void
 BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 {
-	std::size_t i, n_tmp, m;
+	std::size_t i, n, m;
 	uint64_t u0, u1, *d;
 
 	if ( T.n < N.n + 1 || NULL == T.p ) {
@@ -1768,28 +1768,28 @@ BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 
 	memset(T.p, 0, T.n * ciL);
 
-	d     = T.p;
-	n_tmp = N.n;
-	m     = (B.n < n_tmp) ? B.n : n_tmp;
+	d = T.p;
+	n = N.n;
+	m = (B.n < n) ? B.n : n;
 
-	for ( i = 0 ; i < n_tmp ; ++i ) {
+	for ( i = 0 ; i < n ; ++i ) {
 		// T = (T + u0*B + u1*N) / 2^biL
 		u0 = this->p[i];
 		u1 = (d[0] + u0 * B.p[0]) * mm;
 
 		mul_hlp(m,     B.p, d, u0);
-		mul_hlp(n_tmp, N.p, d, u1);
+		mul_hlp(n, N.p, d, u1);
 
-		*d++ = u0; d[n_tmp + 1] = 0;
+		*d++ = u0; d[n + 1] = 0;
 	}
 
-	memcpy(this->p, d, (n_tmp + 1) * ciL);
+	memcpy(this->p, d, (n + 1) * ciL);
 
 	if ( this->cmp_abs(N) >= 0 ) {
-		sub_hlp(n_tmp, N.p, this->p);
+		sub_hlp(n, N.p, this->p);
 	} else {
 		// prevent timing attacks
-		sub_hlp(n_tmp, this->p, T.p);
+		sub_hlp(n, this->p, T.p);
 	}
 }
 

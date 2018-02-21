@@ -25,7 +25,7 @@ set ( CMAKE_CXX_FLAGS_COVERAGE "-O0 -g3 --coverage" )
 set ( CMAKE_CXX_FLAGS_ASAN     "-O2 -Werror -fsanitize=address -fno-common" )
 
 if ( CMAKE_COMPILER_IS_CLANG )
-	set ( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -Wpointer-arith -Wimplicit-fallthrough -Wshadow" )
+	set ( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -Wpointer-arith -Wimplicit-fallthrough" )
 	set ( CMAKE_CXX_FLAGS_ASAN   "${CMAKE_CXX_FLAGS_ASAN} -fsanitize=undefined -fno-sanitize-recover" )
 	set ( CMAKE_CXX_FLAGS_MEMSAN "-O2 -Werror -fsanitize=memory" )
 endif ()
