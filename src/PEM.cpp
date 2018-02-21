@@ -55,7 +55,10 @@ PEM::encode(std::string tag,
 	}
 
 	// Add data
-	Base64::encode(v_data.data(), v_data.size(), base64);
+	if ( v_data.size() > 0 ) {
+		Base64::encode(v_data.data(), v_data.size(), base64);
+	}
+
 	while ( ! base64.empty() ) {
 		std::size_t line_sz = base64.length() >= 64 ?
 			64 : base64.length();
