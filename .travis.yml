@@ -73,5 +73,5 @@ script:
         - ctest -V -j 2
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" && "${BUILD_TYPE}" != "ASan" ]]; then
-                export CRYPTO_TEST_IS_FAST="true" && ctest -V -j 2 -T memcheck
+                CRYPTO_TEST_IS_FAST=1 ctest -V -j 2 -T memcheck
           fi
