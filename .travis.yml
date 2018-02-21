@@ -46,7 +46,7 @@ matrix:
                   addons: *valgrind
 
                 - compiler: clang
-                  env: BUILD_TYPE=ASan LSAN_OPTIONS=verbosity=1:log_threads=1
+                  env: BUILD_TYPE=ASan
 
                 ##########################################################################
                 # GCC on Linux 
@@ -73,5 +73,5 @@ script:
         - ctest -V -j 2
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" && "${BUILD_TYPE}" != "ASan" ]]; then
-                ctest -V -j 2 --timeout 4500 -T memcheck
+                export CRYPTO_TEST_IS_FAST="true" && ctest -V -j 2 -T memcheck
           fi

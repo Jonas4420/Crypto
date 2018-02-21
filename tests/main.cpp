@@ -1,6 +1,8 @@
+#include <cstdlib>
+
 #include "gtest/gtest.h"
 
-bool isFast;
+bool isFast = false;
 
 int
 main(int argc, char **argv)
@@ -9,10 +11,8 @@ main(int argc, char **argv)
 
 	isFast = false;
 
-	if ( argc > 1 ) {
-		if ( std::string(argv[1]) == "-fast" ) {
-			isFast = true;
-		}
+	if ( const char* env_fast = std::getenv("CRYPTO_TEST_IS_FAST") ) {
+		isFast = (1 == atoi(env_fast));
 	}
 
 	return RUN_ALL_TESTS();
