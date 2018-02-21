@@ -13,17 +13,11 @@ env:
                 - BUILD_TYPE="Release"
                 - BUILD_TYPE="Debug"
                 - BUILD_TYPE="ASan"
-                - BUILD_TYPE="MemSan"
 
 matrix:
         exclude:
                 - os: osx
                   compiler: gcc
-                - os: osx
-                  env: BUILD_TYPE="MemSan"
-                - os: linux
-                  compiler: gcc
-                  env: BUILD_TYPE="MemSan"
 
 before_script:
         - cd ${TRAVIS_BUILD_DIR}

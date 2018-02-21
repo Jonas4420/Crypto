@@ -1394,13 +1394,15 @@ BigNum::grow(std::size_t new_size)
 	if ( n < new_size ) {
 		try {
 			tmp = new uint64_t[new_size];
-			memset(tmp, 0, new_size * ciL);
-			memcpy(tmp, p, n * ciL);
 		} catch ( const std::bad_alloc& ba ) {
 			throw BigNum::Exception("Memory allocation failed");
 		}
 
+		memset(tmp, 0, new_size * ciL);
+
 		if ( NULL != p ) {
+			memcpy(tmp, p, n * ciL);
+
 			zeroize(p, n * ciL);
 			delete[] p;
 		}

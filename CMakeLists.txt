@@ -5,7 +5,7 @@ set ( CMAKE_CXX_STANDARD 11 )
 set ( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 set ( CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
-	CACHE STRING "Choose the type of build: None Debug Release Coverage ASan MemSan"
+	CACHE STRING "Choose the type of build: None Release Debug ASan Coverage"
 	FORCE )
 
 if ( CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR )
@@ -27,7 +27,6 @@ set ( CMAKE_CXX_FLAGS_COVERAGE "-O0 -g3 --coverage" )
 if ( CMAKE_COMPILER_IS_CLANG )
 	set ( CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -Wpointer-arith -Wimplicit-fallthrough" )
 	set ( CMAKE_CXX_FLAGS_ASAN   "${CMAKE_CXX_FLAGS_ASAN} -fsanitize=undefined -fno-sanitize-recover=all" )
-	set ( CMAKE_CXX_FLAGS_MEMSAN "-O2 -Werror -fsanitize=memory" )
 endif ()
 
 if ( CMAKE_BUILD_TYPE STREQUAL "Coverage" )
