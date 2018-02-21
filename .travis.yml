@@ -33,4 +33,4 @@ before_script:
 
 script:
         - make -j 2
-        - make -V -j 2
+        - ctest -V -j 2
