@@ -46,7 +46,7 @@ matrix:
                   addons: *valgrind
 
                 - compiler: clang
-                  env: BUILD_TYPE=ASan
+                  env: BUILD_TYPE=ASan LSAN_OPTIONS=verbosity=1:log_threads=1
                   addons: *valgrind
 
                 ##########################################################################
