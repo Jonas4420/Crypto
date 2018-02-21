@@ -1,43 +1,35 @@
 language: cpp
-dist: trusty
-sudo: false
+
+os:
+        - linux
+        - osx
+
+compiler:
+        - gcc
+        - clang
+
+env:
+        matrix:
+                - BUILD_TYPE="Release"
+                - BUILD_TYPE="Debug"
+                - BUILD_TYPE="ASan"
+                - BUILD_TYPE="MemSan"
 
 matrix:
-        include:
-                # Linux GCC builds
+        exclude:
+                - os: osx
+                  compiler: gcc
+                - os: osx
+                  env: BUILD_TYPE="Debug"
                 - os: linux
                   compiler: gcc
-                  addons:
-                          apt:
-                                  sources:
-                                          - ubuntu-toolchain-r-test
-                                  packages:
-                                          - g++-4.9
-                  env: COMPILER='g++-4.9' BUILD_TYPE='Release'
-                # Linux Clang builds
-                - os: linux
-                  compiler: clang
-                  addons:
-                          apt:
-                                  sources:
-                                          - ubuntu-toolchain-r-test
-                                          - llvm-toolchain-precise-3.8
-                                  packages:
-                                          - clang-3.8
-                  env: COMPILER='clang++-3.8' BUILD_TYPE='Release'
-                  # OSX Clang builds
-                - os: osx
-                  osx_image: xcode8.3
-                  compiler: clang
-                  env: COMPILER='clang++' BUILD_TYPE='Release'
+                  env: BUILD_TYPE="MemSan"
 
 before_script:
-        - export CXX=${COMPILER}
         - cd ${TRAVIS_BUILD_DIR}
         - mkdir build
-        - cd build
         - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 
 script:
         - make -j 2
-        - ctest -V -j 2
+        - make -V -j 2

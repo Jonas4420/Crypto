@@ -1,7 +1,5 @@
 Travis-CI
-	Add OSX tests
 	Add valgrind tests
-	Add address and memory sanitizer tests
 	Add coverage tests
 Tests
 	NIST & NESSIE MCT and KAT
