@@ -20,7 +20,7 @@ matrix:
                 - os: osx
                   compiler: gcc
                 - os: osx
-                  env: BUILD_TYPE="Debug"
+                  env: BUILD_TYPE="MemSan"
                 - os: linux
                   compiler: gcc
                   env: BUILD_TYPE="MemSan"
