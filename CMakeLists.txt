@@ -34,7 +34,7 @@ if ( CMAKE_BUILD_TYPE STREQUAL "Coverage" )
 endif ()
 
 if ( NOT LIB_INSTALL_DIR )
-    set ( LIB_INSTALL_DIR "lib" )
+	set ( LIB_INSTALL_DIR "lib" )
 endif ()
 
 include_directories ( "include" )

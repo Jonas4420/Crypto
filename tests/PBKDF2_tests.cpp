@@ -7,6 +7,8 @@
 #include "crypto/SHA1.hpp"
 #include "crypto/Utils.hpp"
 
+extern bool isFast;
+
 TEST(PBKDF2, test_vectors)
 {
 	const std::vector<std::vector<std::string>> test = {
@@ -50,6 +52,8 @@ TEST(PBKDF2, test_vectors)
 		Crypto::Utils::from_hex(test[i][1], salt,     salt_sz);
 		std::size_t iterations = atoi(test[i][2].c_str());
 		std::size_t key_sz     = atoi(test[i][3].c_str());
+
+		if ( isFast && iterations > 10000 ) { continue; }
 
 		Crypto::PBKDF2<Crypto::SHA1>::derive_key(password, password_sz,
 				salt, salt_sz, iterations, key, key_sz);

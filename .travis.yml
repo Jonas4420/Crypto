@@ -2,7 +2,7 @@ language: cpp
 
 os: linux
 dist: trusty
-sudo: false
+sudo: required
 
 notifications:
         email: false
@@ -47,7 +47,6 @@ matrix:
 
                 - compiler: clang
                   env: BUILD_TYPE=ASan LSAN_OPTIONS=verbosity=1:log_threads=1
-                  addons: *valgrind
 
                 ##########################################################################
                 # GCC on Linux 
@@ -63,7 +62,6 @@ matrix:
 
                 - compiler: gcc
                   env: BUILD_TYPE=ASan
-                  addons: *valgrind
 
 before_script:
         - cd "${TRAVIS_BUILD_DIR}"
