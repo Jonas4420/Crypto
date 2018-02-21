@@ -21,7 +21,7 @@ endif()
 set ( CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -Wall -Wextra -W -Wwrite-strings" )
 set ( CMAKE_CXX_FLAGS_RELEASE  "-O2" )
 set ( CMAKE_CXX_FLAGS_DEBUG    "-O0 -g3" )
-set ( CMAKE_CXX_FLAGS_ASAN     "-O2 -Werror -fsanitize=address -fno-common" )
+set ( CMAKE_CXX_FLAGS_ASAN     "-g3 -O2 -Werror -fsanitize=address -fno-common" )
 set ( CMAKE_CXX_FLAGS_COVERAGE "-O0 -g3 --coverage" )
 
 if ( CMAKE_COMPILER_IS_CLANG )
