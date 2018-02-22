@@ -87,7 +87,7 @@ script:
                 fi
           fi
 
-after_succces:
+after_success:
         - |
           if [[ "${BUILD_TYPE}" == "Coverage" ]]; then
                 cd ${TRAVIS_BUILD_DIR}
