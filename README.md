@@ -16,7 +16,7 @@ Second objective of the project is to experiment development tools, on a medium 
 ## Build and dependencies
 
 A CMake file is provided for building the entire library, and version 3.1 is expected at minimum.
-It can run for GNU g++ and LLVM Clang (Unix and Apple version supported).
+It can run for GNU g++ and LLVM Clang (Unix and Apple version supported).\
 Windows' compilers (Visual Studio or MinGW) have not been included in the build chain.
 
 The available build types for CMake are:
@@ -25,21 +25,20 @@ The available build types for CMake are:
  * `ASan`: optimization on (-O2), debug on (-g3), compile with AddressSanitizer modules (for g++ or Clang)
  * `Coverage`: optimization off, debug on (-g3), coverage information on, using lcov
 
-It is possible to build the project by other means, as the build chain is not really complex.
+It is possible to build the project by other means, as the build chain is not really complex.\
 The library tries to keep the different cryptographic modules as independant as possible from each other.
 
-It might be necessary for some objects to have different headers for interfaces, or to include also other
-object for higher level objects (such as ASN1 parser requires to also compile OID objects or BigNum)
+It might be necessary for some objects to have different headers for interfaces, or to include also other object for higher level objects (such as ASN1 parser requires to also compile OID objects or BigNum)
 
-The library is made for C++11, and hence, expect to have a C++11 standard library available.
+The library is made for C++11, and hence, expect to have a C++11 standard library available.\
 There is no additional library needed to build the project.
 
 ## Testing
 
-The testing is available through CTest, using googletest for unit testing.
+The testing is available through CTest, using googletest for unit testing.\
 valgrind is added in CMake build chain as a memchecker for CTest.
 
-The project is integrated to Travis-CI for continuous integration.
+The project is integrated to Travis-CI for continuous integration.\
 Tested platforms are Linux and OSX, only on 64 bits architectures.
 
 # Credits
@@ -54,6 +53,6 @@ These libraries have been used as reference during the development process:
  * [Serpent](https://www.ii.uib.no/~osvik/serpent/)
 
 ## Development tools
- * [Global structure](https://github.com/codecov/example-cpp11-cmake/)
- * [Travis-CI](https://juan-medina.com/2017/07/01/moderncppci/)
  * [googletest integration](https://crascit.com/2015/07/25/cmake-gtest/)
+ * [Project structure](https://github.com/codecov/example-cpp11-cmake/)
+ * [Travis-CI](https://juan-medina.com/2017/07/01/moderncppci/)
