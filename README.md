@@ -1,21 +1,23 @@
 # C++ Cryptographic library
 
 [![Build Status](https://travis-ci.org/Jonas4420/Crypto.svg?branch=master)](https://travis-ci.org/Jonas4420/Crypto)
+[![codecov](https://codecov.io/gh/Jonas4420/Crypto/branch/master/graph/badge.svg)](https://codecov.io/gh/Jonas4420/Crypto)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-C++ cryptographic library for fun and profit.
+C++ cryptographic library for fun and profit.\
 **WARNING: _Use at your own risk as it is purely amateur project._**
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Description 
-Initial goal of this project was to provide Cryptographic primitives for a Bitcoin library.
+Initial goal of this project was to provide Cryptographic primitives for a Bitcoin library.\
 As the development advanced, it also implemented other algorithms than those needed for Bitcoins, then split from the initial project.
 
 Second objective of the project is to experiment development tools, on a medium sized project (Git, Travis-CI, AddressSanitizer, ...).
 
 ## Build and dependencies
 
-A CMake file is provided for building the entire library, and version 3.1 is expected at minimum.
+A CMake file is provided for building the entire library, and version 3.1 is expected at minimum.\
 It can run for GNU g++ and LLVM Clang (Unix and Apple version supported).\
 Windows' compilers (Visual Studio or MinGW) have not been included in the build chain.
 
@@ -53,6 +55,7 @@ These libraries have been used as reference during the development process:
  * [Serpent](https://www.ii.uib.no/~osvik/serpent/)
 
 ## Development tools
+ * [Badges](https://gist.github.com/lukas-h/2a5d00690736b4c3a7ba)
  * [googletest integration](https://crascit.com/2015/07/25/cmake-gtest/)
  * [Project structure](https://github.com/codecov/example-cpp11-cmake/)
  * [Travis-CI](https://juan-medina.com/2017/07/01/moderncppci/)
