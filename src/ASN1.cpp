@@ -54,22 +54,14 @@ ASN1::read_integer(const uint8_t *data, std::size_t data_sz,
 	}
 
 	// Read value
-	try {
-		integer = BigNum(data, len);
-	} catch ( ... ) {
-		return CRYPTO_ASN1_VALUE_ERROR;
-	}
+	integer = BigNum(data, len);
 
 	// If negative number encoded
 	if ( 0x00 != (data[0] & 0x80) ) {
-		try {
-			// Compute two complement of integer
-			BigNum pow_two(0);
-			pow_two.set_bit(integer.size() * 8, 1);
-			integer -= pow_two;
-		} catch ( ... ) {
-			return CRYPTO_ASN1_VALUE_ERROR;
-		}
+		// Compute two complement of integer
+		BigNum pow_two(0);
+		pow_two.set_bit(integer.size() * 8, 1);
+		integer -= pow_two;
 	}
 
 	read_sz += len;
@@ -331,14 +323,10 @@ ASN1::write_integer(const BigNum &integer, uint8_t *data, std::size_t data_sz, s
 	if ( integer >= 0 ) {
 		n = &integer;
 	} else {
-		try {
-			// Compute two complement of integer
-			BigNum pow_two(0);
-			pow_two.set_bit(integer.size() * 8, 1);
-			two_cpt = pow_two + integer;
-		} catch ( ... ) {
-			return CRYPTO_ASN1_VALUE_ERROR;
-		}
+		// Compute two complement of integer
+		BigNum pow_two(0);
+		pow_two.set_bit(integer.size() * 8, 1);
+		two_cpt = pow_two + integer;
 
 		n = &two_cpt;
 	}

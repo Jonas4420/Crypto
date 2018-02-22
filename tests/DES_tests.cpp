@@ -7,6 +7,36 @@
 #include "crypto/DES.hpp"
 #include "crypto/CBC.hpp"
 
+TEST(DES, constructor)
+{
+	// Case 1: key_sz = 64 bits
+	{
+		uint8_t key[8];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::DES ctx(key, key_sz);
+	}
+
+	// Case 2: key_sz != 64 bits
+	{
+		std::string exception, expected("Key size is not supported");
+		uint8_t key[16];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		try {
+			Crypto::DES ctx(key, key_sz);
+		} catch ( const Crypto::DES::Exception &de ) {
+			exception = de.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+}
+
 TEST(DES, encrypt_test_vector)
 {
 	const std::vector<std::vector<std::string>> tests = {
@@ -145,37 +175,82 @@ TEST(DES, check_weak_keys)
 		bool is_weak = Crypto::DES::is_weak_key(key, key_sz);
 		EXPECT_EQ(is_weak, expected);
 	}
+
+	// Check for invalid key_sz
+	{
+		std::string exception, expected("Key size is not supported");
+		uint8_t key[16];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		try {
+			Crypto::DES::is_weak_key(key, key_sz);
+		} catch ( const Crypto::DES::Exception &de ) {
+			exception = de.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
 }
 
 TEST(DES, check_parity)
 {
-	uint8_t key[8];
-	uint8_t cnt, parity;
+	// Case 1: check that parity is correct
+	{
+		uint8_t key[8];
+		uint8_t cnt, parity;
 
-	memset(key, 0x00, 8);
-	cnt = 0;
+		memset(key, 0x00, sizeof(key));
+		cnt = 0;
 
-	// Iterate through all possible byte values
-	for ( std::size_t i = 0 ; i < 32 ; ++i ) {
-		for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
-			key[j] = cnt++;
+		// Iterate through all possible byte values
+		for ( std::size_t i = 0 ; i < 32 ; ++i ) {
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = cnt++;
+			}
+
+			// Set the key parity according to the table
+			Crypto::DES::set_parity_key(key, sizeof(key));
+
+			// Check the parity with a function
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				parity = key[j] ^ (key[j] >> 4);
+				parity =   parity       ^ (parity >> 1)
+					^ (parity >> 2) ^ (parity >> 3);
+				parity &= 1;
+
+				EXPECT_EQ(parity, 1);
+			}
+
+			// Check the parity with the table
+			EXPECT_TRUE(Crypto::DES::check_parity_key(key, sizeof(key)));
 		}
+	}
 
-		// Set the key parity according to the table
-		Crypto::DES::set_parity_key(key, sizeof(key));
+	// Case 2: check when parity is bad
+	{
+		uint8_t key[8];
+		uint8_t cnt;
 
-		// Check the parity with a function
-		for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
-			parity = key[j] ^ (key[j] >> 4);
-			parity =   parity       ^ (parity >> 1)
-				^ (parity >> 2) ^ (parity >> 3);
-			parity &= 1;
+		memset(key, 0x00, sizeof(key));
+		cnt = 0;
 
-			EXPECT_EQ(parity, 1);
+		// Iterate through all possible byte values
+		for ( std::size_t i = 0 ; i < 32 ; ++i ) {
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = cnt++;
+			}
+
+			// Set the key parity according to the table
+			Crypto::DES::set_parity_key(key, sizeof(key));
+
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = key[j] ^ 0x01;
+
+				EXPECT_FALSE(Crypto::DES::check_parity_key(key + j, 1));
+			}
 		}
-
-		// Check the parity with the table
-		EXPECT_TRUE(Crypto::DES::check_parity_key(key, sizeof(key)));
 	}
 }
 
@@ -240,6 +315,47 @@ TEST(DES, cbc)
 		Crypto::Utils::to_hex(plain, plain_sz, plaintext, false);
 		EXPECT_THAT(plaintext, expected);
 	}
+}
+
+TEST(TripleDES, constructor)
+{
+	// Case 1: key_sz = 128 bits
+	{
+		uint8_t key[16];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::TripleDES ctx(key, key_sz);
+	}
+
+	// Case 2: key_sz = 192 bits
+	{
+		uint8_t key[24];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::TripleDES ctx(key, key_sz);
+	}
+
+	// Case 3: key_sz != 128 bits && key_sz != 192
+	{
+		std::string exception, expected("Key size is not supported");
+		uint8_t key[32];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		try {
+			Crypto::TripleDES ctx(key, key_sz);
+		} catch ( const Crypto::TripleDES::Exception &tde ) {
+			exception = tde.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+
 }
 
 TEST(TripleDES, des_ede2_encrypt)
@@ -380,5 +496,82 @@ TEST(TripleDES, check_weak_keys)
 		Crypto::Utils::from_hex(test[0], key, key_sz);
 		bool is_weak = Crypto::TripleDES::is_weak_key(key, key_sz);
 		EXPECT_EQ(is_weak, expected);
+	}
+
+	// Check for invalid key_sz
+	{
+		std::string exception, expected("Key size is not supported");
+		uint8_t key[32];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		try {
+			Crypto::TripleDES::is_weak_key(key, key_sz);
+		} catch ( const Crypto::TripleDES::Exception &tde ) {
+			exception = tde.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+}
+
+TEST(TripleDES, check_parity)
+{
+	// Case 1: check that parity is correct
+	{
+		uint8_t key[24];
+		uint8_t cnt, parity;
+
+		memset(key, 0x00, sizeof(key));
+		cnt = 0;
+
+		// Iterate through all possible byte values
+		for ( std::size_t i = 0 ; i < 32 ; ++i ) {
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = cnt++;
+			}
+
+			// Set the key parity according to the table
+			Crypto::TripleDES::set_parity_key(key, sizeof(key));
+
+			// Check the parity with a function
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				parity = key[j] ^ (key[j] >> 4);
+				parity =   parity       ^ (parity >> 1)
+					^ (parity >> 2) ^ (parity >> 3);
+				parity &= 1;
+
+				EXPECT_EQ(parity, 1);
+			}
+
+			// Check the parity with the table
+			EXPECT_TRUE(Crypto::TripleDES::check_parity_key(key, sizeof(key)));
+		}
+	}
+
+	// Case 2: check when parity is bad
+	{
+		uint8_t key[8];
+		uint8_t cnt;
+
+		memset(key, 0x00, sizeof(key));
+		cnt = 0;
+
+		// Iterate through all possible byte values
+		for ( std::size_t i = 0 ; i < 32 ; ++i ) {
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = cnt++;
+			}
+
+			// Set the key parity according to the table
+			Crypto::TripleDES::set_parity_key(key, sizeof(key));
+
+			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
+				key[j] = key[j] ^ 0x01;
+
+				EXPECT_FALSE(Crypto::TripleDES::check_parity_key(key + j, 1));
+			}
+		}
 	}
 }

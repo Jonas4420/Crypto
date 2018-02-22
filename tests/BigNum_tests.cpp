@@ -9,9 +9,30 @@
 static int
 rnd_std_rand(void *state, uint8_t *data, std::size_t data_sz)
 {
-	if ( NULL != state ) {
-		state = NULL;
+	((void)state);
+
+	for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
+		data[i] = rand();
 	}
+
+	return 0;
+}
+
+static int
+rnd_broken(void *state, uint8_t *data, std::size_t data_sz)
+{
+	static int call = 0;
+
+	int *ptr_fail = static_cast<int*>(state);
+	int fail = ptr_fail ? *ptr_fail : 0;
+
+	// Failure if number of calls reached the limit
+	if ( fail == call ) {
+		call = 0;
+		return 1;
+	}
+
+	++call;
 
 	for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
 		data[i] = rand();
@@ -121,6 +142,23 @@ TEST(BigNum, constructors)
 
 		EXPECT_EQ(Y, val);
 		EXPECT_NE(Y, val_neg);
+	}
+
+	// BigNum too big
+	{
+		std::string exception, expected("Memory allocation failed");
+		uint8_t data[(sizeof(std::size_t) * 10000) + 1];
+		std::size_t data_sz = sizeof(data);
+
+		memset(data, 0x00, data_sz);
+
+		try {
+			Crypto::BigNum X(data, data_sz);
+		} catch ( const Crypto::BigNum::Exception &bne ) {
+			exception = bne.what();
+		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -1229,6 +1267,39 @@ TEST(BigNum, is_prime)
 		bool expected = test[1] == "true";
 
 		EXPECT_EQ(X.is_prime(rnd_std_rand, NULL), expected);
+	}
+}
+
+TEST(BigNum, is_prime_fail)
+{
+	// Fail of PRNG at first call
+	{
+		std::string exception, expected("Random number generator failure");
+		int num_fail = 0;
+		Crypto::BigNum X("768614336404564651");
+
+		try {
+			X.is_prime(rnd_broken, &num_fail);
+		} catch ( const Crypto::BigNum::Exception& bne ) {
+			exception = bne.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+
+	// Fail of PRNG at first call
+	{
+		std::string exception, expected("Random number generator failure");
+		int num_fail = 1;
+		Crypto::BigNum X("768614336404564651");
+
+		try {
+			X.is_prime(rnd_broken, &num_fail);
+		} catch ( const Crypto::BigNum::Exception& bne ) {
+			exception = bne.what();
+		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
