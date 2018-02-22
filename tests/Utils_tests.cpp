@@ -117,8 +117,6 @@ TEST(Utils, from_hex_incorrect_length)
 		FAIL() << "Expected: Utils::Exception";
 	} catch ( const Crypto::Utils::Exception &ce ) {
 		EXPECT_EQ(ce.what(), expected);
-	} catch ( ... ) {
-		FAIL() << "Expected: Utils::Exception";
 	}
 }
 
@@ -136,8 +134,6 @@ TEST(Utils, from_hex_invalid_character)
 			FAIL() << "Expected: Utils::Exception";
 		} catch ( const Crypto::Utils::Exception &ce ) {
 			EXPECT_EQ(ce.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: Utils::Exception";
 		}
 	}
 
@@ -153,8 +149,6 @@ TEST(Utils, from_hex_invalid_character)
 			FAIL() << "Expected: Utils::Exception";
 		} catch ( const Crypto::Utils::Exception &ce ) {
 			EXPECT_EQ(ce.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: Utils::Exception";
 		}
 	}
 }

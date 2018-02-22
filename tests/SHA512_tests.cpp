@@ -8,7 +8,7 @@
 
 TEST(SHA512, digest_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"",
 			"cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
@@ -72,23 +72,23 @@ TEST(SHA512, digest_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t in[2048];
 		std::size_t in_sz = sizeof(in);
 		uint8_t out[Crypto::SHA512::SIZE];
 		std::string output;
 
-		Crypto::Utils::from_hex(test[i][0], in, in_sz);
+		Crypto::Utils::from_hex(test[0], in, in_sz);
 		Crypto::MessageDigest_get<Crypto::SHA512>(in, in_sz, out);
 		Crypto::Utils::to_hex(out, sizeof(out), output, false);
 
-		EXPECT_THAT(output, test[i][1]);
+		EXPECT_THAT(output, test[1]);
 	}
 }
 
 TEST(SHA512, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"",
 			"cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
@@ -152,7 +152,7 @@ TEST(SHA512, reset_ctx)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t in[2048];
 		std::size_t in_sz = sizeof(in);
 
@@ -160,7 +160,7 @@ TEST(SHA512, reset_ctx)
 		uint8_t out_2[Crypto::SHA512::SIZE];
 		std::string output_1, output_2;
 
-		Crypto::Utils::from_hex(test[i][0], in, in_sz);
+		Crypto::Utils::from_hex(test[0], in, in_sz);
 
 		Crypto::SHA512 ctx;
 		ctx.update(in, in_sz);
@@ -173,7 +173,7 @@ TEST(SHA512, reset_ctx)
 		ctx.finish(out_2);
 		Crypto::Utils::to_hex(out_2, sizeof(out_2), output_2, false);
 
-		EXPECT_THAT(output_1, test[i][1]);
-		EXPECT_THAT(output_2, test[i][1]);
+		EXPECT_THAT(output_1, test[1]);
+		EXPECT_THAT(output_2, test[1]);
 	}
 }

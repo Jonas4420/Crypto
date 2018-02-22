@@ -612,8 +612,6 @@ TEST(BigNum, div_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }
@@ -650,8 +648,6 @@ TEST(BigNum, mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -667,8 +663,6 @@ TEST(BigNum, mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -684,8 +678,6 @@ TEST(BigNum, mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }
@@ -772,8 +764,6 @@ TEST(BigNum, exp_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -791,8 +781,6 @@ TEST(BigNum, exp_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -810,8 +798,6 @@ TEST(BigNum, exp_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -829,8 +815,6 @@ TEST(BigNum, exp_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }
@@ -1124,8 +1108,6 @@ TEST(BigNum, inv_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -1142,8 +1124,6 @@ TEST(BigNum, inv_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -1160,8 +1140,6 @@ TEST(BigNum, inv_mod_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }
@@ -1300,8 +1278,6 @@ TEST(BigNum, gen_prime_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }
@@ -1351,8 +1327,6 @@ TEST(BigNum, write_string_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -1366,8 +1340,6 @@ TEST(BigNum, write_string_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -1384,8 +1356,6 @@ TEST(BigNum, write_string_abnormal)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 
 		EXPECT_TRUE(ctor);

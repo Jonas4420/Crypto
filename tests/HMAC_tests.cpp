@@ -11,7 +11,7 @@
 
 TEST(HMAC_SHA1, mac_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
 			"202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
@@ -92,7 +92,7 @@ TEST(HMAC_SHA1, mac_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -100,19 +100,19 @@ TEST(HMAC_SHA1, mac_test_vector)
 		uint8_t out[Crypto::HMAC<Crypto::SHA1>::SIZE];
 		std::string output;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC_get<Crypto::SHA1>(key, key_sz, in, in_sz, out);
-		Crypto::Utils::to_hex(out, test[i][2].length() / 2, output, false);
+		Crypto::Utils::to_hex(out, test[2].length() / 2, output, false);
 
-		EXPECT_THAT(output, test[i][2]);
+		EXPECT_THAT(output, test[2]);
 	}
 }
 
 TEST(HMAC_SHA1, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
 			"202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
@@ -193,7 +193,7 @@ TEST(HMAC_SHA1, reset_ctx)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -202,28 +202,28 @@ TEST(HMAC_SHA1, reset_ctx)
 		uint8_t out_2[Crypto::HMAC<Crypto::SHA1>::SIZE];
 		std::string output_1, output_2;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC<Crypto::SHA1> ctx(key, key_sz);
 		ctx.update(in, in_sz);
 		ctx.reset();
 		ctx.update(in, in_sz);
 		ctx.finish(out_1);
-		Crypto::Utils::to_hex(out_1, test[i][2].length() / 2, output_1, false);
+		Crypto::Utils::to_hex(out_1, test[2].length() / 2, output_1, false);
 
 		ctx.update(in, in_sz);
 		ctx.finish(out_2);
-		Crypto::Utils::to_hex(out_2, test[i][2].length() / 2, output_2, false);
+		Crypto::Utils::to_hex(out_2, test[2].length() / 2, output_2, false);
 
-		EXPECT_THAT(output_1, test[i][2]);
-		EXPECT_THAT(output_2, test[i][2]);
+		EXPECT_THAT(output_1, test[2]);
+		EXPECT_THAT(output_2, test[2]);
 	}
 }
 
 TEST(HMAC_SHA224, mac_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"e055eb756697ee573fd3214811a9f7fa",
 			"3875847012ee42fe54a0027bdf38cca7021b83a2ed0503af69ef6c37c637bc11"
@@ -325,7 +325,7 @@ TEST(HMAC_SHA224, mac_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -333,19 +333,19 @@ TEST(HMAC_SHA224, mac_test_vector)
 		uint8_t out[Crypto::HMAC<Crypto::SHA224>::SIZE];
 		std::string output;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC_get<Crypto::SHA224>(key, key_sz, in, in_sz, out);
-		Crypto::Utils::to_hex(out, test[i][2].length() / 2, output, false);
+		Crypto::Utils::to_hex(out, test[2].length() / 2, output, false);
 
-		EXPECT_THAT(output, test[i][2]);
+		EXPECT_THAT(output, test[2]);
 	}
 }
 
 TEST(HMAC_SHA224, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"e055eb756697ee573fd3214811a9f7fa",
 			"3875847012ee42fe54a0027bdf38cca7021b83a2ed0503af69ef6c37c637bc11"
@@ -447,7 +447,7 @@ TEST(HMAC_SHA224, reset_ctx)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -456,28 +456,28 @@ TEST(HMAC_SHA224, reset_ctx)
 		uint8_t out_2[Crypto::HMAC<Crypto::SHA224>::SIZE];
 		std::string output_1, output_2;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC<Crypto::SHA224> ctx(key, key_sz);
 		ctx.update(in, in_sz);
 		ctx.reset();
 		ctx.update(in, in_sz);
 		ctx.finish(out_1);
-		Crypto::Utils::to_hex(out_1, test[i][2].length() / 2, output_1, false);
+		Crypto::Utils::to_hex(out_1, test[2].length() / 2, output_1, false);
 
 		ctx.update(in, in_sz);
 		ctx.finish(out_2);
-		Crypto::Utils::to_hex(out_2, test[i][2].length() / 2, output_2, false);
+		Crypto::Utils::to_hex(out_2, test[2].length() / 2, output_2, false);
 
-		EXPECT_THAT(output_1, test[i][2]);
-		EXPECT_THAT(output_2, test[i][2]);
+		EXPECT_THAT(output_1, test[2]);
+		EXPECT_THAT(output_2, test[2]);
 	}
 }
 
 TEST(HMAC_SHA256, mac_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"cdffd34e6b16fdc0",
 			"d83e78b99ab61709608972b36e76a575603db742269cc5dd4e7d5ca7816e26b6"
@@ -558,7 +558,7 @@ TEST(HMAC_SHA256, mac_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -566,19 +566,19 @@ TEST(HMAC_SHA256, mac_test_vector)
 		uint8_t out[Crypto::HMAC<Crypto::SHA256>::SIZE];
 		std::string output;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC_get<Crypto::SHA256>(key, key_sz, in, in_sz, out);
-		Crypto::Utils::to_hex(out, test[i][2].length() / 2, output, false);
+		Crypto::Utils::to_hex(out, test[2].length() / 2, output, false);
 
-		EXPECT_THAT(output, test[i][2]);
+		EXPECT_THAT(output, test[2]);
 	}
 }
 
 TEST(HMAC_SHA256, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"cdffd34e6b16fdc0",
 			"d83e78b99ab61709608972b36e76a575603db742269cc5dd4e7d5ca7816e26b6"
@@ -659,7 +659,7 @@ TEST(HMAC_SHA256, reset_ctx)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[2048];
 		std::size_t key_sz = sizeof(key);
 		uint8_t in[2048];
@@ -668,21 +668,21 @@ TEST(HMAC_SHA256, reset_ctx)
 		uint8_t out_2[Crypto::HMAC<Crypto::SHA256>::SIZE];
 		std::string output_1, output_2;
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
-		Crypto::Utils::from_hex(test[i][1], in,  in_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
+		Crypto::Utils::from_hex(test[1], in,  in_sz);
 
 		Crypto::HMAC<Crypto::SHA256> ctx(key, key_sz);
 		ctx.update(in, in_sz);
 		ctx.reset();
 		ctx.update(in, in_sz);
 		ctx.finish(out_1);
-		Crypto::Utils::to_hex(out_1, test[i][2].length() / 2, output_1, false);
+		Crypto::Utils::to_hex(out_1, test[2].length() / 2, output_1, false);
 
 		ctx.update(in, in_sz);
 		ctx.finish(out_2);
-		Crypto::Utils::to_hex(out_2, test[i][2].length() / 2, output_2, false);
+		Crypto::Utils::to_hex(out_2, test[2].length() / 2, output_2, false);
 
-		EXPECT_THAT(output_1, test[i][2]);
-		EXPECT_THAT(output_2, test[i][2]);
+		EXPECT_THAT(output_1, test[2]);
+		EXPECT_THAT(output_2, test[2]);
 	}
 }

@@ -59,8 +59,6 @@ TEST(SHA3, init)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::SHA3::Exception &se ) {
 			EXPECT_EQ(se.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 
@@ -73,8 +71,6 @@ TEST(SHA3, init)
 			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::SHA3::Exception &se ) {
 			EXPECT_EQ(se.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: BigNum::Exception";
 		}
 	}
 }

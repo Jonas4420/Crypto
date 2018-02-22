@@ -8,7 +8,7 @@
 
 TEST(AES128, encrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"f34481ec3cc627bacd5dc3fb08f273e6",
@@ -84,7 +84,7 @@ TEST(AES128, encrypt_test_vector)
 	       	}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -94,20 +94,20 @@ TEST(AES128, encrypt_test_vector)
 		uint8_t cipher[Crypto::AES::BLOCK_SIZE];
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.encrypt(plain, cipher);
 		Crypto::Utils::to_hex(cipher, sizeof(cipher), ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(AES128, decrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"00000000000000000000000000000000",
 			"db4f1aa530967d6732ce4715eb0ee24b",
@@ -155,7 +155,7 @@ TEST(AES128, decrypt_test_vector)
 		} 
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[16];
 		std::size_t key_sz = sizeof(key);
 
@@ -165,20 +165,20 @@ TEST(AES128, decrypt_test_vector)
 		uint8_t plain[Crypto::AES::BLOCK_SIZE];
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.decrypt(cipher, plain);
 		Crypto::Utils::to_hex(plain, sizeof(plain), plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 
 TEST(AES192, encrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"000000000000000000000000000000000000000000000000",
 			"fffffffffffffffffffff80000000000",
@@ -230,7 +230,7 @@ TEST(AES192, encrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[24];
 		std::size_t key_sz = sizeof(key);
 
@@ -240,20 +240,20 @@ TEST(AES192, encrypt_test_vector)
 		uint8_t cipher[Crypto::AES::BLOCK_SIZE];
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.encrypt(plain, cipher);
 		Crypto::Utils::to_hex(cipher, sizeof(cipher), ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(AES192, decrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"fffffffffffffffffffffffffffffffff000000000000000",
 			"bb2852c891c5947d2ed44032c421b85f",
@@ -305,7 +305,7 @@ TEST(AES192, decrypt_test_vector)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[24];
 		std::size_t key_sz = sizeof(key);
 
@@ -315,79 +315,68 @@ TEST(AES192, decrypt_test_vector)
 		uint8_t plain[Crypto::AES::BLOCK_SIZE];
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.decrypt(cipher, plain);
 		Crypto::Utils::to_hex(plain, sizeof(plain), plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 
 TEST(AES256, encrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
-			"c1cc358b449909a19436cfbb3f852ef8"
-			"bcb5ed12ac7058325f56e6099aab1a1c",
+			"c1cc358b449909a19436cfbb3f852ef8bcb5ed12ac7058325f56e6099aab1a1c",
 			"00000000000000000000000000000000",
 			"352065272169abf9856843927d0674fd"
 		}, {
-			"984ca75f4ee8d706f46c2d98c0bf4a45"
-			"f5b00d791c2dfeb191b5ed8e420fd627",
+			"984ca75f4ee8d706f46c2d98c0bf4a45f5b00d791c2dfeb191b5ed8e420fd627",
 			"00000000000000000000000000000000",
 			"4307456a9e67813b452e15fa8fffe398"
 		}, {
-			"b43d08a447ac8609baadae4ff12918b9"
-			"f68fc1653f1269222f123981ded7a92f",
+			"b43d08a447ac8609baadae4ff12918b9f68fc1653f1269222f123981ded7a92f",
 			"00000000000000000000000000000000",
 			"4663446607354989477a5c6f0f007ef4"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"0b24af36193ce4665f2825d7b4749c98",
 			"a9ff75bd7cf6613d3731c77c3b6d0c04"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"761c1fe41a18acf20d241650611d90f1",
 			"623a52fcea5d443e48d9181ab32c7421"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"8a560769d605868ad80d819bdba03771",
 			"38f2c7ae10612415d27ca190d27da8b4"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"ffffffc0000000000000000000000000",
 			"1f8eedea0f62a1406d58cfc3ecea72cf"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"ffffffe0000000000000000000000000",
 			"abf4154a3375a1d3e6b1d454438f95a6"
 		}, {
-			"ffffffffffffffffffffffffffffffff"
-			"ffff8000000000000000000000000000",
+			"ffffffffffffffffffffffffffffffffffff8000000000000000000000000000",
 			"00000000000000000000000000000000",
 			"45d089c36d5c5a4efc689e3b0de10dd5"
 		}, {
-			"ffffffffffffffffffffffffffffffff"
-			"ffffc000000000000000000000000000",
+			"ffffffffffffffffffffffffffffffffffffc000000000000000000000000000",
 			"00000000000000000000000000000000",
 			"b4da5df4becb5462e03a0ed00d295629"
 		}, {
-			"ffffffffffffffffffffffffffffffff"
-			"ffffe000000000000000000000000000",
+			"ffffffffffffffffffffffffffffffffffffe000000000000000000000000000",
 			"00000000000000000000000000000000",
 			"dcf4e129136c1a4b7a0f38935cc34b2b"
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[32];
 		std::size_t key_sz = sizeof(key);
 
@@ -397,84 +386,72 @@ TEST(AES256, encrypt_test_vector)
 		uint8_t cipher[Crypto::AES::BLOCK_SIZE];
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.encrypt(plain, cipher);
 		Crypto::Utils::to_hex(cipher, sizeof(cipher), ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(AES256, decrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
-			"ffffffffffffffffffffffffffffffff"
-			"fffffffffffffff00000000000000000",
+			"fffffffffffffffffffffffffffffffffffffffffffffff00000000000000000",
 			"edf61ae362e882ddc0167474a7a77f3a",
 			"00000000000000000000000000000000"
 		}, {
-			"ffffffffffffffffffffffffffffffff"
-			"fffffffffffffff80000000000000000",
+			"fffffffffffffffffffffffffffffffffffffffffffffff80000000000000000",
 			"6168b00ba7859e0970ecfd757efecf7c",
 			"00000000000000000000000000000000"
 		}, {
-			"ffffffffffffffffffffffffffffffff"
-			"fffffffffffffffc0000000000000000",
+			"fffffffffffffffffffffffffffffffffffffffffffffffc0000000000000000",
 			"d1415447866230d28bb1ea18a4cdfd02",
 			"00000000000000000000000000000000"
 		}, {
-			"f8be9ba615c5a952cabbca24f68f8593"
-			"039624d524c816acda2c9183bd917cb9",
+			"f8be9ba615c5a952cabbca24f68f8593039624d524c816acda2c9183bd917cb9",
 			"a3944b95ca0b52043584ef02151926a8",
 			"00000000000000000000000000000000"
 		}, {
-			"797f8b3d176dac5b7e34a2d539c4ef36"
-			"7a16f8635f6264737591c5c07bf57a3e",
+			"797f8b3d176dac5b7e34a2d539c4ef367a16f8635f6264737591c5c07bf57a3e",
 			"a74289fe73a4c123ca189ea1e1b49ad5",
 			"00000000000000000000000000000000"
 		}, {
-			"6838d40caf927749c13f0329d331f448"
-			"e202c73ef52c5f73a37ca635d4c47707",
+			"6838d40caf927749c13f0329d331f448e202c73ef52c5f73a37ca635d4c47707",
 			"b91d4ea4488644b56cf0812fa7fcf5fc",
 			"00000000000000000000000000000000"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"623a52fcea5d443e48d9181ab32c7421",
 			"761c1fe41a18acf20d241650611d90f1"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"38f2c7ae10612415d27ca190d27da8b4",
 			"8a560769d605868ad80d819bdba03771"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"1bc704f1bce135ceb810341b216d7abe",
 			"91fbef2d15a97816060bee1feaa49afe"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"ddc6bf790c15760d8d9aeb6f9a75fd4e",
 			"80000000000000000000000000000000"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"0a6bdc6d4c1e6280301fd8e97ddbe601",
 			"c0000000000000000000000000000000"
 		}, {
-			"00000000000000000000000000000000"
-			"00000000000000000000000000000000",
+			"0000000000000000000000000000000000000000000000000000000000000000",
 			"9b80eefb7ebe2d2b16247aa0efc72f5d",
 			"e0000000000000000000000000000000"
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[32];
 		std::size_t key_sz = sizeof(key);
 
@@ -484,13 +461,13 @@ TEST(AES256, decrypt_test_vector)
 		uint8_t plain[Crypto::AES::BLOCK_SIZE];
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::AES ctx(key, key_sz);
 		ctx.decrypt(cipher, plain);
 		Crypto::Utils::to_hex(plain, sizeof(plain), plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }

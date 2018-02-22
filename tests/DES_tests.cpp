@@ -9,7 +9,7 @@
 
 TEST(DES, encrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0000000000000000", "0000000000000000", "8ca64de9c1b123a7" },
 		{ "ffffffffffffffff", "ffffffffffffffff", "7359b2163e4edc58" },
 		{ "3000000000000000", "1000000000000001", "958e6e627a05557b" },
@@ -46,7 +46,7 @@ TEST(DES, encrypt_test_vector)
 		{ "fedcba9876543210", "ffffffffffffffff", "2a2bb008df97c2f2" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[8];
 		std::size_t key_sz = sizeof(key);
 
@@ -56,20 +56,20 @@ TEST(DES, encrypt_test_vector)
 		uint8_t cipher[Crypto::DES::BLOCK_SIZE];
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::DES ctx(key, key_sz);
 		ctx.encrypt(plain, cipher);
 		Crypto::Utils::to_hex(cipher, sizeof(cipher), ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(DES, decrypt_test_vector)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0000000000000000", "8ca64de9c1b123a7", "0000000000000000" },
 		{ "ffffffffffffffff", "7359b2163e4edc58", "ffffffffffffffff" },
 		{ "3000000000000000", "958e6e627a05557b", "1000000000000001" },
@@ -106,7 +106,7 @@ TEST(DES, decrypt_test_vector)
 		{ "fedcba9876543210", "2a2bb008df97c2f2", "ffffffffffffffff" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[8];
 		std::size_t key_sz = sizeof(key);
 
@@ -116,32 +116,32 @@ TEST(DES, decrypt_test_vector)
 		uint8_t plain[Crypto::DES::BLOCK_SIZE];
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::DES ctx(key, key_sz);
 		ctx.decrypt(cipher, plain);
 		Crypto::Utils::to_hex(plain, sizeof(plain), plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 
 TEST(DES, check_weak_keys)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0101010101010101", "true"  },
 		{ "FEE0FEE0FEF1FEF1", "true"  },
 		{ "0101010101010100", "false" },
 		{ "EEE0FEE0FEF1FEF1", "false" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[8];
 		std::size_t key_sz = sizeof(key);
-		bool expected = test[i][1] == "true";
+		bool expected = test[1] == "true";
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
 		bool is_weak = Crypto::DES::is_weak_key(key, key_sz);
 		EXPECT_EQ(is_weak, expected);
 	}
@@ -244,12 +244,12 @@ TEST(DES, cbc)
 
 TEST(TripleDES, des_ede2_encrypt)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0000000000000000ffffffffffffffff", "0000000000000000", "9295b59bb384736e" },
 		{ "ffffffffffffffff3000000000000000", "ffffffffffffffff", "199e9d6df39aa816" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[24];
 		std::size_t key_sz = sizeof(key);
 
@@ -259,25 +259,25 @@ TEST(TripleDES, des_ede2_encrypt)
 		uint8_t cipher[Crypto::TripleDES::BLOCK_SIZE];
 		std::string ciphertext;
 
-		Crypto::Utils::from_hex(test[i][0], key,   key_sz);
-		Crypto::Utils::from_hex(test[i][1], plain, plain_sz);
+		Crypto::Utils::from_hex(test[0], key,   key_sz);
+		Crypto::Utils::from_hex(test[1], plain, plain_sz);
 
 		Crypto::TripleDES ctx(key, key_sz);
 		ctx.encrypt(plain, cipher);
 		Crypto::Utils::to_hex(cipher, sizeof(cipher), ciphertext, false);
 
-		EXPECT_THAT(ciphertext, test[i][2]);
+		EXPECT_THAT(ciphertext, test[2]);
 	}
 }
 
 TEST(TripleDES, des_ede2_decrypt)
 {
-	const std::vector<std::vector<std::string>> test = {
-		{ "0000000000000000ffffffffffffffff", "9295b59bb384736e", "0000000000000000" },
+	const std::vector<std::vector<std::string>> tests = {
+		{ "0000000000000000ffffffffffffffff","9295b59bb384736e", "0000000000000000" },
 		{ "ffffffffffffffff3000000000000000", "199e9d6df39aa816", "ffffffffffffffff" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[24];
 		std::size_t key_sz = sizeof(key);
 
@@ -287,14 +287,14 @@ TEST(TripleDES, des_ede2_decrypt)
 		uint8_t plain[Crypto::TripleDES::BLOCK_SIZE];
 		std::string plaintext;
 
-		Crypto::Utils::from_hex(test[i][0], key,    key_sz);
-		Crypto::Utils::from_hex(test[i][1], cipher, cipher_sz);
+		Crypto::Utils::from_hex(test[0], key,    key_sz);
+		Crypto::Utils::from_hex(test[1], cipher, cipher_sz);
 
 		Crypto::TripleDES ctx(key, key_sz);
 		ctx.decrypt(cipher, plain);
 		Crypto::Utils::to_hex(plain, sizeof(plain), plaintext, false);
 
-		EXPECT_THAT(plaintext, test[i][2]);
+		EXPECT_THAT(plaintext, test[2]);
 	}
 }
 
@@ -363,7 +363,7 @@ TEST(TripleDES, des_ede3_cbc)
 
 TEST(TripleDES, check_weak_keys)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "00000000000000000000000000000000",                 "true"  },
 		{ "00000000000000001111111111111111",                 "false" },
 		{ "000000000000000000000000000000001111111111111111", "true"  },
@@ -372,17 +372,13 @@ TEST(TripleDES, check_weak_keys)
 		{ "000000000000000011111111111111112222222222222222", "false" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t key[24];
 		std::size_t key_sz = sizeof(key);
-		bool expected = test[i][1] == "true";
+		bool expected = test[1] == "true";
 
-		Crypto::Utils::from_hex(test[i][0], key, key_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
 		bool is_weak = Crypto::TripleDES::is_weak_key(key, key_sz);
 		EXPECT_EQ(is_weak, expected);
-
-		if ( is_weak != expected ) {
-			std::cout << test[i][0] << std::endl;
-		}
 	}
 }

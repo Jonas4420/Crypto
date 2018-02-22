@@ -10,7 +10,7 @@
 
 TEST(PEM, read_pem)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ // No password
 			"-----BEGIN RSA PRIVATE KEY-----\n"
 			"MIIBOQIBAAJBAO3xuzfdn25wosS2MBekkVJjZ2j0KUHT1+iXyCMYclUe6jpjSbgg\n"
@@ -155,17 +155,17 @@ TEST(PEM, read_pem)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string der;
 
-		ret = Crypto::PEM::decode("RSA PRIVATE KEY", test[i][0], data, data_sz, test[i][1]);
+		ret = Crypto::PEM::decode("RSA PRIVATE KEY", test[0], data, data_sz, test[1]);
 		EXPECT_EQ(ret, 0);
 
 		Crypto::Utils::to_hex(data, data_sz, der, false);
-		EXPECT_THAT(der, test[i][2]);
+		EXPECT_THAT(der, test[2]);
 	}
 }
 
@@ -192,8 +192,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -218,8 +216,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -244,8 +240,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -270,8 +264,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -296,8 +288,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -343,8 +333,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: Base64::Exception";
 		} catch ( const Crypto::Base64::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: Base64::Exception";
 		}
 	}
 
@@ -372,8 +360,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -400,8 +386,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -429,8 +413,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -458,8 +440,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -487,8 +467,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -516,8 +494,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -545,8 +521,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -574,8 +548,6 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: PEM::Exception";
 		}
 	}
 
@@ -603,15 +575,13 @@ TEST(PEM, read_pem_abnormal)
 			FAIL() << "Expected: Padding::Exception";
 		} catch ( const Crypto::Padding::Exception &pe ) {
 			EXPECT_EQ(pe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: Padding::Exception";
 		}
 	}
 }
 
 TEST(PEM, write_pem)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ // Zero data
 			"",
 			"",
@@ -783,17 +753,17 @@ TEST(PEM, write_pem)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
 
-		Crypto::Utils::from_hex(test[i][0], data, data_sz);
+		Crypto::Utils::from_hex(test[0], data, data_sz);
 		ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
-				test[i][1], test[i][2], test[i][3]);
+				test[1], test[2], test[3]);
 		EXPECT_EQ(ret, 0);
 
-		EXPECT_THAT(pem, test[i][4]);
+		EXPECT_THAT(pem, test[4]);
 	}
 }

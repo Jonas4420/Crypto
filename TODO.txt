@@ -1,11 +1,11 @@
 Tests
 	Restore OSX ASan tests when googletest fixed
 	NIST & NESSIE MCT and KAT
-	Add one test suite per Object (AES, DES, ...)
 	Fix isFast option for PBKDF2
 	CodeCoverage to improve
 Sym
 	GCM mode
+	CS1, CS2, CS3
 Asym
 	ECDomainParameters + tests
 	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
