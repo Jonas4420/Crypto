@@ -1,0 +1,29 @@
+version: '{build}'
+
+image: "Visual Studio 2015"
+
+platform:
+        - Win32
+        - x64
+
+notifications:
+        - provider: Email
+          on_build_success: false
+          on_build_failure: false 
+          on_build_status_changed: false 
+
+configuration:
+        - Release
+        - Debug
+
+before_build:
+        - cmake -DCMAKE_BUILD_TYPE=%CONFIGURATION% -H. -BBuild -A%PLATFORM%
+
+build:
+        project: Build\Crypto.sln
+        parallel: true
+        verbosity: normal
+
+test_script:
+        - cd Build
+        - ctest -V -j 2 -C %CONFIGURATION%

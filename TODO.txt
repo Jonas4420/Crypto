@@ -1,6 +1,13 @@
 Travis-CI
 	Restore OSX ASan tests when googletest fixed
 	Add coverage tests
+AppVeyor
+	Add appveyor configuration
+	Add builds for 32 bits and 64 bits (MinGW and Visual Studio)
+ReadMe
+	Details of project
+	Badges
+	Remove warning about Windows
 Tests
 	NIST & NESSIE MCT and KAT
 	Add one test suite per Object (AES, DES, ...)
