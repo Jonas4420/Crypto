@@ -1,6 +1,5 @@
 Travis-CI
 	Restore OSX ASan tests when googletest fixed
-	Add coverage tests
 Tests
 	NIST & NESSIE MCT and KAT
 	Add one test suite per Object (AES, DES, ...)

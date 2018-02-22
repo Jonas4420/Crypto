@@ -63,6 +63,15 @@ matrix:
                 - compiler: gcc
                   env: BUILD_TYPE=ASan
 
+                - compiler: gcc
+                  env: BUILD_TYPE=Coverage
+                  addons: &coverage
+                        apt:
+                                sources:
+                                        - ubuntu-toolchain-r-test
+                                packages:
+                                        - lcov
+
 before_script:
         - cd "${TRAVIS_BUILD_DIR}"
         - mkdir build && cd build
@@ -74,4 +83,14 @@ script:
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" && "${BUILD_TYPE}" != "ASan" ]]; then
                 CRYPTO_TEST_IS_FAST=1 ctest -V -j 2 -T memcheck
+          fi
+
+after_succces:
+        - |
+          if [[ "${BUILD_TYPE}" == "Coverage" ]]; then
+                cd ${TRAVIS_BUILD_DIR}
+                lcov --directory . --capture --output-file coverage.info
+                lcov --remove coverage.info '/usr/*' --output-file coverage.info
+                lcov --list coverage.info
+                bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
           fi
