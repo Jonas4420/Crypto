@@ -6,6 +6,57 @@
 #include "crypto/Utils.hpp"
 #include "crypto/AES.hpp"
 
+TEST(AES, constructor)
+{
+	// Case 1: key_sz = 128 bits
+	{
+		uint8_t key[16];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::AES ctx(key, key_sz);
+	}
+
+	// Case 2: key_sz = 192 bits
+	{
+		uint8_t key[24];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::AES ctx(key, key_sz);
+	}
+
+	// Case 3: key_sz = 256 bits
+	{
+		uint8_t key[32];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		Crypto::AES ctx(key, key_sz);
+	}
+
+	// Case 4: key_sz = 512 bits
+	{
+		std::string exception, expected("Key size is not supported");
+		uint8_t key[64];
+		std::size_t key_sz = sizeof(key);
+
+		memset(key, 0x00, key_sz);
+
+		try {
+			Crypto::AES ctx(key, key_sz);
+		} catch ( const Crypto::AES::Exception &ae ) {
+			exception = ae.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+
+}
+
 TEST(AES128, encrypt_test_vector)
 {
 	const std::vector<std::vector<std::string>> tests = {

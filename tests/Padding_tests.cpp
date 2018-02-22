@@ -62,7 +62,7 @@ TEST(PKCS7Padding, unpad_correct)
 
 TEST(PKCS7Padding, unpad_incorrect)
 {
-	std::string expected = "Invalid padding";
+	std::string exception, expected = "Invalid padding";
 	const std::vector<std::string> tests = {
 		{ "deadbeef0a" },
 		{ "deadbeef00" },
@@ -78,11 +78,11 @@ TEST(PKCS7Padding, unpad_incorrect)
 			Crypto::Utils::from_hex(test, data, in_sz);
 
 			Crypto::PKCS7Padding::unpad(data, in_sz, out_sz);
-
-			FAIL() << "Expected: Padding::Exception";
 		} catch ( const Crypto::Padding::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -142,7 +142,7 @@ TEST(OneAndZeroesPadding, unpad_correct)
 
 TEST(OneAndZeroesPadding, unpad_incorrect)
 {
-	std::string expected = "Invalid padding";
+	std::string exception, expected = "Invalid padding";
 	const std::vector<std::string> tests = {
 		{ "0000000000" },
 		{ "deadbeef00" }
@@ -157,11 +157,11 @@ TEST(OneAndZeroesPadding, unpad_incorrect)
 			Crypto::Utils::from_hex(test, data, in_sz);
 
 			Crypto::OneAndZeroesPadding::unpad(data, in_sz, out_sz);
-
-			FAIL() << "Expected: Padding::Exception";
 		} catch ( const Crypto::Padding::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -221,7 +221,7 @@ TEST(ANSIX923Padding, unpad_correct)
 
 TEST(ANSIX923Padding, unpad_incorrect)
 {
-	std::string expected = "Invalid padding";
+	std::string exception, expected = "Invalid padding";
 	const std::vector<std::string> tests = {
 		{ "deadbeef0a" },
 		{ "deadbeef00" },
@@ -237,10 +237,10 @@ TEST(ANSIX923Padding, unpad_incorrect)
 			Crypto::Utils::from_hex(test, data, in_sz);
 
 			Crypto::ANSIX923Padding::unpad(data, in_sz, out_sz);
-
-			FAIL() << "Expected: Padding::Exception";
 		} catch ( const Crypto::Padding::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }

@@ -107,49 +107,52 @@ TEST(Utils, from_hex_empty)
 
 TEST(Utils, from_hex_incorrect_length)
 {
-	std::string expected = "Incorrect length";
+	std::string exception, expected = "Incorrect length";
 	std::string in = "0";
 	uint8_t out[2];
 	std::size_t out_sz = 2;
 
 	try {
 		Crypto::Utils::from_hex(in, out, out_sz);
-		FAIL() << "Expected: Utils::Exception";
 	} catch ( const Crypto::Utils::Exception &ce ) {
-		EXPECT_EQ(ce.what(), expected);
+		exception = ce.what();
 	}
+
+	EXPECT_EQ(exception, expected);
 }
 
 TEST(Utils, from_hex_invalid_character)
 {
 	// Invalid character #1
 	{
-		std::string expected = "Invalid character";
+		std::string exception, expected = "Invalid character";
 		std::string in = "0123456789ABCDEFGA";
 		uint8_t out[9];
 		std::size_t out_sz = 9;
 
 		try {
 			Crypto::Utils::from_hex(in, out, out_sz);
-			FAIL() << "Expected: Utils::Exception";
 		} catch ( const Crypto::Utils::Exception &ce ) {
-			EXPECT_EQ(ce.what(), expected);
+			exception = ce.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Invalid character #2
 	{
-		std::string expected = "Invalid character";
+		std::string exception, expected = "Invalid character";
 		std::string in = "0123456789ABCDEFAG";
 		uint8_t out[9];
 		std::size_t out_sz = 9;
 
 		try {
 			Crypto::Utils::from_hex(in, out, out_sz);
-			FAIL() << "Expected: Utils::Exception";
 		} catch ( const Crypto::Utils::Exception &ce ) {
-			EXPECT_EQ(ce.what(), expected);
+			exception = ce.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

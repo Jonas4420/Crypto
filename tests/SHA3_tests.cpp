@@ -52,26 +52,26 @@ TEST(SHA3, init)
 
 	// Invalid digest size (200 <= 2 * digest_sz)
 	{
-		std::string expected("Invalid digest length");
+		std::string exception, expected("Invalid digest length");
 		try {
 			Crypto::SHA3 ctx(100);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::SHA3::Exception &se ) {
-			EXPECT_EQ(se.what(), expected);
+			exception = se.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Invalid digest size (200 - 2 * digest_sz <= digest_sz)
 	{
-		std::string expected("Invalid digest length");
+		std::string exception, expected("Invalid digest length");
 		try {
 			Crypto::SHA3 ctx(67);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::SHA3::Exception &se ) {
-			EXPECT_EQ(se.what(), expected);
+			exception = se.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

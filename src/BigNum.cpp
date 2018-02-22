@@ -1582,10 +1582,6 @@ BigNum::sub_abs(const BigNum &other)
 	std::size_t i;
 	const BigNum *B = &other;
 
-	if ( cmp_abs(other) < 0 ) {
-		throw BigNum::Exception("Invalid value");
-	}
-
 	// Number of limbs
 	for ( i = B->n ; i > 0 ; --i ) {
 		if ( 0 != B->p[i - 1] ) {

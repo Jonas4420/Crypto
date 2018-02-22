@@ -75,7 +75,7 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("7F007B", data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -83,11 +83,11 @@ TEST(OID, from_binary_abnormal)
 		try {
 			data_sz = 0;
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 	
 	// Not enough data to process: #1
@@ -95,7 +95,7 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("83FF7F", data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -103,11 +103,11 @@ TEST(OID, from_binary_abnormal)
 		try {
 			data_sz -= 1;
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Not enough data to process: #2
@@ -115,7 +115,7 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("83FF7FFF7F", data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -123,11 +123,11 @@ TEST(OID, from_binary_abnormal)
 		try {
 			data_sz -= 1;
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Last byte is the last byte to process: #1
@@ -135,18 +135,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("83FF", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Last byte is the last byte to process: #2
@@ -154,18 +154,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("4F83FF", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Last byte is the last byte to process: #3
@@ -173,18 +173,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("4F8FFFFFFFFF7F", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// First bit is 0x80 (not minimal): #1
@@ -192,18 +192,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("8000", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// First bit is 0x80 (not minimal): #2
@@ -211,18 +211,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("288000", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Overflow possible: #1
@@ -230,18 +230,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("90FFFFFF7F", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Overflow possible: #2
@@ -249,18 +249,18 @@ TEST(OID, from_binary_abnormal)
 		int res;
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid data";
+		std::string exception, expected = "Invalid data";
 
 		res = Crypto::Utils::from_hex("2890FFFFFFFF", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		try {
 			Crypto::OID oid(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -352,67 +352,67 @@ TEST(OID, to_binary_abnormal)
 	{
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected("Impossible to encode any root OID without any second element");
+		std::string exception, expected("Impossible to encode any root OID without any second element");
 
 		try {
 			Crypto::OID oid(1);
 			oid.to_binary(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Root node > 2
 	{
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected("Impossible to encode any OID with root 3 or higher");
+		std::string exception, expected("Impossible to encode any OID with root 3 or higher");
 
 		try {
 			Crypto::OID oid(3);
 			oid += 1;
 			oid.to_binary(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 	
 	// Root node = 0, second node = 40
 	{
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
+		std::string exception, expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
 
 		try {
 			Crypto::OID oid(0);
 			oid += 40;
 			oid.to_binary(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Root node = 0, second node = 40
 	{
 		uint8_t     data[256];
 		std::size_t data_sz = sizeof(data);
-		std::string expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
+		std::string exception, expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
 
 		try {
 			Crypto::OID oid(1);
 			oid += 256;
 			oid.to_binary(data, data_sz);
-
-			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
-			EXPECT_EQ(oe.what(), expected);
+			exception = oe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

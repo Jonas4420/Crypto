@@ -184,15 +184,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing header";
+		std::string exception, expected = "Missing header";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem,  data, data_sz);
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Missing new line after header
@@ -208,15 +208,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing data";
+		std::string exception, expected = "Missing data";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Missing footer
@@ -232,15 +232,15 @@ TEST(PEM, read_pem_abnormal)
 			"";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing footer";
+		std::string exception, expected = "Missing footer";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Missing new line before footer
@@ -256,15 +256,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing footer";
+		std::string exception, expected = "Missing footer";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Line is more than 80 characters
@@ -280,15 +280,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Line is longer than 80 characters";
+		std::string exception, expected = "Line is longer than 80 characters";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Invalid length
@@ -325,15 +325,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid character";
+		std::string exception, expected = "Invalid character";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem,  data, data_sz);
-
-			FAIL() << "Expected: Base64::Exception";
 		} catch ( const Crypto::Base64::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// No new line after Proc-Type
@@ -352,15 +352,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing metadata";
+		std::string exception, expected = "Missing metadata";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// No metadata
@@ -378,15 +378,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing metadata";
+		std::string exception, expected = "Missing metadata";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// No new line after metadata
@@ -405,15 +405,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing metadata";
+		std::string exception, expected = "Missing metadata";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// No second new line after metadata
@@ -432,15 +432,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Missing metadata";
+		std::string exception, expected = "Missing metadata";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Unsupported encryption Algorithm
@@ -459,15 +459,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Encryption algorithm not supported";
+		std::string exception, expected = "Encryption algorithm not supported";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// DES-CBC Invalid IV
@@ -486,15 +486,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "IV malformed";
+		std::string exception, expected = "IV malformed";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// DES-EDE3-CBC Invalid IV
@@ -513,15 +513,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 			uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "IV malformed";
+		std::string exception, expected = "IV malformed";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "DES-EDE3-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// AES-128-CBC Invalid IV
@@ -540,15 +540,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "IV malformed";
+		std::string exception, expected = "IV malformed";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "AES-128-CBC");
-
-			FAIL() << "Expected: PEM::Exception";
 		} catch ( const Crypto::PEM::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Padding malformed (wrong password)
@@ -567,15 +567,15 @@ TEST(PEM, read_pem_abnormal)
 			"-----END RSA PRIVATE KEY-----\n";
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
-		std::string expected = "Invalid padding";
+		std::string exception, expected = "Invalid padding";
 
 		try {
 			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz, "AES-128-CBC-WRONG");
-
-			FAIL() << "Expected: Padding::Exception";
 		} catch ( const Crypto::Padding::Exception &pe ) {
-			EXPECT_EQ(pe.what(), expected);
+			exception = pe.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

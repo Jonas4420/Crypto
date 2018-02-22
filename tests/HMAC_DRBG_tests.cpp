@@ -11,49 +11,49 @@ TEST(HMAC_DRBG, instantiation_errors)
 {
 	// Instantiation with NULL entropy
 	{
-		std::string expected = "Not enough entropy provided";
+		std::string exception, expected = "Not enough entropy provided";
 		try {
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(NULL, 0, NULL, 0, NULL, 0, false, true);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Instantiation with not enough entropy
 	{
-		std::string expected = "Not enough entropy provided";
+		std::string exception, expected = "Not enough entropy provided";
 		try {
 			uint8_t entropy[16];
 			std::size_t entropy_sz = sizeof(entropy);
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz, NULL, 0, NULL, 0, false, true);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Instantiation with too much entropy
 	{
-		std::string expected = "Entropy failure";
+		std::string exception, expected = "Entropy failure";
 		try {
 			uint8_t entropy[16];
 			std::size_t entropy_sz = (((std::size_t)1) << 32) + 1;
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz, NULL, 0, NULL, 0, false, true);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Instantiation with large personalization string
 	{
-		std::string expected = "Personalization string length is too big";
+		std::string exception, expected = "Personalization string length is too big";
 		try {
 			uint8_t entropy[32];
 			std::size_t entropy_sz = sizeof(entropy);
@@ -61,11 +61,11 @@ TEST(HMAC_DRBG, instantiation_errors)
 			std::size_t perso_sz = (((std::size_t)1) << 32) + 1;
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz, NULL, 0, perso, perso_sz, false, true);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -76,20 +76,20 @@ TEST(HMAC_DRBG, reseed)
 		uint8_t entropy[32];
 		std::size_t entropy_sz = sizeof(entropy);
 
-		std::string expected = "Not enough entropy provided";
+		std::string exception, expected = "Not enough entropy provided";
 		try {
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz);
 			ctx.reseed(NULL, 0);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Reseed with not enough entropy
 	{
-		std::string expected = "Not enough entropy provided";
+		std::string exception, expected = "Not enough entropy provided";
 		try {
 			uint8_t entropy1[32], entropy2[16];
 			std::size_t entropy1_sz = sizeof(entropy1);
@@ -97,16 +97,16 @@ TEST(HMAC_DRBG, reseed)
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy1, entropy1_sz);
 			ctx.reseed(entropy2, entropy2_sz);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Reseed with too much entropy
 	{
-		std::string expected = "Entropy failure";
+		std::string exception, expected = "Entropy failure";
 		try {
 			uint8_t entropy1[32], entropy2[32];
 			std::size_t entropy1_sz = sizeof(entropy1);
@@ -114,16 +114,16 @@ TEST(HMAC_DRBG, reseed)
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy1, entropy1_sz);
 			ctx.reseed(entropy2, entropy2_sz);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Reseed with large additional input
 	{
-		std::string expected = "Additional input length is too big";
+		std::string exception, expected = "Additional input length is too big";
 		try {
 			uint8_t entropy[32];
 			std::size_t entropy_sz = sizeof(entropy);
@@ -132,11 +132,11 @@ TEST(HMAC_DRBG, reseed)
 
 			Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz);
 			ctx.reseed(entropy, entropy_sz, add, add_sz);
-
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -155,7 +155,7 @@ TEST(HMAC_DRBG, generate_errors)
 
 	// Too many bytes requested
 	{
-		std::string expected = "Requested number of bytes is too big";
+		std::string exception, expected = "Requested number of bytes is too big";
 		uint8_t entropy[32];
 		std::size_t entropy_sz = sizeof(entropy);
 		std::size_t random_sz  = (((std::size_t)1) << 16) + 1;
@@ -164,10 +164,11 @@ TEST(HMAC_DRBG, generate_errors)
 
 		try {
 			ctx.generate(NULL, random_sz);
-			FAIL() << "Expected: HMAC_DRBG::Exception";
 		} catch ( const Crypto::HMAC_DRBG<Crypto::SHA512>::Exception &hde ) {
-			EXPECT_EQ(hde.what(), expected);
+			exception = hde.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

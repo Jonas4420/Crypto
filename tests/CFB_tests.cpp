@@ -483,26 +483,28 @@ TEST(CFB, stream_size)
 
 	// Stream size is nul
 	{
-		std::string expected = "Invalid data segment size";
+		std::string exception, expected = "Invalid data segment size";
 
 		try {
 			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 0);
-			FAIL() << "Expected: SymmetricCipher::Exception";
 		} catch ( const Crypto::SymmetricCipher::Exception& sce ) {
-			EXPECT_EQ(sce.what(), expected);
+			exception = sce.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Stream size is bigger than cipher's BLOCK_SIZE
 	{
-		std::string expected = "Invalid data segment size";
+		std::string exception, expected = "Invalid data segment size";
 
 		try {
 			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 17);
-			FAIL() << "Expected: SymmetricCipher::Exception";
 		} catch ( const Crypto::SymmetricCipher::Exception& sce ) {
-			EXPECT_EQ(sce.what(), expected);
+			exception = sce.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 

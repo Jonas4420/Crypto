@@ -261,8 +261,6 @@ TEST(BigNum, cmp)
 			EXPECT_TRUE(X > Y);
 		} else if ( test[2] == "-1" ) {
 			EXPECT_TRUE(X < Y);
-		} else {
-			FAIL() << "Unknown comparison";
 		}
 	}
 }
@@ -288,8 +286,6 @@ TEST(BigNum, cmp_int)
 			EXPECT_TRUE (X > Y);
 		} else if ( test[2] == "-1" ) {
 			EXPECT_TRUE(X < Y);
-		} else {
-			FAIL() << "Unknown comparison";
 		}
 	}
 }
@@ -602,17 +598,17 @@ TEST(BigNum, div_abnormal)
 {
 	// Division by 0
 	{
-		std::string expected("Illegal division by 0");
+		std::string exception, expected("Illegal division by 0");
 		try {
 			Crypto::BigNum X("1000");
 			Crypto::BigNum Y("0");
 
 			Crypto::BigNum Z = X / Y;
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -638,47 +634,47 @@ TEST(BigNum, mod_abnormal)
 {
 	// Modulus by 0
 	{
-		std::string expected("Illegal division by 0");
+		std::string exception, expected("Illegal division by 0");
 		try {
 			Crypto::BigNum X("1000");
 			Crypto::BigNum Y("0");
 
 			Crypto::BigNum Z = X % Y;
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Negative modulus #1
 	{
-		std::string expected("Invalid value for modulus");
+		std::string exception, expected("Invalid value for modulus");
 		try {
 			Crypto::BigNum X("1000");
 			Crypto::BigNum Y("-13");
 
 			Crypto::BigNum Z = X % Y;
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Negative modulus #2
 	{
-		std::string expected("Invalid value for modulus");
+		std::string exception, expected("Invalid value for modulus");
 		try {
 			Crypto::BigNum X("-1000");
 			Crypto::BigNum Y("-13");
 
 			Crypto::BigNum Z = X % Y;
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception &bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -752,7 +748,7 @@ TEST(BigNum, exp_mod_abnormal)
 {
 	// Even modulus
 	{
-		std::string expected("Invalid value for modulus");
+		std::string exception, expected("Invalid value for modulus");
 
 		try {
 			Crypto::BigNum X("23");
@@ -760,16 +756,16 @@ TEST(BigNum, exp_mod_abnormal)
 			Crypto::BigNum Z("30");
 
 			Crypto::BigNum A = X.exp_mod(Y, Z);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Negative modulus
 	{
-		std::string expected("Invalid value for modulus");
+		std::string exception, expected("Invalid value for modulus");
 
 		try {
 			Crypto::BigNum X("23");
@@ -777,16 +773,16 @@ TEST(BigNum, exp_mod_abnormal)
 			Crypto::BigNum Z("-29");
 
 			Crypto::BigNum A = X.exp_mod(Y, Z);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Negative exponent #1
 	{
-		std::string expected("Invalid value for exponent");
+		std::string exception, expected("Invalid value for exponent");
 
 		try {
 			Crypto::BigNum X("23");
@@ -794,16 +790,16 @@ TEST(BigNum, exp_mod_abnormal)
 			Crypto::BigNum Z("29");
 
 			Crypto::BigNum A = X.exp_mod(Y, Z);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Negative exponent #2
 	{
-		std::string expected("Invalid value for exponent");
+		std::string exception, expected("Invalid value for exponent");
 
 		try {
 			Crypto::BigNum X("-23");
@@ -811,11 +807,11 @@ TEST(BigNum, exp_mod_abnormal)
 			Crypto::BigNum Z("29");
 
 			Crypto::BigNum A = X.exp_mod(Y, Z);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -1097,15 +1093,13 @@ TEST(BigNum, inv_mod_abnormal)
 
 	// Modulus is 0
 	{
-		std::string expected("Invalid value for inverse");
+		std::string exception, expected("Invalid value for inverse");
 
 		try {
 			Crypto::BigNum X("3");
 			Crypto::BigNum Y("0");
 
 			Crypto::BigNum Z = X.inv(Y);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
 			EXPECT_EQ(bne.what(), expected);
 		}
@@ -1113,34 +1107,34 @@ TEST(BigNum, inv_mod_abnormal)
 
 	// Negative modulus
 	{
-		std::string expected("Invalid value for inverse");
+		std::string exception, expected("Invalid value for inverse");
 
 		try {
 			Crypto::BigNum X("3");
 			Crypto::BigNum Y("-11");
 
 			Crypto::BigNum Z = X.inv(Y);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Modulus is 1
 	{
-		std::string expected("Invalid value for inverse");
+		std::string exception, expected("Invalid value for inverse");
 
 		try {
 			Crypto::BigNum X("3");
 			Crypto::BigNum Y("1");
 
 			Crypto::BigNum Z = X.inv(Y);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -1270,15 +1264,15 @@ TEST(BigNum, gen_prime_abnormal)
 {
 	// Not enough bits requested
 	{
-		std::string expected("Requested size is not supported");
+		std::string exception, expected("Requested size is not supported");
 
 		try {
 			Crypto::BigNum X = Crypto::BigNum::gen_prime(2, rnd_std_rand, NULL);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }
 
@@ -1319,33 +1313,33 @@ TEST(BigNum, write_string_abnormal)
 {
 	// Invalid character
 	{
-		std::string expected("Invalid character");
+		std::string exception, expected("Invalid character");
 
 		try {
 			Crypto::BigNum X("a28", 10);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Invalid radix input
 	{
-		std::string expected("Radix not supported");
+		std::string exception, expected("Radix not supported");
 
 		try {
 			Crypto::BigNum X("a28", 19);
-
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 
 	// Invalid radix output
 	{
-		std::string expected("Radix not supported");
+		std::string exception, expected("Radix not supported");
 		bool ctor = false;
 
 		try {
@@ -1353,12 +1347,12 @@ TEST(BigNum, write_string_abnormal)
 			ctor = true;
 
 			std::string X_str = X.to_string(17);
-			FAIL() << "Expected: BigNum::Exception";
 		} catch ( const Crypto::BigNum::Exception& bne ) {
-			EXPECT_EQ(bne.what(), expected);
+			exception = bne.what();
 		}
 
 		EXPECT_TRUE(ctor);
+		EXPECT_EQ(exception, expected);
 	}
 }
 

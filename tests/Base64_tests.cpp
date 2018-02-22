@@ -122,7 +122,7 @@ TEST(Base64, decode_regular_spaces)
 
 TEST(Base64, decode_invalid_character)
 {
-	std::string expected = "Invalid character";
+	std::string exception, expected = "Invalid character";
 	const std::vector<std::string> tests = {
 		"zm#=",       "zm===",       "zm=masd",     "zm masd",
 		"Zm9vYmFy\r", "Zm9vYmFy \r", "Zm9vYmFy  \r" "Zm9vYmF\ry",
@@ -134,10 +134,10 @@ TEST(Base64, decode_invalid_character)
 			uint8_t output[11];
 			std::size_t output_sz = sizeof(output);
 			Crypto::Base64::decode(test, output, output_sz);
-
-			FAIL() << "Expected: Base64::Exception";
 		} catch ( const Crypto::Base64::Exception &b64e ) {
-			EXPECT_EQ(b64e.what(), expected);
+			exception = b64e.what();
 		}
+
+		EXPECT_EQ(exception, expected);
 	}
 }

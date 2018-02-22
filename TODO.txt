@@ -1,8 +1,8 @@
 Tests
-	Restore OSX ASan tests when googletest fixed
+	CodeCoverage to improve
 	NIST & NESSIE MCT and KAT
 	Fix isFast option for PBKDF2
-	CodeCoverage to improve
+	Restore OSX ASan tests when googletest fixed
 Sym
 	GCM mode
 	CS1, CS2, CS3
