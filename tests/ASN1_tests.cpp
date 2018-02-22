@@ -889,13 +889,9 @@ TEST(ASN1, read_set_abnormal)
 TEST(ASN1, read_data)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{ "01012C",                 "01", "2C" },
-		{ "0500",                   "05",   "" },
-		{
-			"09080123456789ABCDEF",
-			"09",
-			"0123456789ABCDEF"
-		}
+		{ "01012C",               "01",               "2C" },
+		{ "0500",                 "05",                 "" },
+		{ "09080123456789ABCDEF", "09", "0123456789ABCDEF" }
 	};
 
 	for ( auto test : tests ) {
@@ -1154,11 +1150,7 @@ TEST(ASN1, write_integer)
 		std::size_t write_sz;
 		std::string integer_str;
 
-		try {
-			integer = Crypto::BigNum(test[0], atoi(test[1].c_str()));
-		} catch ( ... ) {
-			FAIL() << "Expected success";
-		}
+		integer = Crypto::BigNum(test[0], atoi(test[1].c_str()));
 
 		res = Crypto::ASN1::write_integer(integer, data, data_sz, write_sz);
 		EXPECT_EQ(res, 0);
@@ -1418,13 +1410,9 @@ TEST(ASN1, write_set)
 TEST(ASN1, write_data)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{ "01", "2C", "01012C" },
-		{ "05", "",   "0500"   },
-		{
-			"09",
-			"0123456789ABCDEF",
-			"09080123456789ABCDEF"
-		}
+		{ "01",               "2C",               "01012C" },
+		{ "05",                 "",                 "0500" },
+		{ "09", "0123456789ABCDEF", "09080123456789ABCDEF" }
 	};
 
 	for ( auto test : tests ) {

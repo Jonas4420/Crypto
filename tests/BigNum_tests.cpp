@@ -126,7 +126,7 @@ TEST(BigNum, constructors)
 
 TEST(BigNum, read_binary)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"0941379d00fed1491fe15df284dfde4a142f68aa8d412023195cee66883e6290"
 			"ffe703f4ea5963bf212713cee46b107c09182b5edcd955adac418bf4918e2889"
@@ -138,30 +138,27 @@ TEST(BigNum, read_binary)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
-		Crypto::Utils::from_hex(test[i][0], data, data_sz);
+		Crypto::Utils::from_hex(test[0], data, data_sz);
 		Crypto::BigNum X(data, data_sz);
 
-		Crypto::BigNum Y(test[i][0], 16);
+		Crypto::BigNum Y(test[0], 16);
 		EXPECT_EQ(X, Y);
 
-		Crypto::BigNum Z(test[i][1], 10);
+		Crypto::BigNum Z(test[1], 10);
 		EXPECT_EQ(X, Z);
 	}
 }
 
 TEST(BigNum, copy)
 {
-	const std::vector<std::vector<std::string>> test = {
-		{ "0", "1500" }
-	};
-
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][1]);
+	// Copy other
+	{
+		Crypto::BigNum X("0");
+		Crypto::BigNum Y("1500");
+		Crypto::BigNum A("1500");
 
 		EXPECT_NE(X, Y);
 		EXPECT_EQ(Y, A);
@@ -171,17 +168,11 @@ TEST(BigNum, copy)
 		EXPECT_EQ(X, Y);
 		EXPECT_NE(Y, A);
 	}
-}
 
-TEST(BigNum, copy_self)
-{
-	const std::vector<std::vector<std::string>> test = {
-		{ "14" }
-	};
-
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		int val = atoi(test[i][0].c_str());
-		Crypto::BigNum X(val);
+	// Copy self
+	{
+		int val = 14;
+		Crypto::BigNum X(14);
 
 		X = X;
 
@@ -191,7 +182,7 @@ TEST(BigNum, copy_self)
 
 TEST(BigNum, safe_cond_assign)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{                   "01", "+",                   "02", "+" },
 		{                   "01", "+",                   "02", "-" },
 		{                   "01", "-",                   "02", "+" },
@@ -200,11 +191,11 @@ TEST(BigNum, safe_cond_assign)
 		{                   "01", "+", "FF000000000000000002", "+" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], 16);
-		if ( test[i][1] == "-" ) { X = -X; }
-		Crypto::BigNum Y(test[i][2], 16);
-		if ( test[i][3] == "-" ) { Y = -Y; }
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], 16);
+		if ( test[1] == "-" ) { X = -X; }
+		Crypto::BigNum Y(test[2], 16);
+		if ( test[3] == "-" ) { Y = -Y; }
 
 		Crypto::BigNum XX(X);
 
@@ -218,7 +209,7 @@ TEST(BigNum, safe_cond_assign)
 
 TEST(BigNum, safe_cond_swap)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{                   "01", "+",                   "02", "+" },
 		{                   "01", "+",                   "02", "-" },
 		{                   "01", "-",                   "02", "+" },
@@ -227,11 +218,11 @@ TEST(BigNum, safe_cond_swap)
 		{                   "01", "+", "FF000000000000000002", "+" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], 16);
-		if ( test[i][1] == "-" ) { X = -X; }
-		Crypto::BigNum Y(test[i][2], 16);
-		if ( test[i][3] == "-" ) { Y = -Y; }
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], 16);
+		if ( test[1] == "-" ) { X = -X; }
+		Crypto::BigNum Y(test[2], 16);
+		if ( test[3] == "-" ) { Y = -Y; }
 
 		Crypto::BigNum XX(X);
 		Crypto::BigNum YY(Y);
@@ -248,7 +239,7 @@ TEST(BigNum, safe_cond_swap)
 
 TEST(BigNum, cmp)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "693",           "693",  "0" },
 		{ "693",           "692",  "1" },
 		{ "693",           "694", "-1" },
@@ -260,15 +251,15 @@ TEST(BigNum, cmp)
 		{ "-2", "31231231289798", "-1" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
 
-		if ( test[i][2] == "0" ) {
+		if ( test[2] == "0" ) {
 			EXPECT_TRUE(X == Y);
-		} else if ( test[i][2] == "1" ) {
+		} else if ( test[2] == "1" ) {
 			EXPECT_TRUE(X > Y);
-		} else if ( test[i][2] == "-1" ) {
+		} else if ( test[2] == "-1" ) {
 			EXPECT_TRUE(X < Y);
 		} else {
 			FAIL() << "Unknown comparison";
@@ -278,7 +269,7 @@ TEST(BigNum, cmp)
 
 TEST(BigNum, cmp_int)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "693", "693",  "0" },
 		{ "693", "692",  "1" },
 		{ "693", "694", "-1" },
@@ -287,15 +278,15 @@ TEST(BigNum, cmp_int)
 		{ "-2",   "-1", "-1" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		int Y = atoi(test[i][1].c_str());
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		int Y = atoi(test[1].c_str());
 
-		if ( test[i][2] == "0" ) {
+		if ( test[2] == "0" ) {
 			EXPECT_TRUE(X == Y);
-		} else if ( test[i][2] == "1" ) {
+		} else if ( test[2] == "1" ) {
 			EXPECT_TRUE (X > Y);
-		} else if ( test[i][2] == "-1" ) {
+		} else if ( test[2] == "-1" ) {
 			EXPECT_TRUE(X < Y);
 		} else {
 			FAIL() << "Unknown comparison";
@@ -303,9 +294,44 @@ TEST(BigNum, cmp_int)
 	}
 }
 
+TEST(BigNum, inc)
+{
+	const std::vector<std::vector<std::string>> tests = {
+		{  "1",  "2" },
+		{ "-1",  "0" },
+		{ "-2", "-1" }
+	};
+
+	// Prefix incrementation
+	for ( auto test : tests ) {
+		Crypto::BigNum A, B, C;
+
+		A = Crypto::BigNum(test[0]);
+		B = Crypto::BigNum(test[1]);
+
+		C = ++A;
+		EXPECT_EQ(A, B);
+		EXPECT_EQ(C, B);
+	}
+
+	// Postfix incrementation
+	for ( auto test : tests ) {
+		Crypto::BigNum A, B, C, D;
+
+		A = Crypto::BigNum(test[0]);
+		B = Crypto::BigNum(test[1]);
+
+		D = A;
+		C = A++;
+
+		EXPECT_EQ(A, B);
+		EXPECT_EQ(C, D);
+	}
+}
+
 TEST(BigNum, add)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "12345678",   "642531",  "12988209" },
 		{ "-12345678",  "642531", "-11703147" },
 		{ "12345678",  "-642531",  "11703147" },
@@ -342,10 +368,10 @@ TEST(BigNum, add)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
 
 		Crypto::BigNum Z = X + Y;
 
@@ -355,10 +381,14 @@ TEST(BigNum, add)
 
 TEST(BigNum, add_inplace)
 {
-	const std::vector<std::vector<std::string>> test = {
-		{                         "12345678", "10",                           "24691356", "10" },
-		{ "ffffffffffffffffffffffffffffffff", "16", "01fffffffffffffffffffffffffffffffe", "16" },
+	const std::vector<std::vector<std::string>> tests = {
 		{
+			"12345678", "10",
+			"24691356", "10"
+		}, {
+			"ffffffffffffffffffffffffffffffff",   "16",
+			"01fffffffffffffffffffffffffffffffe", "16"
+		}, {
 			"6438080068035544392301298549614926991513861075340134329180734395"
 			"2413826484237063006136971539473913409092293733259038472039713333"
 			"5969549256322620979036686633213903952966175107096769180017646161"
@@ -372,11 +402,11 @@ TEST(BigNum, add_inplace)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum Y(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum Z(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum A(test[i][2], atoi(test[i][3].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum Y(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum Z(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum A(test[2], atoi(test[3].c_str()));
 
 		X -= X.abs();
 		EXPECT_EQ(X, 0);
@@ -389,9 +419,42 @@ TEST(BigNum, add_inplace)
 	}
 }
 
+TEST(BigNum, dec)
+{
+	const std::vector<std::vector<std::string>> tests = {
+		{  "2",  "1" },
+		{  "0", "-1" },
+		{ "-1", "-2" }
+	};
+
+	Crypto::BigNum A, B, C, D;
+
+	// Prefix incrementation
+	for ( auto test : tests ) {
+		A = Crypto::BigNum(test[0]);
+		B = Crypto::BigNum(test[1]);
+
+		C = --A;
+		EXPECT_EQ(A, B);
+		EXPECT_EQ(C, B);
+	}
+
+	// Postfix incrementation
+	for ( auto test : tests ) {
+		A = Crypto::BigNum(test[0]);
+		B = Crypto::BigNum(test[1]);
+
+		D = A;
+		C = A--;
+
+		EXPECT_EQ(A, B);
+		EXPECT_EQ(C, D);
+	}
+}
+
 TEST(BigNum, sub)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{  "5",  "7",  "-2" },
 		{ "-5", "-7",   "2" },
 		{ "-5",  "7", "-12" },
@@ -428,10 +491,10 @@ TEST(BigNum, sub)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
 
 		Crypto::BigNum Z = X - Y;
 
@@ -441,7 +504,7 @@ TEST(BigNum, sub)
 
 TEST(BigNum, mul)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{  "5",  "7",  "35" },
 		{  "5", "-7", "-35" },
 		{ "-5",  "7", "-35" },
@@ -470,10 +533,10 @@ TEST(BigNum, mul)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
 
 		Crypto::BigNum Z = X * Y;
 
@@ -483,7 +546,7 @@ TEST(BigNum, mul)
 
 TEST(BigNum, div)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{  "777",   "7", "111",  "0" },
 		{ "1000",  "13",  "76", "12" },
 		{ "1000", "-13", "-76", "12" },
@@ -520,11 +583,11 @@ TEST(BigNum, div)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
-		Crypto::BigNum B(test[i][3]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
+		Crypto::BigNum B(test[3]);
 
 		auto result = X.div_mod(Y);
 		Crypto::BigNum Q = result.first;
@@ -557,15 +620,15 @@ TEST(BigNum, div_abnormal)
 
 TEST(BigNum, mod)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{  "1000", "13", "12" },
 		{ "-1000", "13",  "1" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
 
 		Crypto::BigNum Z = X % Y;
 
@@ -629,7 +692,7 @@ TEST(BigNum, mod_abnormal)
 
 TEST(BigNum, exp_mod)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "10",           "23",          "13",    "29", "24" },
 		{ "10",          "-23",          "13",    "29",  "5" },
 		{ "10", "-10000000000", "10000000000", "99999",  "1" },
@@ -675,17 +738,17 @@ TEST(BigNum, exp_mod)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		int radix = atoi(test[i][0].c_str());
-		Crypto::BigNum A(test[i][1], radix);
-		Crypto::BigNum E(test[i][2], radix);
-		Crypto::BigNum N(test[i][3], radix);
-		Crypto::BigNum X(test[i][4], radix);
+	for ( auto test : tests ) {
+		int radix = atoi(test[0].c_str());
+		Crypto::BigNum A(test[1], radix);
+		Crypto::BigNum E(test[2], radix);
+		Crypto::BigNum N(test[3], radix);
+		Crypto::BigNum X(test[4], radix);
 		Crypto::BigNum _RR;
 
 		EXPECT_EQ(_RR, 0);
 
-		for ( std::size_t j = 0 ; j < 2 ; ++j ) {
+		for ( std::size_t i = 0 ; i < 2 ; ++i ) {
 			Crypto::BigNum Q = A.exp_mod(E, N, &_RR);
 			EXPECT_EQ(Q, X);
 			EXPECT_NE(_RR, 0);
@@ -772,9 +835,34 @@ TEST(BigNum, exp_mod_abnormal)
 	}
 }
 
+TEST(BigNum, signs)
+{
+	const std::vector<std::vector<std::string>> tests = {
+		{  "10",  "10", "-10", "10",  "1" },
+		{ "-10", "-10",  "10", "10", "-1" },
+		{   "0",   "0",   "0",  "0",  "1" },
+		{  "-0",   "0",   "0",  "0",  "1" }
+	};
+
+	for ( auto test : tests ) {
+		Crypto::BigNum A(test[0]);
+		Crypto::BigNum B(test[1]);
+		Crypto::BigNum C(test[2]);
+		Crypto::BigNum D(test[3]);
+		int s = atoi(test[4].c_str());
+
+		EXPECT_EQ(+A,       B);
+		EXPECT_EQ(-A,       C);
+		EXPECT_EQ(A.abs(),  D);
+		if ( A != 0 ) {
+			EXPECT_EQ(A.sign(), s);
+		}
+	}
+}
+
 TEST(BigNum, shift_l)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "64", "10", "128", "10", "1" },
 		{ 
 			"6583855469117335501645160884052389614618802560298345988319720394"
@@ -791,10 +879,10 @@ TEST(BigNum, shift_l)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum A(test[i][2], atoi(test[i][3].c_str()));
-		std::size_t shift = (std::size_t)atoi(test[i][4].c_str());
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum A(test[2], atoi(test[3].c_str()));
+		std::size_t shift = (std::size_t)atoi(test[4].c_str());
 
 		X <<= shift;
 		EXPECT_EQ(X, A);
@@ -803,7 +891,7 @@ TEST(BigNum, shift_l)
 
 TEST(BigNum, shift_r)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "128",              "10", "64", "10",   "1" },
 		{ "FFFFFFFFFFFFFFFF", "16", "01", "16",  "63" },
 		{ "FFFFFFFFFFFFFFFF", "16", "00", "16",  "64" },
@@ -824,10 +912,10 @@ TEST(BigNum, shift_r)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum A(test[i][2], atoi(test[i][3].c_str()));
-		std::size_t shift = (std::size_t)atoi(test[i][4].c_str());
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum A(test[2], atoi(test[3].c_str()));
+		std::size_t shift = (std::size_t)atoi(test[4].c_str());
 
 		X >>= shift;
 		EXPECT_EQ(X, A);
@@ -836,7 +924,7 @@ TEST(BigNum, shift_r)
 
 TEST(BigNum, bitlen)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0",  "0" },
 		{ "1",  "1" },
 		{ "10", "4" },
@@ -852,9 +940,9 @@ TEST(BigNum, bitlen)
 	       	}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		std::size_t nr_bit = (std::size_t)(atoi(test[i][1].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		std::size_t nr_bit = (std::size_t)(atoi(test[1].c_str()));
 
 		EXPECT_EQ(X.bitlen(), nr_bit);
 	}
@@ -862,7 +950,7 @@ TEST(BigNum, bitlen)
 
 TEST(BigNum, lsb)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "24",   "10",  "3" },
 		{ "24",   "16",  "2" },
 		{ "2000", "16", "13" },
@@ -876,9 +964,9 @@ TEST(BigNum, lsb)
 	       	}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		std::size_t nr_bit = (std::size_t)(atoi(test[i][2].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		std::size_t nr_bit = (std::size_t)(atoi(test[2].c_str()));
 
 		EXPECT_EQ(X.lsb(), nr_bit);
 	}
@@ -886,7 +974,7 @@ TEST(BigNum, lsb)
 
 TEST(BigNum, get_bit)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "49979687", "25",  "1" },
 		{ "49979687", "26",  "0" },
 		{ "49979687", "500", "0" },
@@ -894,17 +982,17 @@ TEST(BigNum, get_bit)
 		{ "49979687", "23",  "1" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		int bit = X.get_bit(atoi(test[i][1].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		int bit = X.get_bit(atoi(test[1].c_str()));
 
-		EXPECT_EQ(bit, atoi(test[i][2].c_str()));
+		EXPECT_EQ(bit, atoi(test[2].c_str()));
 	}
 }
 
 TEST(BigNum, set_bit)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "49979687",         "10", "66756903",                  "10", "24", "1" },
 		{ "49979687",         "10", "16425255",                  "10", "25", "0" },
 		{ "49979687",         "10", "49979687",                  "10", "80", "0" },
@@ -913,12 +1001,12 @@ TEST(BigNum, set_bit)
 		{ "00",               "16", "0100000000",                "16", "32", "1" }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum Y(test[i][2], atoi(test[i][3].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum Y(test[2], atoi(test[3].c_str()));
 
-		std::size_t pos = (std::size_t)(atoi(test[i][4].c_str()));
-		int val = atoi(test[i][5].c_str());
+		std::size_t pos = (std::size_t)(atoi(test[4].c_str()));
+		int val = atoi(test[5].c_str());
 
 		X.set_bit(pos, val);
 
@@ -928,7 +1016,7 @@ TEST(BigNum, set_bit)
 
 TEST(BigNum, gcd)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{       "693",       "609", "21" },
 		{      "1764",       "868", "28" },
 		{ "768454923", "542167814",  "1" },
@@ -945,18 +1033,53 @@ TEST(BigNum, gcd)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		Crypto::BigNum Y(test[i][1]);
-		Crypto::BigNum A(test[i][2]);
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
 
 		EXPECT_EQ(X.gcd(Y), A);
 	}
 }
 
+TEST(BigNum, lcm)
+{
+	const std::vector<std::vector<std::string>> tests = {
+		{       "693",       "609",              "20097" },
+		{      "1764",       "868",              "54684" },
+		{ "768454923", "542167814", "416631525760448322" },
+		{
+			"4330192409103774782173735729595601098196486470160965605237690108"
+			"8117286908333828557375657455739586296509501648386781304366398194"
+			"6477698466501451832407592327356331263124555137732393938242285782"
+			"144928753919588632679050799198937132922145084847",
+			"5781538327977828897150909166778407659250458379645823062042492461"
+			"5767585267574909100736280086139775505463827747755708881300297635"
+			"7152869957471758322893953596023446423088257361593038497910037910"
+			"2915657483866755371559811718767760594919456971354184113721",
+			"2503517338075212489135871207566367162777047669852556419556493145"
+			"1510084346396806255634466197539061957289520775510318596936464359"
+			"8515633588811516564098286816069087981946253734550060305103967989"
+			"4194362879681248560305113549747501006121511795464193846440485740"
+			"8322512032841932666065521282830431757472426235689111717735633391"
+			"3787735166702722354199920009995768754045336210090880705313504261"
+			"7366595146990190589302604943633086886103537168971491729188489128"
+			"524337691056145302843187346207711041885687"
+		}
+	};
+
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		Crypto::BigNum Y(test[1]);
+		Crypto::BigNum A(test[2]);
+
+		EXPECT_EQ(X.lcm(Y), A);
+	}
+}
+
 TEST(BigNum, inv_mod)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "3", "10", "11", "10", "4", "10" },
 		{
 			"aa4df5cb14b4c31237f98bd1faf527c283c2d0f3eec89718664ba33f9762907c",
@@ -968,10 +1091,10 @@ TEST(BigNum, inv_mod)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
-		Crypto::BigNum Y(test[i][2], atoi(test[i][3].c_str()));
-		Crypto::BigNum A(test[i][4], atoi(test[i][5].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
+		Crypto::BigNum Y(test[2], atoi(test[3].c_str()));
+		Crypto::BigNum A(test[4], atoi(test[5].c_str()));
 
 		EXPECT_EQ(X.inv(Y), A);
 	}
@@ -1045,7 +1168,7 @@ TEST(BigNum, inv_mod_abnormal)
 
 TEST(BigNum, is_prime)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "0",                                       "false" },
 		{ "1",                                       "false" },
 		{ "2",                                       "true"  },
@@ -1129,9 +1252,9 @@ TEST(BigNum, is_prime)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0]);
-		bool expected = test[i][1] == "true";
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0]);
+		bool expected = test[1] == "true";
 
 		EXPECT_EQ(X.is_prime(rnd_std_rand, NULL), expected);
 	}
@@ -1139,15 +1262,15 @@ TEST(BigNum, is_prime)
 
 TEST(BigNum, gen_prime)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "3",   "false" },
 		{ "128", "false" },
 		{ "128", "true"  }
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		std::size_t bits = (std::size_t)(atoi(test[i][0].c_str()));
-		bool safe        = test[i][1] == "true";
+	for ( auto test : tests ) {
+		std::size_t bits = (std::size_t)(atoi(test[0].c_str()));
+		bool safe        = test[1] == "true";
 
 		Crypto::BigNum X = Crypto::BigNum::gen_prime(bits, rnd_std_rand, NULL, safe);
 
@@ -1185,7 +1308,7 @@ TEST(BigNum, gen_prime_abnormal)
 
 TEST(BigNum, write_string)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{ "128", "10", "10", "128" },
 		{ "128", "10", "16",  "80" },
 		{   "0", "10", "10",   "0" },
@@ -1208,11 +1331,11 @@ TEST(BigNum, write_string)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
+	for ( auto test : tests ) {
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
 
-		std::string result = X.to_string(atoi(test[i][2].c_str()));
-		EXPECT_THAT(result, test[i][3]);
+		std::string result = X.to_string(atoi(test[2].c_str()));
+		EXPECT_THAT(result, test[3]);
 	}
 }
 
@@ -1271,7 +1394,7 @@ TEST(BigNum, write_string_abnormal)
 
 TEST(BigNum, write_binary)
 {
-	const std::vector<std::vector<std::string>> test = {
+	const std::vector<std::vector<std::string>> tests = {
 		{
 			"5612568098175228233414189632037248949061396369355639252081601789"
 			"2111350604111697682705498319512049040516698827829292076808006940"
@@ -1288,19 +1411,19 @@ TEST(BigNum, write_binary)
 		}
 	};
 
-	for ( std::size_t i = 0 ; i < test.size() ; ++i ) {
+	for ( auto test : tests ) {
 		int ret;
 		uint8_t data[512];
 		std::size_t data_sz = sizeof(data);
 		std::string str;
 
-		Crypto::BigNum X(test[i][0], atoi(test[i][1].c_str()));
+		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
 
 		ret = X.to_binary(data, data_sz);
 		EXPECT_EQ(ret, 0);
 
 		Crypto::Utils::to_hex(data, data_sz, str, false);
-		EXPECT_EQ(str, test[i][2]);
+		EXPECT_EQ(str, test[2]);
 	}
 }
 

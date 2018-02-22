@@ -6,6 +6,35 @@
 #include "crypto/OID.hpp"
 #include "crypto/Utils.hpp"
 
+TEST(OID, construction)
+{
+	Crypto::OID oid;
+
+	EXPECT_EQ(oid.size(), 0);
+	EXPECT_EQ(oid.to_string(), "");
+
+	oid += 2;
+
+	EXPECT_EQ(oid.size(), 1);
+	EXPECT_EQ(oid[0], 2);
+	EXPECT_EQ(oid.to_string(), "2");
+
+	oid += 47;
+
+	EXPECT_EQ(oid.size(), 2);
+	EXPECT_EQ(oid[0],  2);
+	EXPECT_EQ(oid[1], 47);
+	EXPECT_EQ(oid.to_string(), "2.47");
+
+	oid += 123;
+
+	EXPECT_EQ(oid.size(), 3);
+	EXPECT_EQ(oid[0],   2);
+	EXPECT_EQ(oid[1],  47);
+	EXPECT_EQ(oid[2], 123);
+	EXPECT_EQ(oid.to_string(), "2.47.123");
+}
+
 TEST(OID, from_binary)
 {
 	const std::vector<std::vector<std::string>> tests = {
@@ -33,13 +62,9 @@ TEST(OID, from_binary)
 
 		Crypto::Utils::from_hex(test[0], data, data_sz);
 
-		try {
-			Crypto::OID oid(data, data_sz);
+		Crypto::OID oid(data, data_sz);
 
-			EXPECT_EQ(oid.to_string(), test[1]);
-		} catch ( ... ) {
-			FAIL() << "OID::Exception not expected";
-		}
+		EXPECT_EQ(oid.to_string(), test[1]);
 	}
 }
 
@@ -62,8 +87,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 	
@@ -84,8 +107,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -106,8 +127,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -127,8 +146,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -148,8 +165,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -169,8 +184,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -190,8 +203,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -211,8 +222,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -232,8 +241,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -253,8 +260,6 @@ TEST(OID, from_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 }
@@ -356,8 +361,6 @@ TEST(OID, to_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -375,8 +378,6 @@ TEST(OID, to_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 	
@@ -394,8 +395,6 @@ TEST(OID, to_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 
@@ -413,8 +412,6 @@ TEST(OID, to_binary_abnormal)
 			FAIL() << "Expected: OID::Exception";
 		} catch ( const Crypto::OID::Exception &oe ) {
 			EXPECT_EQ(oe.what(), expected);
-		} catch ( ... ) {
-			FAIL() << "Expected: OID::Exception";
 		}
 	}
 }
