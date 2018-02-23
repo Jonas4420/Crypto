@@ -132,7 +132,7 @@ class BigNum
 		BigNum& sub_abs(const BigNum&);
 		static void sub_hlp(std::size_t, uint64_t*, uint64_t*);
 		static void mul_hlp(std::size_t, uint64_t*, uint64_t*, uint64_t);
-		static uint64_t int_div_int(uint64_t, uint64_t, uint64_t, uint64_t* = NULL);
+		static uint64_t int_div_int(uint64_t, uint64_t, uint64_t);
 
 		/* Montgommery ladder helpers */
 		uint64_t mont_init(void) const;

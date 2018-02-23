@@ -17,7 +17,6 @@ PEM::encode(std::string tag,
 		std::string &pem,
 		std::string enc, std::string pwd, std::string iv)
 {
-	int res = 0;
 	std::string base64;
 	std::vector<uint8_t> v_data;
 	bool is_encrypted = ("" != enc);
@@ -25,23 +24,19 @@ PEM::encode(std::string tag,
 	pem = "";
 
 	if ( "" == enc ) {
-		res = no_encrypt(data, data_sz, v_data);
+		no_encrypt(data, data_sz, v_data);
 	} else if ( "DES-CBC" == enc ) {
-		res = des_encrypt(pwd, iv, data, data_sz, v_data);
+		des_encrypt(pwd, iv, data, data_sz, v_data);
 	} else if ( "DES-EDE3-CBC" == enc ) {
-		res = des3_encrypt(pwd, iv, data, data_sz, v_data);
+		des3_encrypt(pwd, iv, data, data_sz, v_data);
 	} else if ( "AES-128-CBC" == enc ) {
-		res = aes_encrypt(pwd, iv, 16, data, data_sz, v_data);
+		aes_encrypt(pwd, iv, 16, data, data_sz, v_data);
 	} else if ( "AES-192-CBC" == enc ) {
-		res = aes_encrypt(pwd, iv, 24, data, data_sz, v_data);
+		aes_encrypt(pwd, iv, 24, data, data_sz, v_data);
 	} else if ( "AES-256-CBC" == enc ) {
-		res = aes_encrypt(pwd, iv, 32 ,data, data_sz, v_data);
+		aes_encrypt(pwd, iv, 32 ,data, data_sz, v_data);
 	} else {
 		throw PEM::Exception("Encryption algorithm not supported");
-	}
-
-	if ( 0 != res ) {
-		throw PEM::Exception("Error occured during encryption");
 	}
 
 	// Add footer

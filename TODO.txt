@@ -1,8 +1,8 @@
+CodeCoverage
+	tests/main.cpp (set CRYPTO_TEST_IS_FAST if Coverage?)
 Tests
-	CodeCoverage to improve
 	NIST & NESSIE MCT and KAT
 	Fix isFast option for PBKDF2
-	Restore OSX ASan tests when googletest fixed
 Sym
 	GCM mode
 	CS1, CS2, CS3

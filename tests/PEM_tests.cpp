@@ -767,3 +767,130 @@ TEST(PEM, write_pem)
 		EXPECT_THAT(pem, test[4]);
 	}
 }
+
+TEST(PEM, write_pem_abnormal)
+{
+	// Encryption algorithm not supported
+	{
+		std::string test = "3082013c020100024100ceb9f7849440dbe89e25aed5d04e2c32480244b5a670"
+			"dcb48b9fb810536430a2e047dc08b8ad68cc447c83225e31c6c1ebcf0dee8b7f"
+			"4d421d6f2cfcd13fee2f020301000102404138f13bf61e648386e9f2b868e951"
+			"0e6823b713ecb86d19d57785f638a942a27f635b96c53a19b750d837944c3090"
+			"e82b2be616bf8499f17700a99bb34b4369022100f3ab105291f15d3a4fdc6917"
+			"c99adeef2ddd5a849d798eff06e4cc2732448843022100d9304a2e4f6ea3f628"
+			"e0ec434358fff4f63a16b9b46f3c3652f2060d9bd349a5022100eeadba9056da"
+			"890a6c5da727a0d82dd53524e4dc8ff0194cdfb0cff4f8fd3e47022100aa77d3"
+			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
+			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
+
+		int ret;
+		uint8_t data[1024];
+		std::size_t data_sz = sizeof(data);
+		std::string pem = "";
+		std::string exception, expected = "Encryption algorithm not supported";
+
+		Crypto::Utils::from_hex(test, data, data_sz);
+
+		try {
+			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+					"AES-128-CTR", "AES-128-CTR", "DB1FECFA42F5746785A82673E649BA2C");
+		} catch ( const Crypto::PEM::Exception &pe ) {
+			exception = pe.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+
+	// IV malformed for DES
+	{
+		std::string test = "3082013c020100024100ceb9f7849440dbe89e25aed5d04e2c32480244b5a670"
+			"dcb48b9fb810536430a2e047dc08b8ad68cc447c83225e31c6c1ebcf0dee8b7f"
+			"4d421d6f2cfcd13fee2f020301000102404138f13bf61e648386e9f2b868e951"
+			"0e6823b713ecb86d19d57785f638a942a27f635b96c53a19b750d837944c3090"
+			"e82b2be616bf8499f17700a99bb34b4369022100f3ab105291f15d3a4fdc6917"
+			"c99adeef2ddd5a849d798eff06e4cc2732448843022100d9304a2e4f6ea3f628"
+			"e0ec434358fff4f63a16b9b46f3c3652f2060d9bd349a5022100eeadba9056da"
+			"890a6c5da727a0d82dd53524e4dc8ff0194cdfb0cff4f8fd3e47022100aa77d3"
+			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
+			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
+
+		int ret;
+		uint8_t data[1024];
+		std::size_t data_sz = sizeof(data);
+		std::string pem = "";
+		std::string exception, expected = "IV malformed";
+
+		Crypto::Utils::from_hex(test, data, data_sz);
+
+		try {
+			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+					"DES-CBC", "DES-CBC", "DB1FECFA42F574");
+		} catch ( const Crypto::PEM::Exception &pe ) {
+			exception = pe.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+	
+	// IV malformed for 3DES
+	{
+		std::string test = "3082013c020100024100ceb9f7849440dbe89e25aed5d04e2c32480244b5a670"
+			"dcb48b9fb810536430a2e047dc08b8ad68cc447c83225e31c6c1ebcf0dee8b7f"
+			"4d421d6f2cfcd13fee2f020301000102404138f13bf61e648386e9f2b868e951"
+			"0e6823b713ecb86d19d57785f638a942a27f635b96c53a19b750d837944c3090"
+			"e82b2be616bf8499f17700a99bb34b4369022100f3ab105291f15d3a4fdc6917"
+			"c99adeef2ddd5a849d798eff06e4cc2732448843022100d9304a2e4f6ea3f628"
+			"e0ec434358fff4f63a16b9b46f3c3652f2060d9bd349a5022100eeadba9056da"
+			"890a6c5da727a0d82dd53524e4dc8ff0194cdfb0cff4f8fd3e47022100aa77d3"
+			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
+			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
+
+		int ret;
+		uint8_t data[1024];
+		std::size_t data_sz = sizeof(data);
+		std::string pem = "";
+		std::string exception, expected = "IV malformed";
+
+		Crypto::Utils::from_hex(test, data, data_sz);
+
+		try {
+			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+					"DES-EDE3-CBC", "DES-EDE3-CBC", "DB1FECFA42F574");
+		} catch ( const Crypto::PEM::Exception &pe ) {
+			exception = pe.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+
+	// IV malformed for AES
+	{
+		std::string test = "3082013c020100024100ceb9f7849440dbe89e25aed5d04e2c32480244b5a670"
+			"dcb48b9fb810536430a2e047dc08b8ad68cc447c83225e31c6c1ebcf0dee8b7f"
+			"4d421d6f2cfcd13fee2f020301000102404138f13bf61e648386e9f2b868e951"
+			"0e6823b713ecb86d19d57785f638a942a27f635b96c53a19b750d837944c3090"
+			"e82b2be616bf8499f17700a99bb34b4369022100f3ab105291f15d3a4fdc6917"
+			"c99adeef2ddd5a849d798eff06e4cc2732448843022100d9304a2e4f6ea3f628"
+			"e0ec434358fff4f63a16b9b46f3c3652f2060d9bd349a5022100eeadba9056da"
+			"890a6c5da727a0d82dd53524e4dc8ff0194cdfb0cff4f8fd3e47022100aa77d3"
+			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
+			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
+
+		int ret;
+		uint8_t data[1024];
+		std::size_t data_sz = sizeof(data);
+		std::string pem = "";
+		std::string exception, expected = "IV malformed";
+
+		Crypto::Utils::from_hex(test, data, data_sz);
+
+		try {
+			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+					"AES-128-CBC", "AES-128-CBC", "DB1FECFA42F57467");
+		} catch ( const Crypto::PEM::Exception &pe ) {
+			exception = pe.what();
+		}
+
+		EXPECT_EQ(exception, expected);
+	}
+}

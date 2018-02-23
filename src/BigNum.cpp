@@ -1667,7 +1667,7 @@ BigNum::mul_hlp(std::size_t i, uint64_t *s, uint64_t *d, uint64_t b)
 }
 
 uint64_t
-BigNum::int_div_int(uint64_t u1, uint64_t u0, uint64_t d, uint64_t *r)
+BigNum::int_div_int(uint64_t u1, uint64_t u0, uint64_t d)
 {
 	const uint64_t radix = ((uint64_t)1) << biH;
 	const uint64_t uint_halfword_mask = (((uint64_t) 1) << biH) - 1;
@@ -1677,10 +1677,6 @@ BigNum::int_div_int(uint64_t u1, uint64_t u0, uint64_t d, uint64_t *r)
 
 	// Check for overflow
 	if ( 0 == d || u1 >= d ) {
-		if ( NULL != r ) {
-			*r = ~((uint64_t)0);
-		}
-
 		return ~((uint64_t)0);
 	}
 
@@ -1723,10 +1719,6 @@ BigNum::int_div_int(uint64_t u1, uint64_t u0, uint64_t d, uint64_t *r)
 		r0 += d1;
 
 		if ( r0 >= radix ) { break; }
-	}
-
-	if ( NULL != r ) {
-		*r = (rAX * radix + u0_lsw - q0 * d) >> s;
 	}
 
 	quotient = q1 * radix + q0;
