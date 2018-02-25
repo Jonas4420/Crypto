@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <cstdlib>
+
 class TestOptions
 {
 	public:

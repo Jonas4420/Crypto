@@ -3,6 +3,7 @@
 
 #include "crypto/HMAC.hpp"
 
+#include <memory>
 #include <mutex>
 
 namespace Crypto

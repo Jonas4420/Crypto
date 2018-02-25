@@ -1,5 +1,6 @@
 #include "crypto/BigNum.hpp"
 
+#include <memory>
 #include <vector>
 
 #if defined(CRYPTO_BIGNUM_HAVE_ASM)

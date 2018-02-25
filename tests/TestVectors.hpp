@@ -1,6 +1,7 @@
 #ifndef TESTVECTORS_H
 #define TESTVECTORS_H
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <unordered_map>
