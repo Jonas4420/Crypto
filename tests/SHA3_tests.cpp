@@ -179,7 +179,7 @@ TEST(SHA3_224, KAT)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_224::SIZE];
 				std::string md_str;
 
@@ -245,7 +245,7 @@ TEST(SHA3_224, update_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_224::SIZE];
 				std::string md_str;
 
@@ -287,7 +287,7 @@ TEST(SHA3_224, reset_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md_1[Crypto::SHA3_224::SIZE];
 				uint8_t md_2[Crypto::SHA3_224::SIZE];
 				std::string md_1_str, md_2_str;
@@ -335,7 +335,7 @@ TEST(SHA3_256, KAT)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_256::SIZE];
 				std::string md_str;
 
@@ -401,7 +401,7 @@ TEST(SHA3_256, update_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_256::SIZE];
 				std::string md_str;
 
@@ -443,7 +443,7 @@ TEST(SHA3_256, reset_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md_1[Crypto::SHA3_256::SIZE];
 				uint8_t md_2[Crypto::SHA3_256::SIZE];
 				std::string md_1_str, md_2_str;
@@ -491,7 +491,7 @@ TEST(SHA3_384, KAT)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_384::SIZE];
 				std::string md_str;
 
@@ -557,7 +557,7 @@ TEST(SHA3_384, update_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_384::SIZE];
 				std::string md_str;
 
@@ -599,7 +599,7 @@ TEST(SHA3_384, reset_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md_1[Crypto::SHA3_384::SIZE];
 				uint8_t md_2[Crypto::SHA3_384::SIZE];
 				std::string md_1_str, md_2_str;
@@ -647,7 +647,7 @@ TEST(SHA3_512, KAT)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_512::SIZE];
 				std::string md_str;
 
@@ -713,7 +713,7 @@ TEST(SHA3_512, update_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA3_512::SIZE];
 				std::string md_str;
 
@@ -755,7 +755,7 @@ TEST(SHA3_512, reset_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md_1[Crypto::SHA3_512::SIZE];
 				uint8_t md_2[Crypto::SHA3_512::SIZE];
 				std::string md_1_str, md_2_str;

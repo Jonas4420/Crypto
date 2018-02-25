@@ -26,7 +26,7 @@ TEST(SHA384, KAT)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA384::SIZE];
 				std::string md_str;
 
@@ -103,7 +103,7 @@ TEST(SHA384, update_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md[Crypto::SHA384::SIZE];
 				std::string md_str;
 
@@ -145,7 +145,7 @@ TEST(SHA384, reset_ctx)
 			for ( auto test : tests ) {
 				int res;
 				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
-				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 				uint8_t md_1[Crypto::SHA384::SIZE];
 				uint8_t md_2[Crypto::SHA384::SIZE];
 				std::string md_1_str, md_2_str;

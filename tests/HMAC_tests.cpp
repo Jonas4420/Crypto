@@ -29,8 +29,8 @@ TEST(HMAC, update_ctx)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA256::SIZE];
 			std::string mac_str;
 
@@ -69,8 +69,8 @@ TEST(HMAC, reset_ctx)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac_1[Crypto::SHA256::SIZE];
 			uint8_t mac_2[Crypto::SHA256::SIZE];
 			std::string mac_1_str, mac_2_str;
@@ -116,8 +116,8 @@ TEST(HMAC_SHA1, KAT)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA1::SIZE];
 			std::string mac_str;
 
@@ -150,8 +150,8 @@ TEST(HMAC_SHA224, KAT)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA224::SIZE];
 			std::string mac_str;
 
@@ -184,8 +184,8 @@ TEST(HMAC_SHA256, KAT)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA256::SIZE];
 			std::string mac_str;
 
@@ -218,8 +218,8 @@ TEST(HMAC_SHA384, KAT)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA384::SIZE];
 			std::string mac_str;
 
@@ -252,8 +252,8 @@ TEST(HMAC_SHA512, KAT)
 			int res;
 			std::size_t key_sz = atoi(test["Klen"].c_str());
 			std::size_t msg_sz = test["Msg"].length() / 2;
-			std::unique_ptr<uint8_t> key(new uint8_t[key_sz]);
-			std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+			std::unique_ptr<uint8_t[]> key(new uint8_t[key_sz]);
+			std::unique_ptr<uint8_t[]> msg(new uint8_t[msg_sz]);
 			uint8_t mac[Crypto::SHA512::SIZE];
 			std::string mac_str;
 

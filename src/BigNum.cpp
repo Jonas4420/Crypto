@@ -1226,7 +1226,7 @@ BigNum::gen_prime(std::size_t nbits, int (*f_rng)(void *, uint8_t*, std::size_t)
 	n = bits_to_limbs(nbits);
 
 	std::size_t seed_sz = n * ciL;
-	std::unique_ptr<uint8_t> seed(new uint8_t[seed_sz]);
+	std::unique_ptr<uint8_t[]> seed(new uint8_t[seed_sz]);
 
 	f_rng(p_rng, seed.get(), seed_sz);
 	X = BigNum(seed.get(), seed_sz);

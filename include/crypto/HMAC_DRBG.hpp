@@ -49,7 +49,7 @@ class HMAC_DRBG
 			seed_sz += (NULL != nonce   && 0 != nonce_sz)   ? nonce_sz   : 0;
 			seed_sz += (NULL != perso   && 0 != perso_sz)   ? perso_sz   : 0;
 
-			std::unique_ptr<uint8_t> seed(new uint8_t[seed_sz]);
+			std::unique_ptr<uint8_t[]> seed(new uint8_t[seed_sz]);
 			std::size_t seed_offset = 0;
 
 			if ( NULL != entropy && 0 != entropy_sz ) {
@@ -103,7 +103,7 @@ class HMAC_DRBG
 			seed_sz += entropy_sz;
 			seed_sz += (NULL != add && 0 != add_sz) ? add_sz : 0;
 
-			std::unique_ptr<uint8_t> seed(new uint8_t[seed_sz]);
+			std::unique_ptr<uint8_t[]> seed(new uint8_t[seed_sz]);
 
 			memcpy(seed.get(), entropy, entropy_sz);
 			if ( NULL != add && 0 != add_sz ) {
