@@ -1,13 +1,13 @@
 #include <vector>
 
+#include "TestOptions.hpp"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "crypto/PBKDF2.hpp"
 #include "crypto/SHA1.hpp"
 #include "crypto/Utils.hpp"
-
-extern bool isFast;
 
 TEST(PBKDF2, test_vectors)
 {
@@ -54,7 +54,9 @@ TEST(PBKDF2, test_vectors)
 		std::size_t iterations = atoi(test[2].c_str());
 		std::size_t key_sz     = atoi(test[3].c_str());
 
-		if ( isFast && iterations > 10000 ) { continue; }
+		if ( TestOptions::get().is_fast && iterations > 10000 ) {
+			continue;
+		}
 
 		Crypto::PBKDF2<Crypto::SHA1>::derive_key(password, password_sz,
 				salt, salt_sz, iterations, key, key_sz);

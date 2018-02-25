@@ -1,165 +1,177 @@
 #include <vector>
 
+#include "TestOptions.hpp"
+#include "TestVectors.hpp"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "crypto/Utils.hpp"
 #include "crypto/SHA224.hpp"
 
-TEST(SHA224, digest_test_vector)
+TEST(SHA224, KAT)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{
-			"",
-			"d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f"
-		}, {
-			"ff",
-			"e33f9d75e6ae1369dbabf81b96b4591ae46bba30b591a6b6c62542b5"
-		}, {
-			"984c",
-			"2fa9df9157d9e027cfbc4c6a9df32e1adc0cbe2328ec2a63c5ae934e"
-		}, {
-			"50efd0",
-			"b5a9820413c2bf8211fbbf5df1337043b32fa4eafaf61a0c8e9ccede"
-		}, {
-			"e5e09924",
-			"fd19e74690d291467ce59f077df311638f1c3a46e510d0e49a67062d"
-		}, {
-			"21ebecb914",
-			"78f4a71c21c694499ce1c7866611b14ace70d905012c356323c7c713"
-		}, {
-			"fc488947c1a7a589726b15436b4f3d9556262f98fc6422fc5cdf20f0fad7fe42"
-			"7a3491c86d101ffe6b7514f06268f65b2d269b0f69ad9a97847eff1c16a24387"
-			"75eb7be6847ccf11cb8b2e8dcd6640b095b49c0693fe3cf4a66e2d9b7ad68bff"
-			"14f3ad69abf49d0aba36cbe0535202deb6599a47225ef05beb351335cd7bc0f4"
-			"80d691198c7e71305ffd53b39d33242bb79cfd98bfd69e137b5d18b2b89ac9ac"
-			"e01c8dbdcf2533cce3682ecc52118de0c1062ec2126c2e657d6ea3d9e2398e70"
-			"5d4b0b1f1ceecb266dffc4f31bf42744fb1e938dc22a889919ee1e73f463f787"
-			"1fed720519e32186264b7ef2a0e5d9a18e6c95c0781894f77967f048951dec3b"
-			"4d892a38710b1e3436d3c29088eb8b3da1789c25db3d3bc6c26081206e7155d2"
-			"10a89b80ca6ea877c41ff9947c0f25625dcb118294a163501f6239c326661a95"
-			"8fd12da4cd15a899f8b88cc723589056eaec5aa04a4cf5dbb6f480f9660423cc"
-			"f38c486e210707e0fb25e1f126ceb2616f63e147a647dab0af9ebe89d65458bf"
-			"636154a46e4cab95f5ee62da2c7974cd14b90d3e4f99f81733e85b3c1d5da2b5"
-			"08d9b90f5eed7eff0d9c7649de62bee00375454fee4a39576a5bbfdae428e7f8"
-			"097bdf7797f167686cb68407e49079e4611ff3402b6384ba7b7e522bd2bb11ce"
-			"8fd02ea4c1604d163ac4f6dde50b8b1f593f7edaadeac0868ed97df690200680"
-			"c25f0f5d85431a529e4f339089dcdeda105e4ee51dead704cdf5a605c55fb055"
-			"c9b0e86b8ba1b564c0dea3eb790a595cb103cb292268b07c5e59371e1a7ef597"
-			"cd4b22977a820694c9f9aeb55d9de3ef62b75d6e656e3336698d960a3787bf8c"
-			"f5b926a7faeef52ae128bcb5dc9e66d94b016c7b8e034879171a2d91c381f57e"
-			"6a815b63b5ee6a6d2ff435b49f14c963966960194430d78f8f87627a67757fb3"
-			"532b289550894da6dce4817a4e07f4d56877a1102ffcc8befa5c9f8fca6a4574"
-			"d93ff70376c8861e0f8108cf907fce77ecb49728f86f034f80224b9695682e08"
-			"24462f76cdb1fd1af151337b0d85419047a7aa284791718a4860cd586f7824b9"
-			"5bc837b6fd4f9be5aade68456e20356aa4d943dac36bf8b67b9e8f9d01a00fcd"
-			"a74b798bafa746c661b010f75b59904b29d0c8041504811c4065f82cf2ead58d"
-			"2f595cbd8bc3e7043f4d94577b373b7cfe16a36fe564f505c03b70cfeb5e5f41"
-			"1c79481338aa67e86b3f5a2e77c21e454c333ae3da943ab723ab5f4c94039531"
-			"9534a5575f64acba0d0ecc43f60221ed3badf7289c9b3a7b903a2d6c94e15fa4"
-			"c310dc4fa7faa0c24f405160a1002dbef20e4105d481db982f7243f79400a6e4"
-			"cd9753c4b9732a47575f504b20c328fe9add7f432a4f075829da07b53b695037"
-			"dc51737d3cd731934df333cd1a53fcf65aa31baa450ca501a6fae26e322347e6"
-			"18c5a444d92e9fec5a8261ae38b98fee5be77c02cec09ddccd5b3de92036",
-			"1302149d1e197c41813b054c942329d420e366530f5517b470e964fe"
-		}
+	std::vector<std::string> files = {
+		"SHA224ShortMsg.rsp", "SHA224LongMsg.rsp"
 	};
 
-	for ( auto test : tests ) {
-		uint8_t in[2048];
-		std::size_t in_sz = sizeof(in);
-		uint8_t out[Crypto::SHA224::SIZE];
-		std::string output;
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
 
-		Crypto::Utils::from_hex(test[0], in, in_sz);
-		Crypto::MessageDigest_get<Crypto::SHA224>(in, in_sz, out);
-		Crypto::Utils::to_hex(out, sizeof(out), output, false);
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 28"];
+		EXPECT_FALSE(test_vectors.empty());
 
-		EXPECT_THAT(output, test[1]);
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md[Crypto::SHA224::SIZE];
+				std::string md_str;
+
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
+
+				Crypto::MessageDigest_get<Crypto::SHA224>(msg.get(), msg_sz, md);
+
+				res = Crypto::Utils::to_hex(md, sizeof(md), md_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_str, test["MD"]);
+			}
+		}
+	}
+}
+
+TEST(SHA224, MonteCarlo)
+{
+	int res;
+	uint8_t seed[Crypto::SHA224::SIZE];
+	uint8_t m[4][Crypto::SHA224::SIZE];
+	std::size_t md_sz = Crypto::SHA224::SIZE;
+	std::string md_str;
+
+	std::string file_path = TestOptions::get().vect_dir + "SHA/" + "SHA224Monte.rsp";
+
+	auto test_vectors = TestVectors::NISTParser(file_path)["L = 28"];
+	EXPECT_FALSE(test_vectors.empty());
+
+	for ( auto tests : test_vectors ) {
+		res = Crypto::Utils::from_hex(tests.test_cases[0]["Seed"], seed, md_sz);
+		EXPECT_EQ(res, 0);
+
+		tests.test_cases.erase(tests.test_cases.begin());
+
+		for ( auto test : tests ) {
+			memcpy(m[0], seed, md_sz);
+			memcpy(m[1], seed, md_sz);
+			memcpy(m[2], seed, md_sz);
+
+			for ( std::size_t i = 3 ; i < 1003 ; ++i ) {
+				Crypto::MessageDigest_get<Crypto::SHA224>(m[0], 3 * md_sz, m[3]);
+
+				memcpy(m[0], m[1], md_sz);
+				memcpy(m[1], m[2], md_sz);
+				memcpy(m[2], m[3], md_sz);
+			}
+
+			memcpy(seed, m[3], md_sz);
+
+			res = Crypto::Utils::to_hex(m[3], md_sz, md_str, false);
+			EXPECT_EQ(res, 0);
+			EXPECT_EQ(md_str, test["MD"]);
+		}
+	}
+}
+
+TEST(SHA224, update_ctx)
+{
+	std::vector<std::string> files = {
+		"SHA224ShortMsg.rsp", "SHA224LongMsg.rsp"
+	};
+
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
+
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 28"];
+		EXPECT_FALSE(test_vectors.empty());
+
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md[Crypto::SHA224::SIZE];
+				std::string md_str;
+
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
+
+				Crypto::SHA224 ctx;
+
+				for ( std::size_t i = 0 ; i < msg_sz ; ++i ) {
+					ctx.update(msg.get() + i, 1);
+				}
+
+				ctx.finish(md);
+
+				res = Crypto::Utils::to_hex(md, sizeof(md), md_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_str, test["MD"]);
+			}
+		}
 	}
 }
 
 TEST(SHA224, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{
-			"",
-			"d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f"
-		}, {
-			"ff",
-			"e33f9d75e6ae1369dbabf81b96b4591ae46bba30b591a6b6c62542b5"
-		}, {
-			"984c",
-			"2fa9df9157d9e027cfbc4c6a9df32e1adc0cbe2328ec2a63c5ae934e"
-		}, {
-			"50efd0",
-			"b5a9820413c2bf8211fbbf5df1337043b32fa4eafaf61a0c8e9ccede"
-		}, {
-			"e5e09924",
-			"fd19e74690d291467ce59f077df311638f1c3a46e510d0e49a67062d"
-		}, {
-			"21ebecb914",
-			"78f4a71c21c694499ce1c7866611b14ace70d905012c356323c7c713"
-		}, {
-			"fc488947c1a7a589726b15436b4f3d9556262f98fc6422fc5cdf20f0fad7fe42"
-			"7a3491c86d101ffe6b7514f06268f65b2d269b0f69ad9a97847eff1c16a24387"
-			"75eb7be6847ccf11cb8b2e8dcd6640b095b49c0693fe3cf4a66e2d9b7ad68bff"
-			"14f3ad69abf49d0aba36cbe0535202deb6599a47225ef05beb351335cd7bc0f4"
-			"80d691198c7e71305ffd53b39d33242bb79cfd98bfd69e137b5d18b2b89ac9ac"
-			"e01c8dbdcf2533cce3682ecc52118de0c1062ec2126c2e657d6ea3d9e2398e70"
-			"5d4b0b1f1ceecb266dffc4f31bf42744fb1e938dc22a889919ee1e73f463f787"
-			"1fed720519e32186264b7ef2a0e5d9a18e6c95c0781894f77967f048951dec3b"
-			"4d892a38710b1e3436d3c29088eb8b3da1789c25db3d3bc6c26081206e7155d2"
-			"10a89b80ca6ea877c41ff9947c0f25625dcb118294a163501f6239c326661a95"
-			"8fd12da4cd15a899f8b88cc723589056eaec5aa04a4cf5dbb6f480f9660423cc"
-			"f38c486e210707e0fb25e1f126ceb2616f63e147a647dab0af9ebe89d65458bf"
-			"636154a46e4cab95f5ee62da2c7974cd14b90d3e4f99f81733e85b3c1d5da2b5"
-			"08d9b90f5eed7eff0d9c7649de62bee00375454fee4a39576a5bbfdae428e7f8"
-			"097bdf7797f167686cb68407e49079e4611ff3402b6384ba7b7e522bd2bb11ce"
-			"8fd02ea4c1604d163ac4f6dde50b8b1f593f7edaadeac0868ed97df690200680"
-			"c25f0f5d85431a529e4f339089dcdeda105e4ee51dead704cdf5a605c55fb055"
-			"c9b0e86b8ba1b564c0dea3eb790a595cb103cb292268b07c5e59371e1a7ef597"
-			"cd4b22977a820694c9f9aeb55d9de3ef62b75d6e656e3336698d960a3787bf8c"
-			"f5b926a7faeef52ae128bcb5dc9e66d94b016c7b8e034879171a2d91c381f57e"
-			"6a815b63b5ee6a6d2ff435b49f14c963966960194430d78f8f87627a67757fb3"
-			"532b289550894da6dce4817a4e07f4d56877a1102ffcc8befa5c9f8fca6a4574"
-			"d93ff70376c8861e0f8108cf907fce77ecb49728f86f034f80224b9695682e08"
-			"24462f76cdb1fd1af151337b0d85419047a7aa284791718a4860cd586f7824b9"
-			"5bc837b6fd4f9be5aade68456e20356aa4d943dac36bf8b67b9e8f9d01a00fcd"
-			"a74b798bafa746c661b010f75b59904b29d0c8041504811c4065f82cf2ead58d"
-			"2f595cbd8bc3e7043f4d94577b373b7cfe16a36fe564f505c03b70cfeb5e5f41"
-			"1c79481338aa67e86b3f5a2e77c21e454c333ae3da943ab723ab5f4c94039531"
-			"9534a5575f64acba0d0ecc43f60221ed3badf7289c9b3a7b903a2d6c94e15fa4"
-			"c310dc4fa7faa0c24f405160a1002dbef20e4105d481db982f7243f79400a6e4"
-			"cd9753c4b9732a47575f504b20c328fe9add7f432a4f075829da07b53b695037"
-			"dc51737d3cd731934df333cd1a53fcf65aa31baa450ca501a6fae26e322347e6"
-			"18c5a444d92e9fec5a8261ae38b98fee5be77c02cec09ddccd5b3de92036",
-			"1302149d1e197c41813b054c942329d420e366530f5517b470e964fe"
-		}
+	std::vector<std::string> files = {
+		"SHA224ShortMsg.rsp", "SHA224LongMsg.rsp"
 	};
 
-	for ( auto test : tests ) {
-		uint8_t in[2048];
-		std::size_t in_sz = sizeof(in);
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
 
-		uint8_t out_1[Crypto::SHA224::SIZE];
-		uint8_t out_2[Crypto::SHA224::SIZE];
-		std::string output_1, output_2;
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 28"];
+		EXPECT_FALSE(test_vectors.empty());
 
-		Crypto::Utils::from_hex(test[0], in, in_sz);
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md_1[Crypto::SHA224::SIZE];
+				uint8_t md_2[Crypto::SHA224::SIZE];
+				std::string md_1_str, md_2_str;
 
-		Crypto::SHA224 ctx;
-		ctx.update(in, in_sz);
-		ctx.reset();
-		ctx.update(in, in_sz);
-		ctx.finish(out_1);
-		Crypto::Utils::to_hex(out_1, sizeof(out_1), output_1, false);
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-		ctx.update(in, in_sz);
-		ctx.finish(out_2);
-		Crypto::Utils::to_hex(out_2, sizeof(out_2), output_2, false);
+				Crypto::SHA224 ctx;
+				ctx.update(msg.get(), msg_sz);
+				ctx.reset();
+				ctx.update(msg.get(), msg_sz);
+				ctx.finish(md_1);
 
-		EXPECT_THAT(output_1, test[1]);
-		EXPECT_THAT(output_2, test[1]);
+				res = Crypto::Utils::to_hex(md_1, sizeof(md_1), md_1_str, false);
+				EXPECT_EQ(res, 0);
+
+				ctx.update(msg.get(), msg_sz);
+				ctx.finish(md_2);
+
+				res = Crypto::Utils::to_hex(md_2, sizeof(md_2), md_2_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_1_str, test["MD"]);
+				EXPECT_EQ(md_2_str, test["MD"]);
+			}
+		}
 	}
 }

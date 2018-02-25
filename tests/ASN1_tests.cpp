@@ -1308,7 +1308,7 @@ TEST(ASN1, write_oid)
 
 		res = Crypto::Utils::to_hex(data, write_sz, oid_str);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(oid_str, test[test.size() - 1]);
+		EXPECT_EQ(oid_str, test.back());
 	}
 }
 
@@ -1359,7 +1359,7 @@ TEST(ASN1, write_sequence)
 
 		res = Crypto::Utils::to_hex(data, write_sz, sequence_str);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(sequence_str, test[test.size() - 1]);
+		EXPECT_EQ(sequence_str, test.back());
 
 		for ( auto item : sequence ) {
 			delete[] item.first;
@@ -1399,7 +1399,7 @@ TEST(ASN1, write_set)
 
 		res = Crypto::Utils::to_hex(data, write_sz, set_str);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(set_str, test[test.size() - 1]);
+		EXPECT_EQ(set_str, test.back());
 
 		for ( auto item : set ) {
 			delete[] item.first;

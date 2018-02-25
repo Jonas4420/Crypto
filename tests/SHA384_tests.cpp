@@ -1,191 +1,178 @@
 #include <vector>
 
+#include "TestOptions.hpp"
+#include "TestVectors.hpp"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "crypto/Utils.hpp"
 #include "crypto/SHA384.hpp"
 
-TEST(SHA384, digest_test_vector)
+TEST(SHA384, KAT)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{
-			"",
-			"38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da"
-			"274edebfe76f65fbd51ad2f14898b95b"
-		}, {
-			"ab",
-			"fb94d5be118865f6fcbc978b825da82cff188faec2f66cb84b2537d74b493846"
-			"9854b0ca89e66fa2e182834736629f3d"
-		}, {
-			"7c27",
-			"3d80be467df86d63abb9ea1d3f9cb39cd19890e7f2c53a6200bedc5006842b35"
-			"e820dc4e0ca90ca9b97ab23ef07080fc"
-		}, {
-			"31f5ca",
-			"78d54b943421fdf7ba90a7fb9637c2073aa480454bd841d39ff72f4511fc21fb"
-			"67797b652c0c823229342873d3bef955"
-		}, {
-			"7bdee3f8",
-			"8bdafba0777ee446c3431c2d7b1fbb631089f71d2ca417abc1d230e1aba64ec2"
-			"f1c187474a6f4077d372c14ad407f99a"
-		}, {
-			"8f05604915",
-			"504e414bf1db1060f14c8c799e25b1e0c4dcf1504ebbd129998f0ae283e6de86"
-			"e0d3c7e879c73ec3b1836c3ee89c2649"
-		}, {
-			"665da6eda214",
-			"4c022f112010908848312f8b8f1072625fd5c105399d562ea1d56130619a7eac"
-			"8dfc3748fd05ee37e4b690be9daa9980"
-		}, {
-			"7f46ce506d593c4ed53c82edeb602037e0485befbee03f7f930fe532d18ff2a3"
-			"f5fd6076672c8145a1bf40dd94f7abab47c9ae71c234213d2ad1069c2dac0b0b"
-			"a15257ae672b8245960ae55bd50315c0097daa3a318745788d70d14706910809"
-			"ca6e396237fe4934fa46f9ce782d66606d8bd6b2d283b1160513ce9c24e9f084"
-			"b97891f99d4cdefc169a029e431ca772ba1bba426fce6f01d8e286014e5acc66"
-			"b799e4db62bd4783322f8a32ff78e0de3957df50ce10871f4e0680df4e8ca396"
-			"0af9bc6f4efa8eb3962d18f474eb178c3265cc46b8f2ff5ab1a7449fea297dfc"
-			"fabfa01f28abbb7289bb354b691b5664ec6d098af51be19947ec5ba7ebd66380"
-			"d1141953ba78d4aa5401679fa7b0a44db1981f864d3535c45afe4c61183d5b0a"
-			"d51fae71ca07e34240283959f7530a32c70d95a088e501c230059f333b067082"
-			"5009e7e22103ef22935830df1fac8ef877f5f3426dd54f7d1128dd871ad9a7d0"
-			"88f94c0e8712013295b8d69ae7623b880978c2d3c6ad26dc478f8dc47f5c0adc"
-			"c618665dc3dc205a9071b2f2191e16cac5bd89bb59148fc719633752303aa08e"
-			"518dbc389f0a5482caaa4c507b8729a6f3edd061efb39026cecc6399f51971cf"
-			"7381d605e144a5928c8c2d1ad7467b05da2f202f4f3234e1aff19a0198a28685"
-			"721c3d2d52311c721e3fdcbaf30214cdc3acff8c433880e104fb63f2df7ce69a"
-			"97857819ba7ac00ac8eae1969764fde8f68cf8e0916d7e0c151147d4944f99f4"
-			"2ae50f30e1c79a42d2b6c5188d133d3cbbf69094027b354b295ccd0f7dc5a87d"
-			"73638bd98ebfb00383ca0fa69cb8dcb35a12510e5e07ad8789047d0b63841a1b"
-			"b928737e8b0a0c33254f47aa8bfbe3341a09c2b76dbcefa67e30df300d34f7b8"
-			"465c4f869e51b6bcfe6cf68b238359a645036bf7f63f02924e087ce7457e483b"
-			"6025a859903cb484574aa3b12cf946f32127d537c33bee3141b5db96d10a148c"
-			"50ae045f287210757710d6846e04b202f79e87dd9a56bc6da15f84a77a7f6393"
-			"5e1dee00309cd276a8e7176cb04da6bb0e9009534438732cb42d008008853d38"
-			"d19beba46e61006e30f7efd1bc7c2906b024e4ff898a1b58c448d68b43c6ab63"
-			"f34f85b3ac6aa4475867e51b583844cb23829f4b30f4bdd817d88e2ef3e7b4fc"
-			"0a624395b05ec5e8686082b24d29fef2b0d3c29e031d5f94f504b1d3df9361eb"
-			"5ffbadb242e66c39a8094cfe62f85f639f3fd65fc8ae0c74a8f4c6e1d070b918"
-			"3a434c722caaa0225f8bcd68614d6f0738ed62f8484ec96077d155c08e26c46b"
-			"e262a73e3551698bd70d8d5610cf37c4c306eed04ba6a040a9c3e6d7e15e8acd"
-			"a17f477c2484cf5c56b813313927be8387b1024f995e98fc87f1029091c01424"
-			"bdc2b296c2eadb7d25b3e762a2fd0c2dcd1727ddf91db97c5984305265f3695a"
-			"7f5472f2d72c94d68c27914f14f82aa8dd5fe4e2348b0ca967a3f98626a09155"
-			"2f5d0ffa2bf10350d23c996256c01fdeffb2c2c612519869f877e4929c6e95ff"
-			"15040f1485e22ed14119880232fef3b57b3848f15b1766a5552879df8f06",
-			"cba9e3eb12a6f83db11e8a6ff40d1049854ee094416bc527fea931d8585428a8"
-			"ed6242ce81f6769b36e2123a5c23483e"
-		}
+	std::vector<std::string> files = {
+		"SHA384ShortMsg.rsp", "SHA384LongMsg.rsp"
 	};
 
-	for ( auto test : tests ) {
-		uint8_t in[2048];
-		std::size_t in_sz = sizeof(in);
-		uint8_t out[Crypto::SHA384::SIZE];
-		std::string output;
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
 
-		Crypto::Utils::from_hex(test[0], in, in_sz);
-		Crypto::MessageDigest_get<Crypto::SHA384>(in, in_sz, out);
-		Crypto::Utils::to_hex(out, sizeof(out), output, false);
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 48"];
+		EXPECT_FALSE(test_vectors.empty());
 
-		EXPECT_THAT(output, test[1]);
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md[Crypto::SHA384::SIZE];
+				std::string md_str;
+
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
+
+				Crypto::MessageDigest_get<Crypto::SHA384>(msg.get(), msg_sz, md);
+
+				res = Crypto::Utils::to_hex(md, sizeof(md), md_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_str, test["MD"]);
+			}
+		}
+	}
+}
+
+TEST(SHA384, MonteCarlo)
+{
+	int res;
+	uint8_t seed[Crypto::SHA384::SIZE];
+	uint8_t m[4][Crypto::SHA384::SIZE];
+	std::size_t md_sz = Crypto::SHA384::SIZE;
+	std::string md_str;
+
+	std::string file_path = TestOptions::get().vect_dir + "SHA/" + "SHA384Monte.rsp";
+
+	auto test_vectors = TestVectors::NISTParser(file_path)["L = 48"];
+	EXPECT_FALSE(test_vectors.empty());
+
+	for ( auto tests : test_vectors ) {
+		res = Crypto::Utils::from_hex(tests.test_cases[0]["Seed"], seed, md_sz);
+		EXPECT_EQ(res, 0);
+
+		tests.test_cases.erase(tests.test_cases.begin());
+
+		for ( auto test : tests ) {
+			memcpy(m[0], seed, md_sz);
+			memcpy(m[1], seed, md_sz);
+			memcpy(m[2], seed, md_sz);
+
+			for ( std::size_t i = 3 ; i < 1003 ; ++i ) {
+				Crypto::MessageDigest_get<Crypto::SHA384>(m[0], 3 * md_sz, m[3]);
+
+				memcpy(m[0], m[1], md_sz);
+				memcpy(m[1], m[2], md_sz);
+				memcpy(m[2], m[3], md_sz);
+			}
+
+			memcpy(seed, m[3], md_sz);
+
+			res = Crypto::Utils::to_hex(m[3], md_sz, md_str, false);
+			EXPECT_EQ(res, 0);
+			EXPECT_EQ(md_str, test["MD"]);
+		}
+	}
+}
+
+TEST(SHA384, update_ctx)
+{
+	std::vector<std::string> files = {
+		"SHA384ShortMsg.rsp", "SHA384LongMsg.rsp"
+	};
+
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
+
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 48"];
+		EXPECT_FALSE(test_vectors.empty());
+
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md[Crypto::SHA384::SIZE];
+				std::string md_str;
+
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
+
+				Crypto::SHA384 ctx;
+
+				for ( std::size_t i = 0 ; i < msg_sz ; ++i ) {
+					ctx.update(msg.get() + i, 1);
+				}
+
+				ctx.finish(md);
+
+				res = Crypto::Utils::to_hex(md, sizeof(md), md_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_str, test["MD"]);
+			}
+		}
 	}
 }
 
 TEST(SHA384, reset_ctx)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{
-			"",
-			"38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da"
-			"274edebfe76f65fbd51ad2f14898b95b"
-		}, {
-			"ab",
-			"fb94d5be118865f6fcbc978b825da82cff188faec2f66cb84b2537d74b493846"
-			"9854b0ca89e66fa2e182834736629f3d"
-		}, {
-			"7c27",
-			"3d80be467df86d63abb9ea1d3f9cb39cd19890e7f2c53a6200bedc5006842b35"
-			"e820dc4e0ca90ca9b97ab23ef07080fc"
-		}, {
-			"31f5ca",
-			"78d54b943421fdf7ba90a7fb9637c2073aa480454bd841d39ff72f4511fc21fb"
-			"67797b652c0c823229342873d3bef955"
-		}, {
-			"7bdee3f8",
-			"8bdafba0777ee446c3431c2d7b1fbb631089f71d2ca417abc1d230e1aba64ec2"
-			"f1c187474a6f4077d372c14ad407f99a"
-		}, {
-			"8f05604915",
-			"504e414bf1db1060f14c8c799e25b1e0c4dcf1504ebbd129998f0ae283e6de86"
-			"e0d3c7e879c73ec3b1836c3ee89c2649"
-		}, {
-			"665da6eda214",
-			"4c022f112010908848312f8b8f1072625fd5c105399d562ea1d56130619a7eac"
-			"8dfc3748fd05ee37e4b690be9daa9980"
-		}, {
-			"7f46ce506d593c4ed53c82edeb602037e0485befbee03f7f930fe532d18ff2a3"
-			"f5fd6076672c8145a1bf40dd94f7abab47c9ae71c234213d2ad1069c2dac0b0b"
-			"a15257ae672b8245960ae55bd50315c0097daa3a318745788d70d14706910809"
-			"ca6e396237fe4934fa46f9ce782d66606d8bd6b2d283b1160513ce9c24e9f084"
-			"b97891f99d4cdefc169a029e431ca772ba1bba426fce6f01d8e286014e5acc66"
-			"b799e4db62bd4783322f8a32ff78e0de3957df50ce10871f4e0680df4e8ca396"
-			"0af9bc6f4efa8eb3962d18f474eb178c3265cc46b8f2ff5ab1a7449fea297dfc"
-			"fabfa01f28abbb7289bb354b691b5664ec6d098af51be19947ec5ba7ebd66380"
-			"d1141953ba78d4aa5401679fa7b0a44db1981f864d3535c45afe4c61183d5b0a"
-			"d51fae71ca07e34240283959f7530a32c70d95a088e501c230059f333b067082"
-			"5009e7e22103ef22935830df1fac8ef877f5f3426dd54f7d1128dd871ad9a7d0"
-			"88f94c0e8712013295b8d69ae7623b880978c2d3c6ad26dc478f8dc47f5c0adc"
-			"c618665dc3dc205a9071b2f2191e16cac5bd89bb59148fc719633752303aa08e"
-			"518dbc389f0a5482caaa4c507b8729a6f3edd061efb39026cecc6399f51971cf"
-			"7381d605e144a5928c8c2d1ad7467b05da2f202f4f3234e1aff19a0198a28685"
-			"721c3d2d52311c721e3fdcbaf30214cdc3acff8c433880e104fb63f2df7ce69a"
-			"97857819ba7ac00ac8eae1969764fde8f68cf8e0916d7e0c151147d4944f99f4"
-			"2ae50f30e1c79a42d2b6c5188d133d3cbbf69094027b354b295ccd0f7dc5a87d"
-			"73638bd98ebfb00383ca0fa69cb8dcb35a12510e5e07ad8789047d0b63841a1b"
-			"b928737e8b0a0c33254f47aa8bfbe3341a09c2b76dbcefa67e30df300d34f7b8"
-			"465c4f869e51b6bcfe6cf68b238359a645036bf7f63f02924e087ce7457e483b"
-			"6025a859903cb484574aa3b12cf946f32127d537c33bee3141b5db96d10a148c"
-			"50ae045f287210757710d6846e04b202f79e87dd9a56bc6da15f84a77a7f6393"
-			"5e1dee00309cd276a8e7176cb04da6bb0e9009534438732cb42d008008853d38"
-			"d19beba46e61006e30f7efd1bc7c2906b024e4ff898a1b58c448d68b43c6ab63"
-			"f34f85b3ac6aa4475867e51b583844cb23829f4b30f4bdd817d88e2ef3e7b4fc"
-			"0a624395b05ec5e8686082b24d29fef2b0d3c29e031d5f94f504b1d3df9361eb"
-			"5ffbadb242e66c39a8094cfe62f85f639f3fd65fc8ae0c74a8f4c6e1d070b918"
-			"3a434c722caaa0225f8bcd68614d6f0738ed62f8484ec96077d155c08e26c46b"
-			"e262a73e3551698bd70d8d5610cf37c4c306eed04ba6a040a9c3e6d7e15e8acd"
-			"a17f477c2484cf5c56b813313927be8387b1024f995e98fc87f1029091c01424"
-			"bdc2b296c2eadb7d25b3e762a2fd0c2dcd1727ddf91db97c5984305265f3695a"
-			"7f5472f2d72c94d68c27914f14f82aa8dd5fe4e2348b0ca967a3f98626a09155"
-			"2f5d0ffa2bf10350d23c996256c01fdeffb2c2c612519869f877e4929c6e95ff"
-			"15040f1485e22ed14119880232fef3b57b3848f15b1766a5552879df8f06",
-			"cba9e3eb12a6f83db11e8a6ff40d1049854ee094416bc527fea931d8585428a8"
-			"ed6242ce81f6769b36e2123a5c23483e"
-		}
+	std::vector<std::string> files = {
+		"SHA384ShortMsg.rsp", "SHA384LongMsg.rsp"
 	};
 
-	for ( auto test : tests ) {
-		uint8_t in[2048];
-		std::size_t in_sz = sizeof(in);
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "SHA/" + file;
 
-		uint8_t out_1[Crypto::SHA384::SIZE];
-		uint8_t out_2[Crypto::SHA384::SIZE];
-		std::string output_1, output_2;
+		auto test_vectors = TestVectors::NISTParser(file_path)["L = 48"];
+		EXPECT_FALSE(test_vectors.empty());
 
-		Crypto::Utils::from_hex(test[0], in, in_sz);
+		for ( auto tests : test_vectors ) {
+			for ( auto test : tests ) {
+				int res;
+				std::size_t msg_sz = atoi(test["Len"].c_str()) / 8;
+				std::unique_ptr<uint8_t> msg(new uint8_t[msg_sz]);
+				uint8_t md_1[Crypto::SHA384::SIZE];
+				uint8_t md_2[Crypto::SHA384::SIZE];
+				std::string md_1_str, md_2_str;
 
-		Crypto::SHA384 ctx;
-		ctx.update(in, in_sz);
-		ctx.reset();
-		ctx.update(in, in_sz);
-		ctx.finish(out_1);
-		Crypto::Utils::to_hex(out_1, sizeof(out_1), output_1, false);
+				if ( msg_sz > 0 ) {
+					res = Crypto::Utils::from_hex(test["Msg"], msg.get(), msg_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-		ctx.update(in, in_sz);
-		ctx.finish(out_2);
-		Crypto::Utils::to_hex(out_2, sizeof(out_2), output_2, false);
+				Crypto::SHA384 ctx;
+				ctx.update(msg.get(), msg_sz);
+				ctx.reset();
+				ctx.update(msg.get(), msg_sz);
+				ctx.finish(md_1);
 
-		EXPECT_THAT(output_1, test[1]);
-		EXPECT_THAT(output_2, test[1]);
+				res = Crypto::Utils::to_hex(md_1, sizeof(md_1), md_1_str, false);
+				EXPECT_EQ(res, 0);
+
+				ctx.update(msg.get(), msg_sz);
+				ctx.finish(md_2);
+
+				res = Crypto::Utils::to_hex(md_2, sizeof(md_2), md_2_str, false);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(md_1_str, test["MD"]);
+				EXPECT_EQ(md_2_str, test["MD"]);
+			}
+		}
 	}
 }
+

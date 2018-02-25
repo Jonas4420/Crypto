@@ -1225,10 +1225,10 @@ BigNum::gen_prime(std::size_t nbits, int (*f_rng)(void *, uint8_t*, std::size_t)
 	n = bits_to_limbs(nbits);
 
 	std::size_t seed_sz = n * ciL;
-	std::vector<uint8_t> seed(seed_sz);
+	std::unique_ptr<uint8_t> seed(new uint8_t[seed_sz]);
 
-	f_rng(p_rng, seed.data(), seed_sz);
-	X = BigNum(seed.data(), seed_sz);
+	f_rng(p_rng, seed.get(), seed_sz);
+	X = BigNum(seed.get(), seed_sz);
 
 	k = X.bitlen();
 	if ( k > nbits ) {
@@ -1279,6 +1279,8 @@ BigNum::gen_prime(std::size_t nbits, int (*f_rng)(void *, uint8_t*, std::size_t)
 			Y +=  6;
 		}
 	}
+
+	zeroize(seed.get(), seed_sz);
 
 	return X;
 }

@@ -300,8 +300,8 @@ TEST(OID, to_binary)
 		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(data, data_sz, binary_str);
-		EXPECT_EQ(binary_str, test[test.size() - 1]);
-		EXPECT_EQ(data_sz, test[test.size() - 1].length() / 2);
+		EXPECT_EQ(binary_str, test.back());
+		EXPECT_EQ(data_sz, test.back().length() / 2);
 	}
 }
 
@@ -336,7 +336,7 @@ TEST(OID, to_binary_length)
 			oid += atoi(test[i].c_str());
 		}
 
-		std::size_t expected_sz = atoi(test[test.size() - 1].c_str());
+		std::size_t expected_sz = atoi(test.back().c_str());
 
 		data_sz = 0;
 		res = oid.to_binary(data, data_sz);
@@ -431,9 +431,7 @@ TEST(OID, to_string)
 			oid += atoi(test[i].c_str());
 		}
 
-		std::string expected(test[test.size() - 1]);
-
-		EXPECT_EQ(oid.to_string(), expected);
+		EXPECT_EQ(oid.to_string(), test.back());
 	}
 }
 

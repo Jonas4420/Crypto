@@ -1,8 +1,18 @@
-CodeCoverage
-	tests/main.cpp (set CRYPTO_TEST_IS_FAST if Coverage?)
 Tests
-	NIST & NESSIE MCT and KAT
-	Fix isFast option for PBKDF2
+	CBC_tests.cpp
+	CFB_tests.cpp
+	CTR_tests.cpp
+	ECB_tests.cpp
+	OFB_tests.cpp
+	HMAC_DRBG_tests.cpp
+	PBKDF2_tests.cpp
+	MD5_tests.cpp
+	RIPEMD160_tests.cpp
+	DES_tests.cpp
+	TripleDES_tests.cpp
+	Serpent_tests.cpp
+	Twofish_tests.cpp
+	Check that all tests vectors files are used
 Sym
 	GCM mode
 	CS1, CS2, CS3

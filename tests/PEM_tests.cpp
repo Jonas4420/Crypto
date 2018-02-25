@@ -783,7 +783,6 @@ TEST(PEM, write_pem_abnormal)
 			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
 			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
 
-		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
@@ -792,7 +791,7 @@ TEST(PEM, write_pem_abnormal)
 		Crypto::Utils::from_hex(test, data, data_sz);
 
 		try {
-			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+			Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
 					"AES-128-CTR", "AES-128-CTR", "DB1FECFA42F5746785A82673E649BA2C");
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			exception = pe.what();
@@ -814,7 +813,6 @@ TEST(PEM, write_pem_abnormal)
 			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
 			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
 
-		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
@@ -823,7 +821,7 @@ TEST(PEM, write_pem_abnormal)
 		Crypto::Utils::from_hex(test, data, data_sz);
 
 		try {
-			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+			Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
 					"DES-CBC", "DES-CBC", "DB1FECFA42F574");
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			exception = pe.what();
@@ -845,7 +843,6 @@ TEST(PEM, write_pem_abnormal)
 			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
 			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
 
-		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
@@ -854,7 +851,7 @@ TEST(PEM, write_pem_abnormal)
 		Crypto::Utils::from_hex(test, data, data_sz);
 
 		try {
-			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+			Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
 					"DES-EDE3-CBC", "DES-EDE3-CBC", "DB1FECFA42F574");
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			exception = pe.what();
@@ -876,7 +873,6 @@ TEST(PEM, write_pem_abnormal)
 			"919bb8fcaa66157c7ba2edc52090eeb10d9b48bf9ae7e99cc4abace01d022100"
 			"f0a33ddf97a09b2c9d7a90684ed9c5148756b387d6e5e8e204e22b563b807540";
 
-		int ret;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
@@ -885,7 +881,7 @@ TEST(PEM, write_pem_abnormal)
 		Crypto::Utils::from_hex(test, data, data_sz);
 
 		try {
-			ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+			Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
 					"AES-128-CBC", "AES-128-CBC", "DB1FECFA42F57467");
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			exception = pe.what();
