@@ -288,7 +288,7 @@ ASN1::read_data(const uint8_t *data, std::size_t data_sz,
 
 	memcpy(value, data, len);
 	value_sz = len;
-	read_sz += len; 
+	read_sz += len;
 
 	return CRYPTO_ASN1_SUCCESS;
 }
@@ -583,13 +583,13 @@ ASN1::read_len(const uint8_t *data, std::size_t data_sz,
 	// If multi-byte length, it cannot have 0 bytes
 	if ( 0 == len_sz ) {
 		return CRYPTO_ASN1_LENGTH_ERROR;
-	}	
+	}
 
 	// Length encoded on more than 4 bytes is not supported
 	if ( len_sz > 4 ) {
 		return CRYPTO_ASN1_LENGTH_ERROR;
 	}
-	
+
 	// Check if enough data
 	if ( data_sz < len_sz ) {
 		return CRYPTO_ASN1_OUT_OF_DATA;

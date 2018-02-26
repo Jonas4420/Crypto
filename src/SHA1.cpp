@@ -47,7 +47,7 @@ SHA1::~SHA1(void)
 	zeroize(buffer, sizeof(buffer));
 }
 
-void 
+void
 SHA1::update(const uint8_t *input, std::size_t input_sz)
 {
 	std::size_t fill;
@@ -89,7 +89,7 @@ SHA1::update(const uint8_t *input, std::size_t input_sz)
 	}
 }
 
-void 
+void
 SHA1::finish(uint8_t *output)
 {
 	uint32_t last, padn;

@@ -19,3 +19,4 @@ target_link_libraries ( test_crypto crypto )
 target_link_libraries ( test_crypto gtest gmock )
 
 add_test ( NAME "Crypto" COMMAND "test_crypto" )
+set_property ( TEST "Crypto" PROPERTY ENVIRONMENT "CRYPTO_TEST_VECT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/test_vectors/" )

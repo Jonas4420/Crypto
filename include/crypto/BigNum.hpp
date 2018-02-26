@@ -67,7 +67,7 @@ class BigNum
 		BigNum operator+(void) const;
 		BigNum operator-(void) const;
 		BigNum abs(void) const;
-	
+
 		/* Bit operations */
 		BigNum operator<<(std::size_t)  const;
 		BigNum& operator<<=(std::size_t);

@@ -10,9 +10,11 @@ namespace Crypto
 class MessageDigest
 {
 	public:
+		virtual ~MessageDigest(void) = default;
+
 		virtual void update(const uint8_t*, std::size_t) = 0;
-		virtual void finish(uint8_t*) = 0;
-		virtual void reset(void) = 0;
+		virtual void finish(uint8_t*)                    = 0;
+		virtual void reset(void)                         = 0;
 	protected:
 		void zeroize(void *v, std::size_t n)
 		{

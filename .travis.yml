@@ -77,7 +77,6 @@ before_script:
 
 script:
         - make -j 2
-        - export CRYPTO_TEST_VECT_DIR="${TRAVIS_BUILD_DIR}/tests/test_vectors/"
         - ctest -V -j 2
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then

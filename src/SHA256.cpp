@@ -58,7 +58,7 @@ SHA256::~SHA256(void)
 	zeroize(buffer, sizeof(buffer));
 }
 
-void 
+void
 SHA256::update(const uint8_t *input, std::size_t input_sz)
 {
 	std::size_t fill;
@@ -100,7 +100,7 @@ SHA256::update(const uint8_t *input, std::size_t input_sz)
 	}
 }
 
-void 
+void
 SHA256::finish(uint8_t *output)
 {
 	uint32_t last, padn;

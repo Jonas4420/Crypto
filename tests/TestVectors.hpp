@@ -36,7 +36,7 @@ class TestCase : public std::vector<TestPair>
 			if ( std::string::npos != (pos = key.find(":")) ) {
 				idx = atoi(key.substr(pos + 1).c_str());
 				key = key.substr(0, pos);
-			}	
+			}
 
 			for ( auto pair : *this ) {
 				if ( pair.key == key ) {
@@ -55,6 +55,28 @@ class TestCase : public std::vector<TestPair>
 class TestVector
 {
 	public:
+		std::string operator [](std::string key)
+		{
+			std::size_t pos, idx = 0;
+
+			if ( std::string::npos != (pos = key.find(":")) ) {
+				idx = atoi(key.substr(pos + 1).c_str());
+				key = key.substr(0, pos);
+			}
+
+			for ( auto pair : options ) {
+				if ( pair.key == key ) {
+					if ( idx == 0 ) {
+						return pair.value;
+					} else {
+						--idx;
+					}
+				}
+			}
+
+			return "";
+		}
+
 		std::vector<TestCase>::iterator begin() { return test_cases.begin(); }
 		std::vector<TestCase>::iterator end()   { return test_cases.end(); }
 

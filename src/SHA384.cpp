@@ -16,7 +16,7 @@ SHA384::SHA384(void)
 	reset();
 }
 
-void 
+void
 SHA384::finish(uint8_t *output)
 {
 	uint8_t tmp[64];

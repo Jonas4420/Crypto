@@ -12,6 +12,8 @@ namespace Crypto
 class CipherMode
 {
 	public:
+		virtual ~CipherMode(void) = default;
+
 		virtual int update(const uint8_t*, std::size_t, uint8_t*, std::size_t&) = 0;
 		virtual int finish(std::size_t&)                                        = 0;
 

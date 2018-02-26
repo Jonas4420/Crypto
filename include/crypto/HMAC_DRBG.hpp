@@ -1,16 +1,16 @@
 #ifndef CRYPTO_HMAC_DRBG_H
 #define CRYPTO_HMAC_DRBG_H
 
+#include "crypto/DRBG.hpp"
 #include "crypto/HMAC.hpp"
 
 #include <memory>
-#include <mutex>
 
 namespace Crypto
 {
 
 template <class MD>
-class HMAC_DRBG
+class HMAC_DRBG : public DRBG
 {
 	public:
 		HMAC_DRBG(const uint8_t *entropy, std::size_t entropy_sz,
@@ -71,7 +71,7 @@ class HMAC_DRBG
 			// Zeroize seed
 			zeroize(seed.get(), seed_sz);
 		}
-		
+
 		~HMAC_DRBG(void)
 		{
 			zeroize(V, sizeof(V));
@@ -96,7 +96,7 @@ class HMAC_DRBG
 
 			// Lock resources
 			if ( thread_safe && ! mutex.try_lock() ) {
-				return CRYPTO_HMAC_DRBG_LOCK_FAILED;
+				return CRYPTO_DRBG_LOCK_FAILED;
 			}
 
 			std::size_t seed_sz = 0;
@@ -119,7 +119,7 @@ class HMAC_DRBG
 			// Unlock resources
 			if ( thread_safe ) { mutex.unlock(); }
 
-			return CRYPTO_HMAC_DRBG_SUCCESS;
+			return CRYPTO_DRBG_SUCCESS;
 		}
 
 		int generate(uint8_t *output, std::size_t output_sz,
@@ -134,14 +134,14 @@ class HMAC_DRBG
 
 			// Lock resources
 			if ( thread_safe && ! mutex.try_lock() ) {
-				return CRYPTO_HMAC_DRBG_LOCK_FAILED;
+				return CRYPTO_DRBG_LOCK_FAILED;
 			}
 
 			if ( reseed_counter >= reseed_interval ) {
 				// Unlock resources
 				if ( thread_safe ) { mutex.unlock(); }
 
-				return CRYPTO_HMAC_DRBG_RESEED_REQUIRED;
+				return CRYPTO_DRBG_RESEED_REQUIRED;
 			}
 
 			if ( NULL != additional_input && 0 != additional_input_sz ) {
@@ -166,18 +166,9 @@ class HMAC_DRBG
 			// Unlock resources
 			if ( thread_safe ) { mutex.unlock(); }
 
-			return CRYPTO_HMAC_DRBG_SUCCESS;
+			return CRYPTO_DRBG_SUCCESS;
 		}
 
-		class Exception : public std::runtime_error
-		{
-			public:
-				Exception(const char *what_arg) : std::runtime_error(what_arg) {}
-		};
-
-		static const int CRYPTO_HMAC_DRBG_SUCCESS         = 0x00;
-		static const int CRYPTO_HMAC_DRBG_RESEED_REQUIRED = 0x01;
-		static const int CRYPTO_HMAC_DRBG_LOCK_FAILED     = 0x02;
 	protected:
 		std::size_t security_strength;
 		uint8_t     V[MD::SIZE];
@@ -201,15 +192,6 @@ class HMAC_DRBG
 				HMAC<MD> ctx_2(K, sizeof(K));
 				ctx_2.update(V,   sizeof(V));
 				ctx_2.finish(V);
-			}
-		}
-
-		void zeroize(void *v, std::size_t n)
-		{
-			volatile uint8_t *p = static_cast<uint8_t*>(v);
-
-			while ( n-- ) {
-				*p++ = 0x00;
 			}
 		}
 

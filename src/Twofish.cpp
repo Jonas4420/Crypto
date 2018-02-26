@@ -180,7 +180,7 @@ void
 Twofish::h0(uint8_t x, const uint32_t *L, std::size_t k, uint8_t y[4]) const
 {
 	memset(y, x, 4);
-	
+
 	if ( k >= 4 ) { Q(y, 1, 0, 0, 1, L[6]); }
 	if ( k >= 3 ) { Q(y, 1, 1, 0, 0, L[4]); }
 	                Q(y, 0, 1, 0, 1, L[2]);
@@ -214,7 +214,7 @@ Twofish::ROR(uint32_t x, std::size_t n)
 	return (x >> n) | (x << (32 - n));
 }
 
-uint32_t 
+uint32_t
 Twofish::RS_Mod(uint32_t c)
 {
 	static const uint32_t mod = 0x14d;

@@ -10,7 +10,7 @@ SHA224::SHA224(void)
 	reset();
 }
 
-void 
+void
 SHA224::finish(uint8_t *output)
 {
 	uint8_t tmp[32];
