@@ -11,7 +11,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Description 
 Initial goal of this project was to provide Cryptographic primitives for a Bitcoin library.\
-As the development advanced, it also implemented other algorithms than those needed for Bitcoins, then split from the initial project.
+As the development advanced, it also implemented other algorithms (basically trying to have Suite-B's algorithms), so a split occured from the initial project.
 
 Second objective of the project is to experiment development tools, on a medium sized project (Git, Travis-CI, AddressSanitizer, ...).
 

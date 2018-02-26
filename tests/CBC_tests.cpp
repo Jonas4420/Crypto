@@ -9,7 +9,6 @@
 
 #include "crypto/AES.hpp"
 #include "crypto/CBC.hpp"
-#include "crypto/Padding.hpp"
 #include "crypto/Utils.hpp"
 
 TEST(CBC, KAT_encrypt)

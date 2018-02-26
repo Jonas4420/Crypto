@@ -122,7 +122,7 @@ TEST(CTR, decrypt_test_vector)
 	}
 }
 
-TEST(CTR, update_size)
+TEST(CTR, update_sz)
 {
 	int ret;
 
@@ -163,7 +163,7 @@ TEST(CTR, update_size)
 	}
 }
 
-TEST(CTR, finish_size)
+TEST(CTR, finish_sz)
 {
 	int ret;
 

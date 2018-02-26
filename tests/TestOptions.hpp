@@ -21,12 +21,9 @@ class TestOptions
 			const char *env_fast     = std::getenv("CRYPTO_TEST_IS_FAST");
 			const char *env_vect_dir = std::getenv("CRYPTO_TEST_VECT_DIR");
 
-			is_fast  = env_fast     ? atoi(env_fast) : false;
-			vect_dir = env_vect_dir ? env_vect_dir   : ".";
-
-			if ( ! vect_dir.empty() && vect_dir.back() != '/' ) {
-				vect_dir += "/"; 
-			}
+			is_fast   = env_fast     ? atoi(env_fast) : false;
+			vect_dir  = env_vect_dir ? env_vect_dir   : ".";
+			vect_dir += "/";
 		}
 
 		~TestOptions(void) { }

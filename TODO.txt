@@ -1,16 +1,12 @@
 Tests
-	CFB_tests.cpp
-	CTR_tests.cpp
-	OFB_tests.cpp
-	TripleDES_tests.cpp
+	TripleDES_tests.cpp (16 and 24 bits keys)
+
 	PBKDF2_tests.cpp
 	MD5_tests.cpp
 	RIPEMD160_tests.cpp
 	DES_tests.cpp
 	Serpent_tests.cpp
 	Twofish_tests.cpp
-
-	Check that all tests vectors files are used
 Sym
 	GCM mode
 	CS1, CS2, CS3
