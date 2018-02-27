@@ -138,7 +138,13 @@ TEST(Twofish, MonteCarlo_ECB_enc)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::ECB<Crypto::Twofish> ctx(key, key_sz, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
@@ -207,7 +213,13 @@ TEST(Twofish, MonteCarlo_CBC_enc)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::CBC<Crypto::Twofish> ctx(key, key_sz, iv, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
@@ -331,7 +343,13 @@ TEST(Twofish, MonteCarlo_ECB_dec)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::ECB<Crypto::Twofish> ctx(key, key_sz, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
@@ -398,7 +416,13 @@ TEST(Twofish, MonteCarlo_CBC_dec)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::CBC<Crypto::Twofish> ctx(key, key_sz, iv, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {

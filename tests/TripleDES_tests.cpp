@@ -175,22 +175,13 @@ TEST(TripleDES, MMT_enc)
 				std::size_t total_sz, current_sz, pad_sz = 0;
 				std::string cipher_str;
 
-				if ( test["KEY1"] == test["KEY3"] ) {
-					res = 0;
-					res += Crypto::Utils::from_hex(test["KEY1"], key,     key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY2"], key + 8, key_sz = 8);
-					EXPECT_EQ(res, 0);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz);
+				res += Crypto::Utils::from_hex(test["KEY2"], key + 8,  key_sz);
+				res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz);
+				EXPECT_EQ(res, 0);
 
-					key_sz = 16;
-				} else {
-					res = 0;
-					res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY2"], key +  8, key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz = 8);
-					EXPECT_EQ(res, 0);
-
-					key_sz = 24;
-				}
+				key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
 				res = Crypto::Utils::from_hex(test["PLAINTEXT"], plain.get(), plain_sz);
 				EXPECT_EQ(res, 0);
@@ -256,7 +247,13 @@ TEST(TripleDES, MonteCarlo_enc)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["PLAINTEXT"], plain, plain_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
@@ -312,22 +309,13 @@ TEST(TripleDES, MMT_dec)
 				std::size_t total_sz, current_sz, pad_sz = 0;
 				std::string plain_str;
 
-				if ( test["KEY1"] == test["KEY3"] ) {
-					res = 0;
-					res += Crypto::Utils::from_hex(test["KEY1"], key,     key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY2"], key + 8, key_sz = 8);
-					EXPECT_EQ(res, 0);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz);
+				res += Crypto::Utils::from_hex(test["KEY2"], key + 8,  key_sz);
+				res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz);
+				EXPECT_EQ(res, 0);
 
-					key_sz = 16;
-				} else {
-					res = 0;
-					res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY2"], key +  8, key_sz = 8);
-					res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz = 8);
-					EXPECT_EQ(res, 0);
-
-					key_sz = 24;
-				}
+				key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
 				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], cipher.get(), cipher_sz);
 				EXPECT_EQ(res, 0);
@@ -393,7 +381,13 @@ TEST(TripleDES, MonteCarlo_dec)
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["CIPHERTEXT"], cipher, cipher_sz);
 			EXPECT_EQ(res, 0);
 
+			int iterations = 0;
 			for ( auto test : tests ) {
+				if ( TestOptions::get().is_fast && iterations > 100 ) {
+					continue;
+				}
+				++iterations;
+
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
