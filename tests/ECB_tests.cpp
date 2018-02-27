@@ -12,7 +12,7 @@
 #include "crypto/Padding.hpp"
 #include "crypto/Utils.hpp"
 
-TEST(ECB, KAT_encrypt)
+TEST(ECB, KAT_enc)
 {
 	std::vector<std::string> files = {
 		"ECBGFSbox128.rsp",  "ECBGFSbox192.rsp",  "ECBGFSbox256.rsp",
@@ -63,7 +63,7 @@ TEST(ECB, KAT_encrypt)
 	}
 }
 
-TEST(ECB, MMT_encrypt)
+TEST(ECB, MMT_enc)
 {
 	std::vector<std::string> files = {
 		"ECBMMT128.rsp",  "ECBMMT192.rsp",  "ECBMMT256.rsp",
@@ -120,7 +120,7 @@ TEST(ECB, MMT_encrypt)
 	}
 }
 
-TEST(ECB, MCT_encrypt)
+TEST(ECB, MonteCarlo_enc)
 {
 	std::vector<std::string> files = {
 		"ECBMCT128.rsp",  "ECBMCT192.rsp",  "ECBMCT256.rsp",
@@ -136,11 +136,10 @@ TEST(ECB, MCT_encrypt)
 			int res;
 			uint8_t key[32];
 			uint8_t plain[Crypto::AES::BLOCK_SIZE];
-			uint8_t cipher[Crypto::AES::BLOCK_SIZE];
-			uint8_t last_cipher[Crypto::AES::BLOCK_SIZE];
+			uint8_t cipher[2][Crypto::AES::BLOCK_SIZE];
 			std::size_t key_sz    = sizeof(key);
 			std::size_t plain_sz  = sizeof(plain);
-			std::size_t cipher_sz = sizeof(cipher);
+			std::size_t cipher_sz = sizeof(cipher[0]);
 			std::size_t pad_sz = 0;
 			std::string cipher_str;
 
@@ -154,44 +153,32 @@ TEST(ECB, MCT_encrypt)
 				Crypto::ECB<Crypto::AES> ctx(key, key_sz, true);
 
 				for ( std::size_t i = 0 ; i < 1000 ; ++i ) {
-					memcpy(last_cipher, cipher, cipher_sz);
+					memcpy(cipher[0], cipher[1], cipher_sz);
 
-					res = ctx.update(plain, plain_sz, cipher, cipher_sz);
+					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(plain, cipher, plain_sz);
+					memcpy(plain, cipher[1], plain_sz);
 				}
 
-				res = Crypto::Utils::to_hex(cipher, cipher_sz, cipher_str, false);
+				res = Crypto::Utils::to_hex(cipher[1], cipher_sz, cipher_str, false);
 				EXPECT_EQ(res, 0);
 
 				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
 
-				if ( 16 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= cipher[i];
-					}
-				} else if ( 24 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 8 ; ++i ) {
-						key[i] ^= last_cipher[8 + i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[8 + i] ^= cipher[i];
-					}
-				} else {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= last_cipher[i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[16 + i] ^= cipher[i];
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= cipher[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= cipher[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(plain, cipher, plain_sz);
+				memcpy(plain, cipher[1], plain_sz);
 			}
 		}
 	}
@@ -505,7 +492,7 @@ TEST(ECB, MMT_decrypt)
 	}
 }
 
-TEST(ECB, MCT_decrypt)
+TEST(ECB, MonteCarlo_dec)
 {
 	std::vector<std::string> files = {
 		"ECBMCT128.rsp",  "ECBMCT192.rsp",  "ECBMCT256.rsp",
@@ -521,11 +508,10 @@ TEST(ECB, MCT_decrypt)
 			int res;
 			uint8_t key[32];
 			uint8_t cipher[Crypto::AES::BLOCK_SIZE];
-			uint8_t plain[Crypto::AES::BLOCK_SIZE];
-			uint8_t last_plain[Crypto::AES::BLOCK_SIZE];
+			uint8_t plain[2][Crypto::AES::BLOCK_SIZE];
 			std::size_t key_sz    = sizeof(key);
 			std::size_t cipher_sz = sizeof(cipher);
-			std::size_t plain_sz  = sizeof(plain);
+			std::size_t plain_sz  = sizeof(plain[0]);
 			std::size_t pad_sz = 0;
 			std::string plain_str;
 
@@ -536,42 +522,31 @@ TEST(ECB, MCT_decrypt)
 			EXPECT_EQ(res, 0);
 
 			for ( auto test : tests ) {
-				for ( std::size_t i = 0 ; i < 1000 ; ++i ) {
-					memcpy(last_plain, plain, plain_sz);
+				Crypto::ECB<Crypto::AES> ctx(key, key_sz, false);
 
-					Crypto::ECB<Crypto::AES> ctx(key, key_sz, false);
-					res = ctx.update(cipher, cipher_sz, plain, plain_sz);
+				for ( std::size_t i = 0 ; i < 1000 ; ++i ) {
+					memcpy(plain[0], plain[1], plain_sz);
+
+					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(cipher, plain, cipher_sz);
+					memcpy(cipher, plain[1], cipher_sz);
 				}
 
-				res = Crypto::Utils::to_hex(plain, plain_sz, plain_str, false);
+				res = Crypto::Utils::to_hex(plain[1], plain_sz, plain_str, false);
 				EXPECT_EQ(res, 0);
 
 				EXPECT_EQ(plain_str, test["PLAINTEXT"]);
 
-				if ( 16 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= plain[i];
-					}
-				} else if ( 24 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 8 ; ++i ) {
-						key[i] ^= last_plain[8 + i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[8 + i] ^= plain[i];
-					}
-				} else {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= last_plain[i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[16 + i] ^= plain[i];
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= plain[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= plain[1][i - (key_sz - 16)];
 					}
 				}
 			}

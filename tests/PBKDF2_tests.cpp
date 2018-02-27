@@ -47,7 +47,7 @@ TEST(PBKDF2, test_vectors)
 		uint8_t salt[64];
 		std::size_t salt_sz = sizeof(salt);
 		uint8_t key[64];
-		std::string output = "";
+		std::string output;
 
 		Crypto::Utils::from_hex(test[0], password, password_sz);
 		Crypto::Utils::from_hex(test[1], salt,     salt_sz);

@@ -10,13 +10,13 @@
 class TestPair
 {
 	public:
-		TestPair(std::string str)
+		TestPair(std::string str, std::string sep)
 		{
 			std::size_t pos;
 
-			if ( std::string::npos != (pos = str.find(" = ")) ) {
+			if ( std::string::npos != (pos = str.find(sep)) ) {
 				key   = str.substr(0, pos);
-				value = str.substr(pos + 3);
+				value = str.substr(pos + sep.length());
 			} else {
 				key = str;
 			}
@@ -106,6 +106,73 @@ class TestVectors
 
 		bool empty(void) { return vectors.empty(); }
 
+		// Parser for AES contest test vectors
+		static TestVectors AESCandidateParser(std::string file_path)
+		{
+			TestVectors result;
+			TestCase test_case;
+			std::string line;
+
+			std::ifstream ifs(file_path);
+			State state = State::HEADER;
+
+			while ( std::getline(ifs, line) ) {
+				trim_line(line);
+
+				bool line_processed = false;
+				while ( ! line_processed ) {
+					switch ( state ) {
+						case State::HEADER:
+							if ( line == "==========" ) {
+								state = State::VECTORS;
+							} else {
+								line_processed = true;
+							}
+							break;
+						case State::VECTORS:
+							if ( line == "==========" ) {
+								result.vectors.push_back(TestVector());
+							} else if ( ! line.empty() ) {
+								result.vectors.back().name = line;
+								state = State::TESTS;
+							}
+
+							line_processed = true;
+
+							break;
+						case State::TESTS:
+							if ( line == "==========" ) {
+								state = State::VECTORS;
+							} else if ( line.empty() ) {
+								if ( ! test_case.empty() ) {
+									result.vectors.back().test_cases.push_back(test_case);
+									test_case = TestCase();
+								}
+
+								line_processed = true;
+							} else {
+								test_case.push_back(TestPair(line, "="));
+
+								line_processed = true;
+							}
+
+							break;
+						default:
+							line_processed =true;
+
+							break;
+					}
+				}
+			}
+
+			if ( ! result.vectors.empty()&& result.vectors.back().test_cases.empty() ) {
+				result.vectors.pop_back();
+			}
+
+			return result;
+		}
+
+		// Parser for NIST test vectors
 		static TestVectors NISTParser(std::string file_path)
 		{
 			TestVectors result;
@@ -143,7 +210,7 @@ class TestVectors
 						case State::OPTIONS:
 							if ( starts_with(line, "[") && ends_with(line, "]") ) {
 								line = line.substr(1, line.size() - 2);
-								result.vectors.back().options.push_back(TestPair(line));
+								result.vectors.back().options.push_back(TestPair(line, " = "));
 
 								line_processed = true;
 							} else {
@@ -161,12 +228,14 @@ class TestVectors
 
 								line_processed = true;
 							} else {
-								test_case.push_back(TestPair(line));
+								test_case.push_back(TestPair(line, " = "));
 
 								line_processed = true;
 							}
 							break;
 						default:
+							line_processed = true;
+
 							break;
 
 					}

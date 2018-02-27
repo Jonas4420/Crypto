@@ -6,8 +6,8 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "crypto/Utils.hpp"
 #include "crypto/AES.hpp"
+#include "crypto/Utils.hpp"
 
 TEST(AES, constructor)
 {
@@ -60,7 +60,7 @@ TEST(AES, constructor)
 
 }
 
-TEST(AES, KAT_encrypt)
+TEST(AES, KAT_enc)
 {
 	std::vector<std::string> files = {
 		"ECBGFSbox128.rsp",  "ECBGFSbox192.rsp",  "ECBGFSbox256.rsp",
@@ -103,7 +103,7 @@ TEST(AES, KAT_encrypt)
 	}
 }
 
-TEST(AES, KAT_decrypt)
+TEST(AES, KAT_dec)
 {
 	std::vector<std::string> files = {
 		"ECBGFSbox128.rsp",  "ECBGFSbox192.rsp",  "ECBGFSbox256.rsp",

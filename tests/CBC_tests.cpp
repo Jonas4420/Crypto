@@ -11,7 +11,7 @@
 #include "crypto/CBC.hpp"
 #include "crypto/Utils.hpp"
 
-TEST(CBC, KAT_encrypt)
+TEST(CBC, KAT_enc)
 {
 	std::vector<std::string> files = {
 		"CBCGFSbox128.rsp",  "CBCGFSbox192.rsp",  "CBCGFSbox256.rsp",
@@ -67,7 +67,7 @@ TEST(CBC, KAT_encrypt)
 	}
 }
 
-TEST(CBC, MMT_encrypt)
+TEST(CBC, MMT_enc)
 {
 	std::vector<std::string> files = {
 		"CBCMMT128.rsp",  "CBCMMT192.rsp",  "CBCMMT256.rsp",
@@ -129,7 +129,7 @@ TEST(CBC, MMT_encrypt)
 	}
 }
 
-TEST(CBC, MCT_encrypt)
+TEST(CBC, MonteCarlo_enc)
 {
 	std::vector<std::string> files = {
 		"CBCMCT128.rsp",  "CBCMCT192.rsp",  "CBCMCT256.rsp",
@@ -146,12 +146,11 @@ TEST(CBC, MCT_encrypt)
 			uint8_t key[32];
 			uint8_t iv[Crypto::AES::BLOCK_SIZE];
 			uint8_t plain[Crypto::AES::BLOCK_SIZE];
-			uint8_t cipher[Crypto::AES::BLOCK_SIZE];
-			uint8_t last_cipher[Crypto::AES::BLOCK_SIZE];
+			uint8_t cipher[2][Crypto::AES::BLOCK_SIZE];
 			std::size_t key_sz    = sizeof(key);
 			std::size_t iv_sz     = sizeof(iv);
 			std::size_t plain_sz  = sizeof(plain);
-			std::size_t cipher_sz = sizeof(cipher);
+			std::size_t cipher_sz = sizeof(cipher[0]);
 			std::size_t pad_sz = 0;
 			std::string cipher_str;
 
@@ -168,45 +167,33 @@ TEST(CBC, MCT_encrypt)
 				Crypto::CBC<Crypto::AES> ctx(key, key_sz, iv, true);
 
 				for ( std::size_t i = 0 ; i < 1000 ; ++i ) {
-					memcpy(last_cipher, cipher, cipher_sz);
+					memcpy(cipher[0], cipher[1], cipher_sz);
 
-					res = ctx.update(plain, plain_sz, cipher, cipher_sz);
+					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(plain, (i == 0) ? iv : last_cipher, plain_sz);
+					memcpy(plain, (i == 0) ? iv : cipher[0], plain_sz);
 				}
 
-				res = Crypto::Utils::to_hex(cipher, cipher_sz, cipher_str, false);
+				res = Crypto::Utils::to_hex(cipher[1], cipher_sz, cipher_str, false);
 				EXPECT_EQ(res, 0);
 
 				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
 
-				if ( 16 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= cipher[i];
-					}
-				} else if ( 24 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 8 ; ++i ) {
-						key[i] ^= last_cipher[8 + i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[8 + i] ^= cipher[i];
-					}
-				} else {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= last_cipher[i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[16 + i] ^= cipher[i];
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= cipher[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= cipher[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(iv,    cipher,      iv_sz);
-				memcpy(plain, last_cipher, plain_sz);
+				memcpy(iv,    cipher[1], iv_sz);
+				memcpy(plain, cipher[0], plain_sz);
 			}
 		}
 	}
@@ -420,7 +407,7 @@ TEST(CBC, encrypt_finish_sz)
 	}
 }
 
-TEST(CBC, KAT_decrypt)
+TEST(CBC, KAT_dec)
 {
 	std::vector<std::string> files = {
 		"CBCGFSbox128.rsp",  "CBCGFSbox192.rsp",  "CBCGFSbox256.rsp",
@@ -476,7 +463,7 @@ TEST(CBC, KAT_decrypt)
 	}
 }
 
-TEST(CBC, MMT_decrypt)
+TEST(CBC, MMT_dec)
 {
 	std::vector<std::string> files = {
 		"CBCMMT128.rsp",  "CBCMMT192.rsp",  "CBCMMT256.rsp",
@@ -538,7 +525,7 @@ TEST(CBC, MMT_decrypt)
 	}
 }
 
-TEST(CBC, MCT_decrypt)
+TEST(CBC, MonteCarlo_dec)
 {
 	std::vector<std::string> files = {
 		"CBCMCT128.rsp",  "CBCMCT192.rsp",  "CBCMCT256.rsp",
@@ -555,12 +542,11 @@ TEST(CBC, MCT_decrypt)
 			uint8_t key[32];
 			uint8_t iv[Crypto::AES::BLOCK_SIZE];
 			uint8_t cipher[Crypto::AES::BLOCK_SIZE];
-			uint8_t plain[Crypto::AES::BLOCK_SIZE];
-			uint8_t last_plain[Crypto::AES::BLOCK_SIZE];
+			uint8_t plain[2][Crypto::AES::BLOCK_SIZE];
 			std::size_t key_sz    = sizeof(key);
 			std::size_t iv_sz     = sizeof(iv);
 			std::size_t cipher_sz = sizeof(cipher);
-			std::size_t plain_sz  = sizeof(plain);
+			std::size_t plain_sz  = sizeof(plain[0]);
 			std::size_t pad_sz = 0;
 			std::string plain_str;
 
@@ -577,45 +563,33 @@ TEST(CBC, MCT_decrypt)
 				Crypto::CBC<Crypto::AES> ctx(key, key_sz, iv, false);
 
 				for ( std::size_t i = 0 ; i < 1000 ; ++i ) {
-					memcpy(last_plain, plain, plain_sz);
+					memcpy(plain[0], plain[1], plain_sz);
 
-					res = ctx.update(cipher, cipher_sz, plain, plain_sz);
+					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(cipher, (i == 0) ? iv : last_plain, cipher_sz);
+					memcpy(cipher, (i == 0) ? iv : plain[0], cipher_sz);
 				}
 
-				res = Crypto::Utils::to_hex(plain, plain_sz, plain_str, false);
+				res = Crypto::Utils::to_hex(plain[1], plain_sz, plain_str, false);
 				EXPECT_EQ(res, 0);
 
 				EXPECT_EQ(plain_str, test["PLAINTEXT"]);
 
-				if ( 16 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= plain[i];
-					}
-				} else if ( 24 == key_sz ) {
-					for ( std::size_t i = 0 ; i < 8 ; ++i ) {
-						key[i] ^= last_plain[8 + i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[8 + i] ^= plain[i];
-					}
-				} else {
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[i] ^= last_plain[i];
-					}
-					for ( std::size_t i = 0 ; i < 16 ; ++i ) {
-						key[16 + i] ^= plain[i];
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= plain[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= plain[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(iv,    plain,       iv_sz);
-				memcpy(cipher, last_plain, cipher_sz);
+				memcpy(iv,     plain[1], iv_sz);
+				memcpy(cipher, plain[0], cipher_sz);
 			}
 		}
 	}

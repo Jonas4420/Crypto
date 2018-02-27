@@ -11,7 +11,7 @@
 #include "crypto/CFB.hpp"
 #include "crypto/Utils.hpp"
 
-TEST(CFB8, KAT_encrypt)
+TEST(CFB8, KAT_enc)
 {
 	std::vector<std::string> files = {
 		"CFB8GFSbox128.rsp",  "CFB8GFSbox192.rsp",  "CFB8GFSbox256.rsp",
@@ -67,7 +67,7 @@ TEST(CFB8, KAT_encrypt)
 	}
 }
 
-TEST(CFB8, MMT_encrypt)
+TEST(CFB8, MMT_enc)
 {
 	std::vector<std::string> files = {
 		"CFB8MMT128.rsp",  "CFB8MMT192.rsp",  "CFB8MMT256.rsp",
@@ -129,7 +129,7 @@ TEST(CFB8, MMT_encrypt)
 	}
 }
 
-TEST(CFB8, MCT_encrypt)
+TEST(CFB8, MonteCarlo_enc)
 {
 	std::vector<std::string> files = {
 		"CFB8MCT128.rsp",  "CFB8MCT192.rsp",  "CFB8MCT256.rsp",
@@ -186,18 +186,8 @@ TEST(CFB8, MCT_encrypt)
 
 				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
 
-				if ( 16 == key_sz ) {
-					for ( std::size_t m = 0 ; m < 16 ; ++m ) {
-						key[m] ^= buffer[16 + m];
-					}
-				} else if ( 24 == key_sz ) {
-					for ( std::size_t m = 0 ; m < 24 ; ++m ) {
-						key[m] ^= buffer[8 + m];
-					}
-				} else {
-					for ( std::size_t m = 0 ; m < 32 ; ++m ) {
-						key[m] ^= buffer[m];
-					}
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					key[i] ^= buffer[i + (32 - key_sz)];
 				}
 
 				memcpy(iv,    buffer + 16,            iv_sz);
@@ -207,7 +197,7 @@ TEST(CFB8, MCT_encrypt)
 	}
 }
 
-TEST(CFB8, KAT_decrypt)
+TEST(CFB8, KAT_dec)
 {
 	std::vector<std::string> files = {
 		"CFB8GFSbox128.rsp",  "CFB8GFSbox192.rsp",  "CFB8GFSbox256.rsp",
@@ -263,7 +253,7 @@ TEST(CFB8, KAT_decrypt)
 	}
 }
 
-TEST(CFB8, MMT_decrypt)
+TEST(CFB8, MMT_dec)
 {
 	std::vector<std::string> files = {
 		"CFB8MMT128.rsp",  "CFB8MMT192.rsp",  "CFB8MMT256.rsp",
@@ -325,7 +315,7 @@ TEST(CFB8, MMT_decrypt)
 	}
 }
 
-TEST(CFB8, MCT_decrypt)
+TEST(CFB8, MonteCarlo_dec)
 {
 	std::vector<std::string> files = {
 		"CFB8MCT128.rsp",  "CFB8MCT192.rsp",  "CFB8MCT256.rsp",
@@ -403,7 +393,7 @@ TEST(CFB8, MCT_decrypt)
 	}
 }
 
-TEST(CFB128, KAT_encrypt)
+TEST(CFB128, KAT_enc)
 {
 	std::vector<std::string> files = {
 		"CFB128GFSbox128.rsp",  "CFB128GFSbox192.rsp",  "CFB128GFSbox256.rsp",
@@ -459,7 +449,7 @@ TEST(CFB128, KAT_encrypt)
 	}
 }
 
-TEST(CFB128, MMT_encrypt)
+TEST(CFB128, MMT_enc)
 {
 	std::vector<std::string> files = {
 		"CFB128MMT128.rsp",  "CFB128MMT192.rsp",  "CFB128MMT256.rsp",
@@ -521,7 +511,7 @@ TEST(CFB128, MMT_encrypt)
 	}
 }
 
-TEST(CFB128, MCT_encrypt)
+TEST(CFB128, MonteCarlo_enc)
 {
 	std::vector<std::string> files = {
 		"CFB128MCT128.rsp",  "CFB128MCT192.rsp",  "CFB128MCT256.rsp",
@@ -599,7 +589,7 @@ TEST(CFB128, MCT_encrypt)
 	}
 }
 
-TEST(CFB128, KAT_decrypt)
+TEST(CFB128, KAT_dec)
 {
 	std::vector<std::string> files = {
 		"CFB128GFSbox128.rsp",  "CFB128GFSbox192.rsp",  "CFB128GFSbox256.rsp",
@@ -655,7 +645,7 @@ TEST(CFB128, KAT_decrypt)
 	}
 }
 
-TEST(CFB128, MMT_decrypt)
+TEST(CFB128, MMT_dec)
 {
 	std::vector<std::string> files = {
 		"CFB128MMT128.rsp",  "CFB128MMT192.rsp",  "CFB128MMT256.rsp",
@@ -717,7 +707,7 @@ TEST(CFB128, MMT_decrypt)
 	}
 }
 
-TEST(CFB128, MCT_decrypt)
+TEST(CFB128, MonteCarlo_dec)
 {
 	std::vector<std::string> files = {
 		"CFB128MCT128.rsp",  "CFB128MCT192.rsp",  "CFB128MCT256.rsp",

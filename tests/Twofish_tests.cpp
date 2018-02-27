@@ -1,10 +1,15 @@
 #include <vector>
 
+#include "TestOptions.hpp"
+#include "TestVectors.hpp"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "crypto/Utils.hpp"
 #include "crypto/Twofish.hpp"
+#include "crypto/ECB.hpp"
+#include "crypto/CBC.hpp"
+#include "crypto/Utils.hpp"
 
 TEST(Twofish, constructor)
 {
@@ -46,239 +51,386 @@ TEST(Twofish, constructor)
 	}
 }
 
-TEST(Twofish128, encrypt_test_vector)
+TEST(Twofish, KAT_enc)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{ "0",  "9f589f5cf6122c32b6bfec2f2ae8c35a" },
-		{ "1",  "d491db16e7b1c39e86cb086b789f5419" },
-		{ "2",  "019f9809de1711858faac3a3ba20fbc3" },
-		{ "3",  "6363977de839486297e661c6c9d668eb" },
-		{ "4",  "816d5bd0fae35342bf2a7412c246f752" },
-		{ "5",  "5449eca008ff5921155f598af4ced4d0" },
-		{ "6",  "6600522e97aeb3094ed5f92afcbcdd10" },
-		{ "7",  "34c8a5fb2d3d08a170d120ac6d26dbfa" },
-		{ "8",  "28530b358c1b42ef277de6d4407fc591" },
-		{ "9",  "8a8ab983310ed78c8c0ecde030b8dca4" },
-		{ "47", "6b459286f3ffd28d49f15b1581b08e42" },
-		{ "48", "5d9d4eeffa9151575524f115815a12e0" }
+	std::vector<std::string> files = {
+		"ECB_VK.TXT", "ECB_VT.TXT", "ECB_TBL.TXT"
 	};
 
-	std::vector<std::string> ciphertexts;
-	uint8_t key[16];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	std::size_t cipher_sz = sizeof(cipher);
-	std::string ciphertext;
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t plain[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t cipher[Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz   = sizeof(key);
+			std::size_t plain_sz = sizeof(plain);
+			std::string cipher_str;
 
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
+			if ( tests.test_cases[0]["CT"].empty() ) {
+				if ( ! tests.test_cases[0]["KEY"].empty() ) {
+					res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+				if ( ! tests.test_cases[0]["PT"].empty() ) {
+					res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-		// Push result
-		Crypto::Utils::to_hex(cipher, cipher_sz, ciphertext, false);
-		ciphertexts.push_back(ciphertext);
-	}
+				tests.test_cases.erase(tests.test_cases.begin());
+			}
 
-	for ( auto test : tests ) {
-		std::size_t idx = atoi(test[0].c_str());
-		EXPECT_EQ(ciphertexts[idx], test[1]);
-	}
-}
+			for ( auto test : tests ) {
+				if ( ! test["KEY"].empty() ) {
+					res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-TEST(Twofish128, decrypt_test)
-{
-	uint8_t key[16];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	uint8_t decrypt[16];
+				if ( ! test["PT"].empty() ) {
+					res = Crypto::Utils::from_hex(test["PT"], plain, plain_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+				Crypto::Twofish ctx(key, key_sz);
+				ctx.encrypt(plain, cipher);
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
-		ctx.decrypt(cipher, decrypt);
+				res = Crypto::Utils::to_hex(cipher, sizeof(cipher), cipher_str, true);
+				EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(0, memcmp(plain, decrypt, plain_sz));
-
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
-
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+				EXPECT_EQ(cipher_str, test["CT"]);
+			}
+		}
 	}
 }
 
-TEST(Twofish192, encrypt_test_vector)
+TEST(Twofish, MonteCarlo_ECB_enc)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{ "0",  "efa71f788965bd4453f860178fc19101" },
-		{ "1",  "88b2b2706b105e36b446bb6d731a1e88" },
-		{ "2",  "39da69d6ba4997d585b6dc073ca341b2" },
-		{ "3",  "182b02d81497ea45f9daacdc29193a65" },
-		{ "4",  "7aff7a70ca2ff28ac31dd8ae5daaab63" },
-		{ "5",  "d1079b789f666649b6bd7d1629f1f77e" },
-		{ "6",  "3af6f7ce5bd35ef18bec6fa787ab506b" },
-		{ "7",  "ae8109bfda85c1f2c5038b34ed691bff" },
-		{ "8",  "893fd67b98c550073571bd631263fc78" },
-		{ "9",  "16434fc9c8841a63d58700b5578e8f67" },
-		{ "47", "f0ab73301125fa21ef70be5385fb76b6" },
-		{ "48", "e75449212beef9f4a390bd860a640941" }
+	std::vector<std::string> files = {
+		"ECB_E_M.TXT"
 	};
 
-	std::vector<std::string> ciphertexts;
-	uint8_t key[24];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	std::size_t cipher_sz = sizeof(cipher);
-	std::string ciphertext;
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t plain[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t cipher[2][Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz    = sizeof(key);
+			std::size_t plain_sz  = sizeof(plain);
+			std::size_t cipher_sz = sizeof(cipher[0]);
+			std::size_t pad_sz = 0;
+			std::string cipher_str;
 
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			EXPECT_EQ(res, 0);
 
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+			EXPECT_EQ(res, 0);
 
-		// Push result
-		Crypto::Utils::to_hex(cipher, cipher_sz, ciphertext, false);
-		ciphertexts.push_back(ciphertext);
-	}
+			for ( auto test : tests ) {
+				Crypto::ECB<Crypto::Twofish> ctx(key, key_sz, true);
 
-	for ( auto test : tests ) {
-		std::size_t idx = atoi(test[0].c_str());
-		EXPECT_EQ(ciphertexts[idx], test[1]);
-	}
-}
+				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
+					memcpy(cipher[0], cipher[1], cipher_sz);
 
-TEST(Twofish192, decrypt_test)
-{
-	uint8_t key[24];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	uint8_t decrypt[16];
+					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
+					EXPECT_EQ(res, 0);
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+					res = ctx.finish(pad_sz);
+					EXPECT_EQ(res, 0);
+					EXPECT_EQ(pad_sz, 0);
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
-		ctx.decrypt(cipher, decrypt);
+					memcpy(plain, cipher[1], plain_sz);
+				}
 
-		EXPECT_EQ(0, memcmp(plain, decrypt, plain_sz));
+				res = Crypto::Utils::to_hex(cipher[1], cipher_sz, cipher_str, true);
+				EXPECT_EQ(res, 0);
 
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
+				EXPECT_EQ(cipher_str, test["CT"]);
 
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= cipher[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= cipher[1][i - (key_sz - 16)];
+					}
+				}
+
+				memcpy(plain, cipher[1], plain_sz);
+			}
+		}
 	}
 }
 
-TEST(Twofish256, encrypt_test_vector)
+TEST(Twofish, MonteCarlo_CBC_enc)
 {
-	const std::vector<std::vector<std::string>> tests = {
-		{ "0",  "57ff739d4dc92c1bd7fc01700cc8216f" },
-		{ "1",  "d43bb7556ea32e46f2a282b7d45b4e0d" },
-		{ "2",  "90afe91bb288544f2c32dc239b2635e6" },
-		{ "3",  "6cb4561c40bf0a9705931cb6d408e7fa" },
-		{ "4",  "3059d6d61753b958d92f4781c8640e58" },
-		{ "5",  "e69465770505d7f80ef68ca38ab3a3d6" },
-		{ "6",  "5ab67a5f8539a4a5fd9f0373ba463466" },
-		{ "7",  "dc096bcd99fc72f79936d4c748e75af7" },
-		{ "8",  "c5a3e7cee0f1b7260528a68fb4ea05f2" },
-		{ "9",  "43d5cec327b24ab90ad34a79d0469151" },
-		{ "47", "431058f4dbc7f734da4f02f04cc4f459" },
-		{ "48", "37fe26ff1cf66175f5ddf4c33b97a205" }
+	std::vector<std::string> files = {
+		"CBC_E_M.TXT"
 	};
 
-	std::vector<std::string> ciphertexts;
-	uint8_t key[32];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	std::size_t cipher_sz = sizeof(cipher);
-	std::string ciphertext;
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t iv[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t plain[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t cipher[2][Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz    = sizeof(key);
+			std::size_t iv_sz     = sizeof(iv);
+			std::size_t plain_sz  = sizeof(plain);
+			std::size_t cipher_sz = sizeof(cipher[0]);
+			std::size_t pad_sz = 0;
+			std::string cipher_str;
 
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			EXPECT_EQ(res, 0);
 
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			EXPECT_EQ(res, 0);
 
-		// Push result
-		Crypto::Utils::to_hex(cipher, cipher_sz, ciphertext, false);
-		ciphertexts.push_back(ciphertext);
-	}
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+			EXPECT_EQ(res, 0);
 
-	for ( auto test : tests ) {
-		std::size_t idx = atoi(test[0].c_str());
-		EXPECT_EQ(ciphertexts[idx], test[1]);
+			for ( auto test : tests ) {
+				Crypto::CBC<Crypto::Twofish> ctx(key, key_sz, iv, true);
+
+				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
+					memcpy(cipher[0], cipher[1], cipher_sz);
+
+					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
+					EXPECT_EQ(res, 0);
+
+					res = ctx.finish(pad_sz);
+					EXPECT_EQ(res, 0);
+					EXPECT_EQ(pad_sz, 0);
+
+					memcpy(plain, (i == 0) ? iv : cipher[0], plain_sz);
+				}
+
+				res = Crypto::Utils::to_hex(cipher[1], cipher_sz, cipher_str, true);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(cipher_str, test["CT"]);
+
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= cipher[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= cipher[1][i - (key_sz - 16)];
+					}
+				}
+
+				memcpy(iv,    cipher[1], iv_sz);
+				memcpy(plain, cipher[0], plain_sz);
+			}
+		}
 	}
 }
 
-TEST(Twofish256, decrypt_test)
+TEST(Twofish, KAT_dec)
 {
-	uint8_t key[32];
-	std::size_t key_sz = sizeof(key);
-	uint8_t plain[16];
-	std::size_t plain_sz = sizeof(plain);
-	uint8_t cipher[16];
-	uint8_t decrypt[16];
+	std::vector<std::string> files = {
+		"ECB_VK.TXT", "ECB_VT.TXT", "ECB_TBL.TXT"
+	};
 
-	memset(key,   0x00, key_sz);
-	memset(plain, 0x00, plain_sz);
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
 
-	for ( std::size_t i = 0 ; i < 50 ; ++i ) {
-		Crypto::Twofish ctx(key, key_sz);
-		ctx.encrypt(plain, cipher);
-		ctx.decrypt(cipher, decrypt);
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
 
-		EXPECT_EQ(0, memcmp(plain, decrypt, plain_sz));
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t cipher[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t plain[Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz    = sizeof(key);
+			std::size_t cipher_sz = sizeof(cipher);
+			std::string expected_str, plain_str;
 
-		// Shift key
-		memcpy(key + 16, key,   key_sz - 16);
-		memcpy(key,      plain, 16);
+			if ( tests.test_cases[0]["CT"].empty() ) {
+				if ( ! tests.test_cases[0]["KEY"].empty() ) {
+					res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+					EXPECT_EQ(res, 0);
+				}
 
-		// Shift plain
-		memcpy(plain, cipher, plain_sz);
+				if ( ! tests.test_cases[0]["PT"].empty() ) {
+					expected_str = tests.test_cases[0]["PT"];
+				}
+
+				tests.test_cases.erase(tests.test_cases.begin());
+			}
+
+			for ( auto test : tests ) {
+				if ( ! test["KEY"].empty() ) {
+					res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+					EXPECT_EQ(res, 0);
+				}
+
+				res = Crypto::Utils::from_hex(test["CT"], cipher, cipher_sz);
+				EXPECT_EQ(res, 0);
+
+				Crypto::Twofish ctx(key, key_sz);
+				ctx.decrypt(cipher, plain);
+
+				res = Crypto::Utils::to_hex(plain, sizeof(plain), plain_str, true);
+				EXPECT_EQ(res, 0);
+
+				if ( ! test["PT"].empty() ) {
+					expected_str = test["PT"];
+				}
+
+				EXPECT_EQ(plain_str, expected_str);
+			}
+		}
+	}
+}
+
+TEST(Twofish, MonteCarlo_ECB_dec)
+{
+	std::vector<std::string> files = {
+		"ECB_D_M.TXT"
+	};
+
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
+
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
+
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t cipher[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t plain[2][Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz    = sizeof(key);
+			std::size_t cipher_sz = sizeof(cipher);
+			std::size_t plain_sz  = sizeof(plain[0]);
+			std::size_t pad_sz = 0;
+			std::string plain_str;
+
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			EXPECT_EQ(res, 0);
+
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
+			EXPECT_EQ(res, 0);
+
+			for ( auto test : tests ) {
+				Crypto::ECB<Crypto::Twofish> ctx(key, key_sz, false);
+
+				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
+					memcpy(plain[0], plain[1], plain_sz);
+
+					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
+					EXPECT_EQ(res, 0);
+
+					res = ctx.finish(pad_sz);
+					EXPECT_EQ(res, 0);
+					EXPECT_EQ(pad_sz, 0);
+
+					memcpy(cipher, plain[1], cipher_sz);
+				}
+
+				res = Crypto::Utils::to_hex(plain[1], plain_sz, plain_str, true);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(plain_str, test["PT"]);
+
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= plain[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= plain[1][i - (key_sz - 16)];
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST(Twofish, MonteCarlo_CBC_dec)
+{
+	std::vector<std::string> files = {
+		"CBC_D_M.TXT"
+	};
+
+	for ( auto file : files ) {
+		std::string file_path = TestOptions::get().vect_dir + "Twofish/" + file;
+
+		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		EXPECT_FALSE(test_vectors.empty());
+
+		for ( auto tests : test_vectors ) {
+			int res;
+			uint8_t key[32];
+			uint8_t iv[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t cipher[Crypto::Twofish::BLOCK_SIZE];
+			uint8_t plain[2][Crypto::Twofish::BLOCK_SIZE];
+			std::size_t key_sz    = sizeof(key);
+			std::size_t iv_sz     = sizeof(iv);
+			std::size_t cipher_sz = sizeof(cipher);
+			std::size_t plain_sz  = sizeof(plain[0]);
+			std::size_t pad_sz = 0;
+			std::string plain_str;
+
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			EXPECT_EQ(res, 0);
+
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			EXPECT_EQ(res, 0);
+
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
+			EXPECT_EQ(res, 0);
+
+			for ( auto test : tests ) {
+				Crypto::CBC<Crypto::Twofish> ctx(key, key_sz, iv, false);
+
+				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
+					memcpy(plain[0], plain[1], plain_sz);
+
+					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
+					EXPECT_EQ(res, 0);
+
+					res = ctx.finish(pad_sz);
+					EXPECT_EQ(res, 0);
+					EXPECT_EQ(pad_sz, 0);
+
+					memcpy(iv,     plain[0], iv_sz);
+					memcpy(cipher, plain[1], cipher_sz);
+				}
+
+				res = Crypto::Utils::to_hex(plain[1], plain_sz, plain_str, true);
+				EXPECT_EQ(res, 0);
+
+				EXPECT_EQ(plain_str, test["PT"]);
+
+				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
+					if ( i < (key_sz - 16) ) {
+						key[i] ^= plain[0][i + (32 - key_sz)];
+					} else {
+						key[i] ^= plain[1][i - (key_sz - 16)];
+					}
+				}
+
+				memcpy(iv,     plain[0], iv_sz);
+				memcpy(cipher, plain[1], cipher_sz);
+			}
+		}
 	}
 }
