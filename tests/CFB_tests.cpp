@@ -798,9 +798,9 @@ TEST(CFB, stream_sz)
 		std::string exception, expected = "Invalid data segment size";
 
 		try {
-			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 0);
-		} catch ( const Crypto::SymmetricCipher::Exception& sce ) {
-			exception = sce.what();
+			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 0, true);
+		} catch ( const Crypto::CipherMode::Exception &cme ) {
+			exception = cme.what();
 		}
 
 		EXPECT_EQ(exception, expected);
@@ -811,9 +811,9 @@ TEST(CFB, stream_sz)
 		std::string exception, expected = "Invalid data segment size";
 
 		try {
-			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 17);
-		} catch ( const Crypto::SymmetricCipher::Exception& sce ) {
-			exception = sce.what();
+			Crypto::CFB<Crypto::AES> ctx(key, key_sz, iv, 17, true);
+		} catch ( const Crypto::CipherMode::Exception &cme ) {
+			exception = cme.what();
 		}
 
 		EXPECT_EQ(exception, expected);

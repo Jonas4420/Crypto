@@ -13,7 +13,7 @@ template <class SC>
 class ECB : public CipherMode
 {
 	public:
-		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt = true)
+		ECB(const uint8_t *key, std::size_t key_sz, bool is_encrypt)
 			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt)
 		{
 		}

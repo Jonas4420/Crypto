@@ -29,6 +29,17 @@ class TestPair
 class TestCase : public std::vector<TestPair>
 {
 	public:
+		bool has(std::string key)
+		{
+			for ( auto pair : *this ) {
+				if ( pair.key == key ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		std::string operator [](std::string key)
 		{
 			std::size_t pos, idx = 0;

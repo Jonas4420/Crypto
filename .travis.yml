@@ -81,7 +81,7 @@ script:
         - |
           if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
                 if [[ "${BUILD_TYPE}" == "Release" || "${BUILD_TYPE}" == "Debug" ]]; then
-                        CRYPTO_TEST_IS_FAST=1 ctest -V -j 2 -T memcheck
+                        CRYPTO_TEST_IS_FAST=1 ctest -V -j 2 --timeout 4500 -T memcheck
                 fi
           fi
 

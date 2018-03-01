@@ -14,7 +14,7 @@ class CTR : public CipherMode
 {
 	public:
 		CTR(const uint8_t *key, std::size_t key_sz, uint8_t counter[SC::BLOCK_SIZE])
-			: sc_ctx(key, key_sz)
+			: sc_ctx(key, key_sz), limit_reached(false)
 		{
 			memcpy(this->begin,   counter, BLOCK_SIZE);
 			memcpy(this->counter, counter, BLOCK_SIZE);
@@ -32,6 +32,10 @@ class CTR : public CipherMode
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
 		{
+			if ( limit_reached ) {
+				return CRYPTO_CIPHER_MODE_LENGTH_LIMIT;
+			}
+
 			// Check that output is large enough
 			if ( output_sz < input_sz ) {
 				output_sz = input_sz;
@@ -39,27 +43,24 @@ class CTR : public CipherMode
 			}
 
 			// Process input
+			output_sz = 0;
 			for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
 				output[i] = input[i] ^ stream[stream_sz];
 				++stream_sz;
+				++output_sz;
 
 				if ( BLOCK_SIZE == stream_sz ) {
-					for ( std::size_t j = BLOCK_SIZE - 1 ; j < BLOCK_SIZE ; --j ) {
-						if ( ++counter[j] != 0 ) {
-							break;
-						}
-					}
+					inc_counter(counter);
 
 					if ( 0 == memcmp(begin, counter, BLOCK_SIZE) ) {
-						throw SymmetricCipher::Exception("Counter MUST be unique for a given key");
+						limit_reached = true;
+						return CRYPTO_CIPHER_MODE_LENGTH_LIMIT;
 					}
 
 					sc_ctx.encrypt(counter, stream);
 					stream_sz = 0;
 				}
 			}
-
-			output_sz = input_sz;
 
 			return CRYPTO_CIPHER_MODE_SUCCESS;
 		}
@@ -73,12 +74,22 @@ class CTR : public CipherMode
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
 	protected:
+		static inline void inc_counter(uint8_t counter[BLOCK_SIZE])
+		{
+			for ( std::size_t i = BLOCK_SIZE - 1 ; i < BLOCK_SIZE ; --i ) {
+				if ( ++counter[i] != 0 ) {
+					break;
+				}
+			}
+		}
+
 		SC sc_ctx;
 
 		uint8_t     begin[BLOCK_SIZE];
 		uint8_t     counter[BLOCK_SIZE];
 		uint8_t     stream[BLOCK_SIZE];
 		std::size_t stream_sz;
+		bool        limit_reached;
 };
 
 }
