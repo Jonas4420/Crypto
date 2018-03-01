@@ -393,9 +393,9 @@ BigNum::~BigNum(void)
 		delete[] p;
 	}
 
-	s = 1;
-	n = 0;
-	p = NULL;
+	zeroize(&s, sizeof(s));
+	zeroize(&n, sizeof(n));
+	zeroize(&p, sizeof(p));
 }
 
 bool

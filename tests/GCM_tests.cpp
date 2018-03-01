@@ -350,6 +350,61 @@ TEST(GCM, get_tag)
 	}
 }
 
+TEST(GCM, check_tag)
+{
+	// Requested tag is too small
+	{
+		int ret;
+		uint8_t key[16], iv[16], add[16], tag[3];
+		std::size_t key_sz = sizeof(key);
+		std::size_t iv_sz  = sizeof(iv);
+		std::size_t add_sz = sizeof(add);
+		std::size_t tag_sz = sizeof(tag);
+		std::size_t pad_sz = 0;
+		bool is_auth;
+
+		memset(key, 0x00, key_sz);
+		memset(iv,  0x00, iv_sz);
+		memset(add, 0x00, add_sz);
+		memset(tag, 0x00, tag_sz);
+
+		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
+
+		ret = ctx.finish(pad_sz);
+		EXPECT_EQ(ret, 0);
+
+		tag_sz = 3;
+		ret = ctx.check_tag(tag, tag_sz, is_auth);
+		EXPECT_EQ(ret, 1);
+	}
+
+	// Requested tag is too big
+	{
+		int ret;
+		uint8_t key[16], iv[16], add[16], tag[3];
+		std::size_t key_sz = sizeof(key);
+		std::size_t iv_sz  = sizeof(iv);
+		std::size_t add_sz = sizeof(add);
+		std::size_t tag_sz = sizeof(tag);
+		std::size_t pad_sz = 0;
+		bool is_auth;
+
+		memset(key, 0x00, key_sz);
+		memset(iv,  0x00, iv_sz);
+		memset(add, 0x00, add_sz);
+		memset(tag, 0x00, tag_sz);
+
+		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
+
+		ret = ctx.finish(pad_sz);
+		EXPECT_EQ(ret, 0);
+
+		tag_sz = 17;
+		ret = ctx.check_tag(tag, tag_sz, is_auth);
+		EXPECT_EQ(ret, 1);
+	}
+}
+
 TEST(GCM, KAT_enc)
 {
 	std::vector<std::string> files = {

@@ -20,7 +20,9 @@ class ECB : public CipherMode
 
 		~ECB(void)
 		{
-			zeroize(buffer, sizeof(buffer));
+			zeroize(buffer,      sizeof(buffer));
+			zeroize(&buffer_sz,  sizeof(buffer_sz));
+			zeroize(&is_encrypt, sizeof(is_encrypt));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)

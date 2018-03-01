@@ -21,7 +21,8 @@ class OFB : public CipherMode
 
 		~OFB(void)
 		{
-			zeroize(iv, sizeof(iv));
+			zeroize(iv,         sizeof(iv));
+			zeroize(&iv_offset, sizeof(iv_offset));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)

@@ -59,8 +59,14 @@ class GCM : public CipherMode
 				throw CipherMode::Exception("Additional Input length does not meet length requirements");
 			}
 
+			// Precompute hash tables
+			uint8_t H[16];
+
 			memset(H, 0x00, sizeof(H));
 			sc_ctx.encrypt(H, H);
+			gcm_gen_tables(H, HH, HL);
+
+			zeroize(H, sizeof(H));
 
 			// Create counter block
 			memset(CB, 0x00, sizeof(S));
@@ -76,13 +82,13 @@ class GCM : public CipherMode
 				while ( iv_sz > 0 ) {
 					std::size_t read_sz = (iv_sz < 16) ? iv_sz : 16;
 
-					gcm_hash(H, CB, iv, read_sz);
+					gcm_hash(HH, HL, CB, iv, read_sz);
 
 					iv    += read_sz;
 					iv_sz -= read_sz;
 				}
 
-				gcm_hash(H, CB, buffer, 16);
+				gcm_hash(HH, HL, CB, buffer, 16);
 			}
 
 			// Keep first counter block for Tag
@@ -97,7 +103,7 @@ class GCM : public CipherMode
 			while ( add_sz > 0 ) {
 				std::size_t read_sz = (add_sz < 16) ? add_sz : 16;
 
-				gcm_hash(H, S, add, read_sz);
+				gcm_hash(HH, HL, S, add, read_sz);
 
 				add    += read_sz;
 				add_sz -= read_sz;
@@ -106,17 +112,19 @@ class GCM : public CipherMode
 
 		~GCM(void)
 		{
-			zeroize(H,          sizeof(H));
-			zeroize(CB,         sizeof(CB));
-			zeroize(S,          sizeof(S));
-			zeroize(base,       sizeof(base));
-			zeroize(buffer,     sizeof(buffer));
-			zeroize(stream,     sizeof(stream));
+			zeroize(HH,          sizeof(HH));
+			zeroize(HL,          sizeof(HL));
+			zeroize(CB,          sizeof(CB));
+			zeroize(S,           sizeof(S));
+			zeroize(base,        sizeof(base));
+			zeroize(buffer,      sizeof(buffer));
+			zeroize(stream,      sizeof(stream));
 
-			zeroize(&add_sz,    sizeof(add_sz));
-			zeroize(&buffer_sz, sizeof(buffer_sz));
-			zeroize(&stream_sz, sizeof(stream_sz));
-			zeroize(&total_sz,  sizeof(total_sz));
+			zeroize(&add_sz,     sizeof(add_sz));
+			zeroize(&buffer_sz,  sizeof(buffer_sz));
+			zeroize(&stream_sz,  sizeof(stream_sz));
+			zeroize(&total_sz,   sizeof(total_sz));
+			zeroize(&is_encrypt, sizeof(is_encrypt));
 		}
 
 		int update(const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
@@ -149,7 +157,7 @@ class GCM : public CipherMode
 
 				++buffer_sz;
 				if ( 16 == buffer_sz ) {
-					gcm_hash(H, S, buffer, 16);
+					gcm_hash(HH, HL, S, buffer, 16);
 					buffer_sz = 0;
 				}
 			}
@@ -160,13 +168,13 @@ class GCM : public CipherMode
 		int finish(std::size_t &pad_sz)
 		{
 			if ( buffer_sz > 0 ) {
-				gcm_hash(H, S, buffer, buffer_sz);
+				gcm_hash(HH, HL, S, buffer, buffer_sz);
 			}
 
 			PUT_UINT64(add_sz   * 8, buffer, 0);
 			PUT_UINT64(total_sz * 8, buffer, 8);
 
-			gcm_hash(H, S, buffer, 16);
+			gcm_hash(HH, HL, S, buffer, 16);
 
 			for ( std::size_t i = 0 ; i < 16 ; ++i ) {
 				S[i] ^= base[i];
@@ -207,55 +215,76 @@ class GCM : public CipherMode
 
 		static const std::size_t BLOCK_SIZE = SC::BLOCK_SIZE;
 	protected:
-		static inline void gcm_hash(const uint8_t H[16], uint8_t S[16], const uint8_t data[16], std::size_t data_sz)
+		static inline void gcm_gen_tables(const uint8_t H[16], uint64_t HH[16], uint64_t HL[16])
 		{
+			uint64_t vl, vh;
+
+			GET_UINT64(vl, H, 8);
+			GET_UINT64(vh, H, 0);
+
+			// 8 = 0b1000 is 1 in GCM representation
+			HL[8] = vl;
+			HH[8] = vh;
+
+			HL[0] = 0;
+			HH[0] = 0;
+
+			// Compute HX, HX^2, ...
+			for ( std::size_t i = 4 ; i > 0 ; i >>= 1 ) {
+				uint64_t mod = (vl & 0x01) ? UL64(0xE100000000000000) : 0;
+
+				vl = (vh << 63) | (vl >> 1);
+				vh = (vh >>  1) ^ mod; 
+
+				HL[i] = vl;
+				HH[i] = vh;
+			}
+
+			for ( std::size_t i = 2 ; i <= 8 ; i <<= 1 ) {
+				vl = HL[i];
+				vh = HH[i];
+
+				// Compute HX + H, HX^2 + H, HX^2 + HX, ...
+				for ( std::size_t j = 1 ; j < i ; ++j ) {
+					HL[i + j] = vl ^ HL[j];
+					HH[i + j] = vh ^ HH[j];
+				}
+			}
+		}
+
+		static inline void gcm_hash(const uint64_t HH[16], const uint64_t HL[16],
+				uint8_t S[16], const uint8_t data[16], std::size_t data_sz)
+		{
+			static const uint64_t rem4[16] = {
+				UL64(0x0000000000000000), UL64(0x1C20000000000000), UL64(0x3840000000000000), UL64(0x2460000000000000),
+				UL64(0x7080000000000000), UL64(0x6CA0000000000000), UL64(0x48C0000000000000), UL64(0x54E0000000000000),
+				UL64(0xE100000000000000), UL64(0xFD20000000000000), UL64(0xD940000000000000), UL64(0xC560000000000000),
+				UL64(0x9180000000000000), UL64(0x8DA0000000000000), UL64(0xA9C0000000000000), UL64(0xB5E0000000000000)
+			};
+			uint8_t lo, hi, rem;
+			uint64_t zl, zh;
+
 			for ( std::size_t i = 0 ; i < data_sz ; ++i ) {
 				S[i] ^= data[i];
 			}
 
-			gcm_mult(H, S);
-		}
+			zl = zh = 0x00;
 
-		// TODO: optimization through precompute table
-		static inline void gcm_mult(const uint8_t H[16], uint8_t S[16])
-		{
-			// S = S * H
-			uint64_t xl, xh;
-			uint64_t vl, vh;
-			uint64_t zl, zh;
-			uint64_t rl, rh;
+			for ( std::size_t i = 15 ; i < 16 ; --i ) {
+				lo = S[i] & 0x0F;
+				hi = S[i] >> 4;
 
-			GET_UINT64(xh, S, 0);
-			GET_UINT64(xl, S, 8);
+				rem = zl & 0x0F;
+				zl  = (zh << 60) | (zl >> 4);
+				zh  = (zh >> 4) ^ rem4[rem];
+				zl ^= HL[lo];
+				zh ^= HH[lo];
 
-			GET_UINT64(vh, H, 0);
-			GET_UINT64(vl, H, 8);
-
-			zl = UL64(0x0000000000000000);
-			zh = UL64(0x0000000000000000);
-
-			rl = UL64(0x0000000000000000);
-			rh = UL64(0xE100000000000000);
-
-			for ( std::size_t i = 0 ; i < 128 ; ++i ) {
-				if ( 0 != ((xh >> 63) & 0x01) ) {
-					zl = zl ^ vl;
-					zh = zh ^ vh;
-				}
-
-				if ( 0 != (vl & 0x01) ) {
-					vl = ((vh & 0x01) << 63) | (vl >> 1);
-					vh = vh >> 1;
-
-					vl ^= rl;
-					vh ^= rh;
-				} else {
-					vl = ((vh & 0x01) << 63) | (vl >> 1);
-					vh = vh >> 1;
-				}
-
-				xh = (xh << 1) | (xl >> 63);
-				xl =  xl << 1;
+				rem = zl & 0x0F;
+				zl  = (zh << 60) | (zl >> 4);
+				zh  = (zh >> 4) ^ rem4[rem];
+				zl ^= HL[hi];
+				zh ^= HH[hi];
 			}
 
 			PUT_UINT64(zh, S, 0);
@@ -264,16 +293,16 @@ class GCM : public CipherMode
 
 		static void inc_cb(uint8_t CB[16])
 		{
-			for ( std::size_t i = 15 ; i > 11 ; --i ) {
-				if ( ++CB[i] != 0 ) {
-					break;
-				}
-			}
+			if ( ++CB[15] != 0 ) { return; }
+			if ( ++CB[14] != 0 ) { return; }
+			if ( ++CB[13] != 0 ) { return; }
+			if ( ++CB[12] != 0 ) { return; }
 		}
 
 		SC sc_ctx;
 
-		uint8_t H[16];
+		uint64_t HH[16];
+		uint64_t HL[16];
 		uint8_t CB[16];
 		uint8_t S[16];
 		uint8_t base[16];

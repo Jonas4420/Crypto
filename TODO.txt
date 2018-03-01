@@ -1,5 +1,4 @@
 Sym
-	GCM mode
 	CS1, CS2, CS3
 Asym
 	ECDomainParameters + tests

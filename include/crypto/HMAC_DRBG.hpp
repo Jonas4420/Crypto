@@ -74,8 +74,12 @@ class HMAC_DRBG : public DRBG
 
 		~HMAC_DRBG(void)
 		{
-			zeroize(V, sizeof(V));
-			zeroize(K, sizeof(K));
+			zeroize(&security_strength, sizeof(security_strength));
+			zeroize(V,                  sizeof(V));
+			zeroize(K,                  sizeof(K));
+			zeroize(&reseed_counter,    sizeof(reseed_counter));
+			zeroize(&reseed_interval,   sizeof(reseed_interval));
+			zeroize(&thread_safe,       sizeof(thread_safe));
 		}
 
 		int reseed(const uint8_t *entropy, std::size_t entropy_sz,
