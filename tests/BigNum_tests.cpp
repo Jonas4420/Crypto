@@ -48,14 +48,14 @@ TEST(BigNum, constructors)
 		Crypto::BigNum X;
 
 		EXPECT_THAT(X.get_bit(42), 0);
-		EXPECT_THAT(X.lsb(),       0);
-		EXPECT_THAT(X.bitlen(),    0);
-		EXPECT_THAT(X.size(),      1);
+		EXPECT_THAT(X.lsb(), 0);
+		EXPECT_THAT(X.bitlen(), 0);
+		EXPECT_THAT(X.size(), 1);
 	}
 
 	// Int constructor
 	{
-		int val     = 42;
+		int val = 42;
 		int val_neg = -val;
 
 		Crypto::BigNum X(val);
@@ -71,7 +71,7 @@ TEST(BigNum, constructors)
 
 	// Copy constructor
 	{
-		int val     = 42;
+		int val = 42;
 		int val_neg = -val;
 
 		Crypto::BigNum X(val);
@@ -87,7 +87,7 @@ TEST(BigNum, constructors)
 
 	// Move constructor
 	{
-		int val     = 42;
+		int val = 42;
 		int val_neg = -val;
 
 		Crypto::BigNum X(val);
@@ -105,7 +105,7 @@ TEST(BigNum, constructors)
 
 	// Copy assignment operator
 	{
-		int val     = 42;
+		int val = 42;
 		int val_neg = -val;
 
 		Crypto::BigNum X(val);
@@ -124,7 +124,7 @@ TEST(BigNum, constructors)
 
 	// Move assignment operator
 	{
-		int val     = 42;
+		int val = 42;
 		int val_neg = -val;
 
 		Crypto::BigNum X(val);
@@ -627,8 +627,8 @@ TEST(BigNum, div)
 		Crypto::BigNum Q = result.first;
 		Crypto::BigNum R = result.second;
 
-		EXPECT_EQ(Q,  A);
-		EXPECT_EQ(R,  B);
+		EXPECT_EQ(Q, A);
+		EXPECT_EQ(R, B);
 	}
 }
 
@@ -869,9 +869,9 @@ TEST(BigNum, signs)
 		Crypto::BigNum D(test[3]);
 		int s = atoi(test[4].c_str());
 
-		EXPECT_EQ(+A,       B);
-		EXPECT_EQ(-A,       C);
-		EXPECT_EQ(A.abs(),  D);
+		EXPECT_EQ(+A, B);
+		EXPECT_EQ(-A, C);
+		EXPECT_EQ(A.abs(), D);
 		if ( A != 0 ) {
 			EXPECT_EQ(A.sign(), s);
 		}
@@ -1313,7 +1313,7 @@ TEST(BigNum, gen_prime)
 
 	for ( auto test : tests ) {
 		std::size_t bits = (std::size_t)(atoi(test[0].c_str()));
-		bool safe        = test[1] == "true";
+		bool safe = test[1] == "true";
 
 		Crypto::BigNum X = Crypto::BigNum::gen_prime(bits, rnd_std_rand, NULL, safe);
 

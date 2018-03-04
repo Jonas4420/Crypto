@@ -66,17 +66,17 @@ TEST(Serpent, KAT_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
-			uint8_t plain[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz   = sizeof(key);
-			std::size_t plain_sz = sizeof(plain);
-			std::string cipher_str;
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::string output_str;
 
 			if ( tests.test_cases[0]["CT"].empty() ) {
 				if ( ! tests.test_cases[0]["KEY"].empty() ) {
@@ -86,9 +86,9 @@ TEST(Serpent, KAT_enc)
 				}
 
 				if ( ! tests.test_cases[0]["PT"].empty() ) {
-					res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+					res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
 					EXPECT_EQ(res, 0);
-					std::reverse(plain, plain + plain_sz);
+					std::reverse(input, input + input_sz);
 				}
 
 				tests.test_cases.erase(tests.test_cases.begin());
@@ -102,19 +102,19 @@ TEST(Serpent, KAT_enc)
 				}
 
 				if ( ! test["PT"].empty() ) {
-					res = Crypto::Utils::from_hex(test["PT"], plain, plain_sz);
+					res = Crypto::Utils::from_hex(test["PT"], input, input_sz);
 					EXPECT_EQ(res, 0);
-					std::reverse(plain, plain + plain_sz);
+					std::reverse(input, input + input_sz);
 				}
 
 				Crypto::Serpent ctx(key, key_sz);
-				ctx.encrypt(plain, cipher);
+				ctx.encrypt(input, output);
 
-				std::reverse(cipher, cipher + sizeof(cipher));
-				res = Crypto::Utils::to_hex(cipher, sizeof(cipher), cipher_str, false);
+				std::reverse(output, output + sizeof(output));
+				res = Crypto::Utils::to_hex(output, sizeof(output), output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CT"]);
+				EXPECT_EQ(output_str, test["CT"]);
 			}
 		}
 	}
@@ -129,28 +129,28 @@ TEST(Serpent, MonteCarlo_ECB_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
-			uint8_t plain[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher[2][Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher_rev[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t plain_sz  = sizeof(plain);
-			std::size_t cipher_sz = sizeof(cipher[0]);
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[2][Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output_rev[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
 			std::size_t pad_sz = 0;
-			std::string cipher_str;
+			std::string output_str;
 
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
 			EXPECT_EQ(res, 0);
 			std::reverse(key, key + key_sz);
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
 			EXPECT_EQ(res, 0);
-			std::reverse(plain, plain + plain_sz);
+			std::reverse(input, input + input_sz);
 
 			int iterations = 0;
 			for ( auto test : tests ) {
@@ -162,34 +162,34 @@ TEST(Serpent, MonteCarlo_ECB_enc)
 				Crypto::ECB<Crypto::Serpent> ctx(key, key_sz, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(cipher[0], cipher[1], cipher_sz);
+					memcpy(output[0], output[1], output_sz);
 
-					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
+					res = ctx.update(input, input_sz, output[1], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(plain, cipher[1], plain_sz);
+					memcpy(input, output[1], input_sz);
 				}
 
-				memcpy(cipher_rev, cipher[1], cipher_sz);
-				std::reverse(cipher_rev, cipher_rev + cipher_sz);
-				res = Crypto::Utils::to_hex(cipher_rev, cipher_sz, cipher_str, false);
+				memcpy(output_rev, output[1], output_sz);
+				std::reverse(output_rev, output_rev + output_sz);
+				res = Crypto::Utils::to_hex(output_rev, output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CT"]);
+				EXPECT_EQ(output_str, test["CT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					if ( i < (key_sz - 16) ) {
-						key[i] ^= cipher[0][i + (32 - key_sz)];
+						key[i] ^= output[0][i + (32 - key_sz)];
 					} else {
-						key[i] ^= cipher[1][i - (key_sz - 16)];
+						key[i] ^= output[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(plain, cipher[1], plain_sz);
+				memcpy(input, output[1], input_sz);
 			}
 		}
 	}
@@ -204,22 +204,22 @@ TEST(Serpent, MonteCarlo_CBC_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
 			uint8_t iv[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher[2][Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher_rev[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t iv_sz     = sizeof(iv);
-			std::size_t plain_sz  = sizeof(plain);
-			std::size_t cipher_sz = sizeof(cipher[0]);
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[2][Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output_rev[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t iv_sz = sizeof(iv);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
 			std::size_t pad_sz = 0;
-			std::string cipher_str;
+			std::string output_str;
 
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
 			EXPECT_EQ(res, 0);
@@ -229,9 +229,9 @@ TEST(Serpent, MonteCarlo_CBC_enc)
 			EXPECT_EQ(res, 0);
 			std::reverse(iv, iv + iv_sz);
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], plain, plain_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
 			EXPECT_EQ(res, 0);
-			std::reverse(plain, plain + plain_sz);
+			std::reverse(input, input + input_sz);
 
 			int iterations = 0;
 			for ( auto test : tests ) {
@@ -243,35 +243,35 @@ TEST(Serpent, MonteCarlo_CBC_enc)
 				Crypto::CBC<Crypto::Serpent> ctx(key, key_sz, iv, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(cipher[0], cipher[1], cipher_sz);
+					memcpy(output[0], output[1], output_sz);
 
-					res = ctx.update(plain, plain_sz, cipher[1], cipher_sz);
+					res = ctx.update(input, input_sz, output[1], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(plain, (i == 0) ? iv : cipher[0], plain_sz);
+					memcpy(input, (i == 0) ? iv : output[0], input_sz);
 				}
 
-				memcpy(cipher_rev, cipher[1], cipher_sz);
-				std::reverse(cipher_rev, cipher_rev + cipher_sz);
-				res = Crypto::Utils::to_hex(cipher_rev, cipher_sz, cipher_str, false);
+				memcpy(output_rev, output[1], output_sz);
+				std::reverse(output_rev, output_rev + output_sz);
+				res = Crypto::Utils::to_hex(output_rev, output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CT"]);
+				EXPECT_EQ(output_str, test["CT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					if ( i < (key_sz - 16) ) {
-						key[i] ^= cipher[0][i + (32 - key_sz)];
+						key[i] ^= output[0][i + (32 - key_sz)];
 					} else {
-						key[i] ^= cipher[1][i - (key_sz - 16)];
+						key[i] ^= output[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(iv,    cipher[1], iv_sz);
-				memcpy(plain, cipher[0], plain_sz);
+				memcpy(iv, output[1], iv_sz);
+				memcpy(input, output[0], input_sz);
 			}
 		}
 	}
@@ -286,17 +286,17 @@ TEST(Serpent, KAT_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
-			uint8_t cipher[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t cipher_sz = sizeof(cipher);
-			std::string expected_str, plain_str;
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::string expected_str, output_str;
 
 			if ( tests.test_cases[0]["CT"].empty() ) {
 				if ( ! tests.test_cases[0]["KEY"].empty() ) {
@@ -319,22 +319,22 @@ TEST(Serpent, KAT_dec)
 					std::reverse(key, key + key_sz);
 				}
 
-				res = Crypto::Utils::from_hex(test["CT"], cipher, cipher_sz);
+				res = Crypto::Utils::from_hex(test["CT"], input, input_sz);
 				EXPECT_EQ(res, 0);
-				std::reverse(cipher, cipher + cipher_sz);
+				std::reverse(input, input + input_sz);
 
 				Crypto::Serpent ctx(key, key_sz);
-				ctx.decrypt(cipher, plain);
+				ctx.decrypt(input, output);
 
-				std::reverse(plain, plain + sizeof(plain));
-				res = Crypto::Utils::to_hex(plain, sizeof(plain), plain_str, false);
+				std::reverse(output, output + sizeof(output));
+				res = Crypto::Utils::to_hex(output, sizeof(output), output_str, false);
 				EXPECT_EQ(res, 0);
 
 				if ( ! test["PT"].empty() ) {
 					expected_str = test["PT"];
 				}
 
-				EXPECT_EQ(plain_str, expected_str);
+				EXPECT_EQ(output_str, expected_str);
 			}
 		}
 	}
@@ -349,28 +349,28 @@ TEST(Serpent, MonteCarlo_ECB_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
-			uint8_t cipher[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain[2][Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain_rev[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t cipher_sz = sizeof(cipher);
-			std::size_t plain_sz  = sizeof(plain[0]);
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[2][Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output_rev[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
 			std::size_t pad_sz = 0;
-			std::string plain_str;
+			std::string output_str;
 
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
 			EXPECT_EQ(res, 0);
 			std::reverse(key, key + key_sz);
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
 			EXPECT_EQ(res, 0);
-			std::reverse(cipher, cipher + cipher_sz);
+			std::reverse(input, input + input_sz);
 
 			int iterations = 0;
 			for ( auto test : tests ) {
@@ -382,30 +382,30 @@ TEST(Serpent, MonteCarlo_ECB_dec)
 				Crypto::ECB<Crypto::Serpent> ctx(key, key_sz, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(plain[0], plain[1], plain_sz);
+					memcpy(output[0], output[1], output_sz);
 
-					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
+					res = ctx.update(input, input_sz, output[1], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(cipher, plain[1], cipher_sz);
+					memcpy(input, output[1], input_sz);
 				}
 
-				memcpy(plain_rev, plain[1], plain_sz);
-				std::reverse(plain_rev, plain_rev + plain_sz);
-				res = Crypto::Utils::to_hex(plain_rev, plain_sz, plain_str, false);
+				memcpy(output_rev, output[1], output_sz);
+				std::reverse(output_rev, output_rev + output_sz);
+				res = Crypto::Utils::to_hex(output_rev, output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(plain_str, test["PT"]);
+				EXPECT_EQ(output_str, test["PT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					if ( i < (key_sz - 16) ) {
-						key[i] ^= plain[0][i + (32 - key_sz)];
+						key[i] ^= output[0][i + (32 - key_sz)];
 					} else {
-						key[i] ^= plain[1][i - (key_sz - 16)];
+						key[i] ^= output[1][i - (key_sz - 16)];
 					}
 				}
 			}
@@ -422,22 +422,22 @@ TEST(Serpent, MonteCarlo_CBC_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "Serpent/" + file;
 
-		auto test_vectors = TestVectors::AESCandidateParser(file_path);
+		auto test_vectors = TestVectors::AESContestParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[32];
 			uint8_t iv[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t cipher[Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain[2][Crypto::Serpent::BLOCK_SIZE];
-			uint8_t plain_rev[Crypto::Serpent::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t iv_sz     = sizeof(iv);
-			std::size_t cipher_sz = sizeof(cipher);
-			std::size_t plain_sz  = sizeof(plain[0]);
+			uint8_t input[Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output[2][Crypto::Serpent::BLOCK_SIZE];
+			uint8_t output_rev[Crypto::Serpent::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t iv_sz = sizeof(iv);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
 			std::size_t pad_sz = 0;
-			std::string plain_str;
+			std::string output_str;
 
 			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
 			EXPECT_EQ(res, 0);
@@ -447,9 +447,9 @@ TEST(Serpent, MonteCarlo_CBC_dec)
 			EXPECT_EQ(res, 0);
 			std::reverse(iv, iv + iv_sz);
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], cipher, cipher_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
 			EXPECT_EQ(res, 0);
-			std::reverse(cipher, cipher + cipher_sz);
+			std::reverse(input, input + input_sz);
 
 			int iterations = 0;
 			for ( auto test : tests ) {
@@ -461,36 +461,36 @@ TEST(Serpent, MonteCarlo_CBC_dec)
 				Crypto::CBC<Crypto::Serpent> ctx(key, key_sz, iv, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(plain[0], plain[1], plain_sz);
+					memcpy(output[0], output[1], output_sz);
 
-					res = ctx.update(cipher, cipher_sz, plain[1], plain_sz);
+					res = ctx.update(input, input_sz, output[1], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(iv,     plain[0], iv_sz);
-					memcpy(cipher, plain[1], cipher_sz);
+					memcpy(iv, output[0], iv_sz);
+					memcpy(input, output[1], input_sz);
 				}
 
-				memcpy(plain_rev, plain[1], plain_sz);
-				std::reverse(plain_rev, plain_rev + plain_sz);
-				res = Crypto::Utils::to_hex(plain_rev, plain_sz, plain_str, false);
+				memcpy(output_rev, output[1], output_sz);
+				std::reverse(output_rev, output_rev + output_sz);
+				res = Crypto::Utils::to_hex(output_rev, output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(plain_str, test["PT"]);
+				EXPECT_EQ(output_str, test["PT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
 					if ( i < (key_sz - 16) ) {
-						key[i] ^= plain[0][i + (32 - key_sz)];
+						key[i] ^= output[0][i + (32 - key_sz)];
 					} else {
-						key[i] ^= plain[1][i - (key_sz - 16)];
+						key[i] ^= output[1][i - (key_sz - 16)];
 					}
 				}
 
-				memcpy(iv,     plain[0], iv_sz);
-				memcpy(cipher, plain[1], cipher_sz);
+				memcpy(iv, output[0], iv_sz);
+				memcpy(input, output[1], input_sz);
 			}
 		}
 	}

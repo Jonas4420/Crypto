@@ -31,26 +31,26 @@ TEST(CTR, encrypt_test_vector)
 		uint8_t counter[Crypto::AES::BLOCK_SIZE];
 		std::size_t counter_sz = sizeof(counter);
 
-		uint8_t plain[Crypto::AES::BLOCK_SIZE * 10];
-		std::size_t plain_sz = sizeof(plain);
+		uint8_t input[Crypto::AES::BLOCK_SIZE * 10];
+		std::size_t input_sz = sizeof(input);
 
 
-		uint8_t cipher[Crypto::AES::BLOCK_SIZE * 10];
-		std::size_t cipher_sz = sizeof(cipher);
-		std::string ciphertext;
+		uint8_t output[Crypto::AES::BLOCK_SIZE * 10];
+		std::size_t output_sz = sizeof(output);
+		std::string outputtext;
 
-		Crypto::Utils::from_hex(test[0], key,     key_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
 		Crypto::Utils::from_hex(test[1], counter, counter_sz);
-		Crypto::Utils::from_hex(test[2], plain,   plain_sz);
+		Crypto::Utils::from_hex(test[2], input, input_sz);
 
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
 		std::size_t current_sz, offset;
 		offset = 0;
-		for ( std::size_t i = 0 ; i < plain_sz ; ++i ) {
-			current_sz = cipher_sz - offset;
+		for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
+			current_sz = output_sz - offset;
 
-			res = ctx.update(plain + i, 1, cipher + offset, current_sz);
+			res = ctx.update(input + i, 1, output + offset, current_sz);
 			EXPECT_EQ(res, 0);
 
 			offset += current_sz;
@@ -60,8 +60,8 @@ TEST(CTR, encrypt_test_vector)
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
 
-		Crypto::Utils::to_hex(cipher, offset, ciphertext, false);
-		EXPECT_THAT(ciphertext, test[3]);
+		Crypto::Utils::to_hex(output, offset, outputtext, false);
+		EXPECT_THAT(outputtext, test[3]);
 	}
 }
 
@@ -89,25 +89,25 @@ TEST(CTR, decrypt_test_vector)
 		uint8_t counter[Crypto::AES::BLOCK_SIZE];
 		std::size_t counter_sz = sizeof(counter);
 
-		uint8_t cipher[Crypto::AES::BLOCK_SIZE * 10];
-		std::size_t cipher_sz = sizeof(cipher);
+		uint8_t input[Crypto::AES::BLOCK_SIZE * 10];
+		std::size_t input_sz = sizeof(input);
 
-		uint8_t plain[Crypto::AES::BLOCK_SIZE * 10];
-		std::size_t plain_sz = sizeof(plain);
-		std::string plaintext;
+		uint8_t output[Crypto::AES::BLOCK_SIZE * 10];
+		std::size_t output_sz = sizeof(output);
+		std::string outputtext;
 
-		Crypto::Utils::from_hex(test[0], key,     key_sz);
+		Crypto::Utils::from_hex(test[0], key, key_sz);
 		Crypto::Utils::from_hex(test[1], counter, counter_sz);
-		Crypto::Utils::from_hex(test[2], cipher,  cipher_sz);
+		Crypto::Utils::from_hex(test[2], input, input_sz);
 
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
 		std::size_t current_sz, offset;
 		offset = 0;
-		for ( std::size_t i = 0 ; i < cipher_sz ; ++i ) {
-			current_sz = plain_sz - offset;
+		for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
+			current_sz = output_sz - offset;
 
-			res = ctx.update(cipher + i, 1, plain + offset, current_sz);
+			res = ctx.update(input + i, 1, output + offset, current_sz);
 			EXPECT_EQ(res, 0);
 
 			offset += current_sz;
@@ -117,8 +117,8 @@ TEST(CTR, decrypt_test_vector)
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
 
-		Crypto::Utils::to_hex(plain, offset, plaintext, false);
-		EXPECT_THAT(plaintext, test[3]);
+		Crypto::Utils::to_hex(output, offset, outputtext, false);
+		EXPECT_THAT(outputtext, test[3]);
 	}
 }
 
@@ -134,32 +134,32 @@ TEST(CTR, update_sz)
 	std::size_t counter_sz = sizeof(counter);
 	memset(counter, 0x00, counter_sz);
 
-	uint8_t plain[32];
-	std::size_t plain_sz = sizeof(plain);
-	memset(plain, 0x00, plain_sz);
+	uint8_t input[32];
+	std::size_t input_sz = sizeof(input);
+	memset(input, 0x00, input_sz);
 
-	uint8_t cipher[32];
-	std::size_t cipher_sz = sizeof(cipher);
-	memset(cipher, 0x00, cipher_sz);
+	uint8_t output[32];
+	std::size_t output_sz = sizeof(output);
+	memset(output, 0x00, output_sz);
 
 	// Buffer empty, provide < BLOCK_SIZE, space 0
 	{
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
-		cipher_sz = 0;
-		ret = ctx.update(plain, 8, cipher, cipher_sz);
+		output_sz = 0;
+		ret = ctx.update(input, 8, output, output_sz);
 		EXPECT_EQ(ret, 1);
-		EXPECT_EQ(cipher_sz, (std::size_t)8);
+		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 
 	// Buffer empty, provide = BLOCK_SIZE, space 0
 	{
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
-		cipher_sz = 8;
-		ret = ctx.update(plain, 8, cipher, cipher_sz);
+		output_sz = 8;
+		ret = ctx.update(input, 8, output, output_sz);
 		EXPECT_EQ(ret, 0);
-		EXPECT_EQ(cipher_sz, (std::size_t)8);
+		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 }
 
@@ -175,21 +175,21 @@ TEST(CTR, finish_sz)
 	std::size_t counter_sz = sizeof(counter);
 	memset(counter, 0x00, counter_sz);
 
-	uint8_t plain[32];
-	std::size_t plain_sz = sizeof(plain);
-	memset(plain, 0x00, plain_sz);
+	uint8_t input[32];
+	std::size_t input_sz = sizeof(input);
+	memset(input, 0x00, input_sz);
 
-	uint8_t cipher[32];
-	std::size_t cipher_sz = sizeof(cipher);
-	memset(cipher, 0x00, cipher_sz);
+	uint8_t output[32];
+	std::size_t output_sz = sizeof(output);
+	memset(output, 0x00, output_sz);
 
 	// Buffer empty, not finished
 	{
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
-		cipher_sz = 16;
-		ret = ctx.finish(cipher_sz);
+		output_sz = 16;
+		ret = ctx.finish(output_sz);
 		EXPECT_EQ(ret, 0);
-		EXPECT_EQ(cipher_sz, (std::size_t)0);
+		EXPECT_EQ(output_sz, (std::size_t)0);
 	}
 }

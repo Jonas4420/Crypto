@@ -167,7 +167,7 @@ TEST(HMAC_DRBG, generate_errors)
 		std::string exception, expected = "Requested number of bytes is too big";
 		uint8_t entropy[32];
 		std::size_t entropy_sz = sizeof(entropy);
-		std::size_t random_sz  = (((std::size_t)1) << 16) + 1;
+		std::size_t random_sz = (((std::size_t)1) << 16) + 1;
 
 		Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz);
 
@@ -186,7 +186,7 @@ TEST(HMAC_DRBG, reseed_with_pr)
 	int res;
 	uint8_t entropy[32], random[32];
 	std::size_t entropy_sz = sizeof(entropy);
-	std::size_t random_sz  = sizeof(random);
+	std::size_t random_sz = sizeof(random);
 
 	Crypto::HMAC_DRBG<Crypto::SHA512> ctx(entropy, entropy_sz, NULL, 0, NULL, 0, true, true);
 
@@ -207,16 +207,16 @@ TEST(HMAC_DRBG, KAT_no_reseed)
 	std::string file = "HMAC_DRBG.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "DRBG/no_reseed/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path);
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path);
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
-		bool pr                = (tests["PredictionResistance"] == "True");
-		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str())          / 8;
-		std::size_t nonce_sz   = atoi(tests["NonceLen"].c_str())                 / 8;
-		std::size_t perso_sz   = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
-		std::size_t add_sz     = atoi(tests["AdditionalInputLen"].c_str())       / 8;
-		std::size_t random_sz  = atoi(tests["ReturnedBitsLen"].c_str())          / 8;
+		bool pr = (tests["PredictionResistance"] == "True");
+		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str()) / 8;
+		std::size_t nonce_sz = atoi(tests["NonceLen"].c_str()) / 8;
+		std::size_t perso_sz = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
+		std::size_t add_sz = atoi(tests["AdditionalInputLen"].c_str()) / 8;
+		std::size_t random_sz = atoi(tests["ReturnedBitsLen"].c_str()) / 8;
 
 		std::unique_ptr<uint8_t[]> entropy(new uint8_t[entropy_sz]);
 		std::unique_ptr<uint8_t[]> nonce(new uint8_t[nonce_sz]);
@@ -231,11 +231,11 @@ TEST(HMAC_DRBG, KAT_no_reseed)
 			std::string random_str;
 
 			res = 0;
-			res += Crypto::Utils::from_hex(test["EntropyInput"],          entropy.get(), entropy_sz);
-			res += Crypto::Utils::from_hex(test["Nonce"],                 nonce.get(),   nonce_sz);
-			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(),   perso_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:0"],     add_1.get(),   add_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:1"],     add_2.get(),   add_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInput"], entropy.get(), entropy_sz);
+			res += Crypto::Utils::from_hex(test["Nonce"], nonce.get(), nonce_sz);
+			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(), perso_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:0"], add_1.get(), add_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:1"], add_2.get(), add_sz);
 			EXPECT_EQ(res, 0);
 
 			if ( "SHA-1" == tests.name ) {
@@ -271,16 +271,16 @@ TEST(HMAC_DRBG, KAT_pr_false)
 	std::string file = "HMAC_DRBG.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "DRBG/pr_false/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path);
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path);
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
-		bool pr                = (tests["PredictionResistance"] == "True");
-		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str())          / 8;
-		std::size_t nonce_sz   = atoi(tests["NonceLen"].c_str())                 / 8;
-		std::size_t perso_sz   = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
-		std::size_t add_sz     = atoi(tests["AdditionalInputLen"].c_str())       / 8;
-		std::size_t random_sz  = atoi(tests["ReturnedBitsLen"].c_str())          / 8;
+		bool pr = (tests["PredictionResistance"] == "True");
+		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str()) / 8;
+		std::size_t nonce_sz = atoi(tests["NonceLen"].c_str()) / 8;
+		std::size_t perso_sz = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
+		std::size_t add_sz = atoi(tests["AdditionalInputLen"].c_str()) / 8;
+		std::size_t random_sz = atoi(tests["ReturnedBitsLen"].c_str()) / 8;
 
 		std::unique_ptr<uint8_t[]> entropy(new uint8_t[entropy_sz]);
 		std::unique_ptr<uint8_t[]> nonce(new uint8_t[nonce_sz]);
@@ -297,13 +297,13 @@ TEST(HMAC_DRBG, KAT_pr_false)
 			std::string random_str;
 
 			res = 0;
-			res += Crypto::Utils::from_hex(test["EntropyInput"],          entropy.get(),    entropy_sz);
-			res += Crypto::Utils::from_hex(test["Nonce"],                 nonce.get(),      nonce_sz);
-			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(),      perso_sz);
-			res += Crypto::Utils::from_hex(test["EntropyInputReseed"],    reseed.get(),     entropy_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInput"], entropy.get(), entropy_sz);
+			res += Crypto::Utils::from_hex(test["Nonce"], nonce.get(), nonce_sz);
+			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(), perso_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInputReseed"], reseed.get(), entropy_sz);
 			res += Crypto::Utils::from_hex(test["AdditionalInputReseed"], add_reseed.get(), add_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:0"],     add_1.get(),      add_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:1"],     add_2.get(),      add_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:0"], add_1.get(), add_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:1"], add_2.get(), add_sz);
 			EXPECT_EQ(res, 0);
 
 			if ( "SHA-1" == tests.name ) {
@@ -342,16 +342,16 @@ TEST(HMAC_DRBG, KAT_pr_true)
 	std::string file = "HMAC_DRBG.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "DRBG/pr_true/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path);
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path);
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
-		bool pr                = (tests["PredictionResistance"] == "True");
-		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str())          / 8;
-		std::size_t nonce_sz   = atoi(tests["NonceLen"].c_str())                 / 8;
-		std::size_t perso_sz   = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
-		std::size_t add_sz     = atoi(tests["AdditionalInputLen"].c_str())       / 8;
-		std::size_t random_sz  = atoi(tests["ReturnedBitsLen"].c_str())          / 8;
+		bool pr = (tests["PredictionResistance"] == "True");
+		std::size_t entropy_sz = atoi(tests["EntropyInputLen"].c_str()) / 8;
+		std::size_t nonce_sz = atoi(tests["NonceLen"].c_str()) / 8;
+		std::size_t perso_sz = atoi(tests["PersonalizationStringLen"].c_str()) / 8;
+		std::size_t add_sz = atoi(tests["AdditionalInputLen"].c_str()) / 8;
+		std::size_t random_sz = atoi(tests["ReturnedBitsLen"].c_str()) / 8;
 
 		std::unique_ptr<uint8_t[]> entropy(new uint8_t[entropy_sz]);
 		std::unique_ptr<uint8_t[]> nonce(new uint8_t[nonce_sz]);
@@ -368,13 +368,13 @@ TEST(HMAC_DRBG, KAT_pr_true)
 			std::string random_str;
 
 			res = 0;
-			res += Crypto::Utils::from_hex(test["EntropyInput"],          entropy.get(),      entropy_sz);
-			res += Crypto::Utils::from_hex(test["Nonce"],                 nonce.get(),        nonce_sz);
-			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(),        perso_sz);
-			res += Crypto::Utils::from_hex(test["EntropyInputPR:0"],      entropy_pr_1.get(), entropy_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:0"],     add_1.get(),        add_sz);
-			res += Crypto::Utils::from_hex(test["EntropyInputPR:1"],      entropy_pr_2.get(), entropy_sz);
-			res += Crypto::Utils::from_hex(test["AdditionalInput:1"],     add_2.get(),        add_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInput"], entropy.get(), entropy_sz);
+			res += Crypto::Utils::from_hex(test["Nonce"], nonce.get(), nonce_sz);
+			res += Crypto::Utils::from_hex(test["PersonalizationString"], perso.get(), perso_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInputPR:0"], entropy_pr_1.get(), entropy_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:0"], add_1.get(), add_sz);
+			res += Crypto::Utils::from_hex(test["EntropyInputPR:1"], entropy_pr_2.get(), entropy_sz);
+			res += Crypto::Utils::from_hex(test["AdditionalInput:1"], add_2.get(), add_sz);
 			EXPECT_EQ(res, 0);
 
 			if ( "SHA-1" == tests.name ) {

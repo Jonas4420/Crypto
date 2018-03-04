@@ -172,7 +172,7 @@ TEST(SHA3_224, KAT)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 224"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 224"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -208,7 +208,7 @@ TEST(SHA3_224, MonteCarlo)
 
 	std::string file_path = TestOptions::get().vect_dir + "SHA3/" + "SHA3_224Monte.rsp";
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L = 224"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 224"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -238,7 +238,7 @@ TEST(SHA3_224, update_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 224"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 224"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -280,7 +280,7 @@ TEST(SHA3_224, reset_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 224"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 224"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -328,7 +328,7 @@ TEST(SHA3_256, KAT)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 256"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 256"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -364,7 +364,7 @@ TEST(SHA3_256, MonteCarlo)
 
 	std::string file_path = TestOptions::get().vect_dir + "SHA3/" + "SHA3_256Monte.rsp";
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L = 256"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 256"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -394,7 +394,7 @@ TEST(SHA3_256, update_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 256"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 256"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -436,7 +436,7 @@ TEST(SHA3_256, reset_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 256"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 256"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -484,7 +484,7 @@ TEST(SHA3_384, KAT)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 384"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 384"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -520,7 +520,7 @@ TEST(SHA3_384, MonteCarlo)
 
 	std::string file_path = TestOptions::get().vect_dir + "SHA3/" + "SHA3_384Monte.rsp";
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L = 384"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 384"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -550,7 +550,7 @@ TEST(SHA3_384, update_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 384"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 384"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -592,7 +592,7 @@ TEST(SHA3_384, reset_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 384"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 384"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -640,7 +640,7 @@ TEST(SHA3_512, KAT)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 512"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 512"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -676,7 +676,7 @@ TEST(SHA3_512, MonteCarlo)
 
 	std::string file_path = TestOptions::get().vect_dir + "SHA3/" + "SHA3_512Monte.rsp";
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L = 512"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 512"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -706,7 +706,7 @@ TEST(SHA3_512, update_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 512"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 512"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -748,7 +748,7 @@ TEST(SHA3_512, reset_ctx)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "SHA3/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["L = 512"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L = 512"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {

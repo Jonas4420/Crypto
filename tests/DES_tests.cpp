@@ -98,8 +98,7 @@ TEST(DES, check_parity)
 			// Check the parity with a function
 			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
 				parity = key[j] ^ (key[j] >> 4);
-				parity =   parity       ^ (parity >> 1)
-					^ (parity >> 2) ^ (parity >> 3);
+				parity = parity ^ (parity >> 1) ^ (parity >> 2) ^ (parity >> 3);
 				parity &= 1;
 
 				EXPECT_EQ(parity, 1);
@@ -147,32 +146,32 @@ TEST(DES, KAT_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/KAT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["ENCRYPT"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["ENCRYPT"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			for ( auto test : tests ) {
 				int res;
 				uint8_t key[8];
-				uint8_t plain[Crypto::DES::BLOCK_SIZE];
-				uint8_t cipher[Crypto::DES::BLOCK_SIZE];
-				std::size_t key_sz   = sizeof(key);
-				std::size_t plain_sz = sizeof(plain);
-				std::string cipher_str;
+				uint8_t input[Crypto::DES::BLOCK_SIZE];
+				uint8_t output[Crypto::DES::BLOCK_SIZE];
+				std::size_t key_sz = sizeof(key);
+				std::size_t input_sz = sizeof(input);
+				std::string output_str;
 
 				res = Crypto::Utils::from_hex(test["KEYs"], key, key_sz);
 				EXPECT_EQ(res, 0);
 
-				res = Crypto::Utils::from_hex(test["PLAINTEXT"], plain, plain_sz);
+				res = Crypto::Utils::from_hex(test["PLAINTEXT"], input, input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::DES ctx(key, key_sz);
-				ctx.encrypt(plain, cipher);
+				ctx.encrypt(input, output);
 
-				res = Crypto::Utils::to_hex(cipher, sizeof(cipher), cipher_str, false);
+				res = Crypto::Utils::to_hex(output, sizeof(output), output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
+				EXPECT_EQ(output_str, test["CIPHERTEXT"]);
 			}
 		}
 	}
@@ -189,32 +188,32 @@ TEST(DES, KAT_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/KAT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["DECRYPT"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["DECRYPT"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			for ( auto test : tests ) {
 				int res;
 				uint8_t key[8];
-				uint8_t cipher[Crypto::DES::BLOCK_SIZE];
-				uint8_t plain[Crypto::DES::BLOCK_SIZE];
-				std::size_t key_sz    = sizeof(key);
-				std::size_t cipher_sz = sizeof(plain);
-				std::string plain_str;
+				uint8_t input[Crypto::DES::BLOCK_SIZE];
+				uint8_t output[Crypto::DES::BLOCK_SIZE];
+				std::size_t key_sz = sizeof(key);
+				std::size_t input_sz = sizeof(output);
+				std::string output_str;
 
 				res = Crypto::Utils::from_hex(test["KEYs"], key, key_sz);
 				EXPECT_EQ(res, 0);
 
-				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], cipher, cipher_sz);
+				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], input, input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::DES ctx(key, key_sz);
-				ctx.decrypt(cipher, plain);
+				ctx.decrypt(input, output);
 
-				res = Crypto::Utils::to_hex(plain, sizeof(plain), plain_str, false);
+				res = Crypto::Utils::to_hex(output, sizeof(output), output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(plain_str, test["PLAINTEXT"]);
+				EXPECT_EQ(output_str, test["PLAINTEXT"]);
 			}
 		}
 	}

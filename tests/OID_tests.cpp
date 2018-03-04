@@ -22,15 +22,15 @@ TEST(OID, construction)
 	oid += 47;
 
 	EXPECT_EQ(oid.size(), 2);
-	EXPECT_EQ(oid[0],  2);
+	EXPECT_EQ(oid[0], 2);
 	EXPECT_EQ(oid[1], 47);
 	EXPECT_EQ(oid.to_string(), "2.47");
 
 	oid += 123;
 
 	EXPECT_EQ(oid.size(), 3);
-	EXPECT_EQ(oid[0],   2);
-	EXPECT_EQ(oid[1],  47);
+	EXPECT_EQ(oid[0], 2);
+	EXPECT_EQ(oid[1], 47);
 	EXPECT_EQ(oid[2], 123);
 	EXPECT_EQ(oid.to_string(), "2.47.123");
 }
@@ -57,7 +57,7 @@ TEST(OID, from_binary)
 	};
 
 	for ( auto test : tests ) {
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
 		Crypto::Utils::from_hex(test[0], data, data_sz);
@@ -73,7 +73,7 @@ TEST(OID, from_binary_abnormal)
 	// Data size is 0
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -93,7 +93,7 @@ TEST(OID, from_binary_abnormal)
 	// Not enough data to process: #1
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -113,7 +113,7 @@ TEST(OID, from_binary_abnormal)
 	// Not enough data to process: #2
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -133,7 +133,7 @@ TEST(OID, from_binary_abnormal)
 	// Last byte is the last byte to process: #1
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -152,7 +152,7 @@ TEST(OID, from_binary_abnormal)
 	// Last byte is the last byte to process: #2
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -171,7 +171,7 @@ TEST(OID, from_binary_abnormal)
 	// Last byte is the last byte to process: #3
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -190,7 +190,7 @@ TEST(OID, from_binary_abnormal)
 	// First bit is 0x80 (not minimal): #1
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -209,7 +209,7 @@ TEST(OID, from_binary_abnormal)
 	// First bit is 0x80 (not minimal): #2
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -228,7 +228,7 @@ TEST(OID, from_binary_abnormal)
 	// Overflow possible: #1
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -247,7 +247,7 @@ TEST(OID, from_binary_abnormal)
 	// Overflow possible: #2
 	{
 		int res;
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected = "Invalid data";
 
@@ -350,7 +350,7 @@ TEST(OID, to_binary_abnormal)
 {
 	// Node size < 2
 	{
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected("Impossible to encode any root OID without any second element");
 
@@ -366,7 +366,7 @@ TEST(OID, to_binary_abnormal)
 
 	// Root node > 2
 	{
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected("Impossible to encode any OID with root 3 or higher");
 
@@ -383,7 +383,7 @@ TEST(OID, to_binary_abnormal)
 	
 	// Root node = 0, second node = 40
 	{
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
 
@@ -400,7 +400,7 @@ TEST(OID, to_binary_abnormal)
 
 	// Root node = 0, second node = 40
 	{
-		uint8_t     data[256];
+		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 		std::string exception, expected("Impossible to encode second child >= 40 if root OID is 0 or 1");
 
@@ -447,10 +447,10 @@ TEST(OID, cmp)
 		oid_2 += 12;
 		oid_2 += 243;
 
-		EXPECT_TRUE(oid_1  == oid_2);
+		EXPECT_TRUE(oid_1 == oid_2);
 		EXPECT_FALSE(oid_1 != oid_2);
-		EXPECT_FALSE(oid_1  < oid_2);
-		EXPECT_FALSE(oid_2  < oid_1);
+		EXPECT_FALSE(oid_1 < oid_2);
+		EXPECT_FALSE(oid_2 < oid_1);
 	}
 
 	// Test case #2
@@ -463,17 +463,17 @@ TEST(OID, cmp)
 		oid_2 += 13;
 		oid_2 += 243;
 
-		EXPECT_TRUE(oid_1  != oid_2);
+		EXPECT_TRUE(oid_1 != oid_2);
 		EXPECT_FALSE(oid_1 == oid_2);
-		EXPECT_TRUE(oid_1   < oid_2);
-		EXPECT_FALSE(oid_2  < oid_1);
+		EXPECT_TRUE(oid_1 < oid_2);
+		EXPECT_FALSE(oid_2 < oid_1);
 	}
 }
 
 TEST(OID, named)
 {
 	Crypto::OID oid = Crypto::OID::secp256r1();
-	uint8_t     data[256];
+	uint8_t data[256];
 	std::size_t data_sz = sizeof(data);
 	std::string oid_str;
 

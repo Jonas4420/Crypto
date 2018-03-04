@@ -113,8 +113,7 @@ TEST(TripleDES, check_parity)
 			// Check the parity with a function
 			for ( std::size_t j = 0 ; j < sizeof(key) ; ++j ) {
 				parity = key[j] ^ (key[j] >> 4);
-				parity =   parity       ^ (parity >> 1)
-					^ (parity >> 2) ^ (parity >> 3);
+				parity = parity ^ (parity >> 1) ^ (parity >> 2) ^ (parity >> 3);
 				parity &= 1;
 
 				EXPECT_EQ(parity, 1);
@@ -160,7 +159,7 @@ TEST(TripleDES, MMT_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/MMT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path);
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -168,35 +167,35 @@ TEST(TripleDES, MMT_enc)
 				int res;
 				uint8_t key[24];
 				std::size_t key_sz = sizeof(key);
-				std::size_t plain_sz  = test["PLAINTEXT"].length() / 2;
-				std::size_t cipher_sz = test["CIPHERTEXT"].length() / 2;
-				std::unique_ptr<uint8_t[]> plain(new uint8_t[plain_sz]);
-				std::unique_ptr<uint8_t[]> cipher(new uint8_t[cipher_sz]);
+				std::size_t input_sz = test["PLAINTEXT"].length() / 2;
+				std::size_t output_sz = test["CIPHERTEXT"].length() / 2;
+				std::unique_ptr<uint8_t[]> input(new uint8_t[input_sz]);
+				std::unique_ptr<uint8_t[]> output(new uint8_t[output_sz]);
 				std::size_t total_sz, current_sz, pad_sz = 0;
-				std::string cipher_str;
+				std::string output_str;
 
 				res = 0;
-				res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz);
-				res += Crypto::Utils::from_hex(test["KEY2"], key + 8,  key_sz);
+				res += Crypto::Utils::from_hex(test["KEY1"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["KEY2"], key + 8, key_sz);
 				res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz);
 				EXPECT_EQ(res, 0);
 
 				key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
-				res = Crypto::Utils::from_hex(test["PLAINTEXT"], plain.get(), plain_sz);
+				res = Crypto::Utils::from_hex(test["PLAINTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, true);
 
-				total_sz = cipher_sz;
-				cipher_sz = 0;
-				for ( std::size_t i = 0 ; i < plain_sz ; ++i ) {
-					current_sz = total_sz - cipher_sz;
+				total_sz = output_sz;
+				output_sz = 0;
+				for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
+					current_sz = total_sz - output_sz;
 
-					res = ctx.update(plain.get() + i, 1, cipher.get() + cipher_sz, current_sz);
+					res = ctx.update(input.get() + i, 1, output.get() + output_sz, current_sz);
 					EXPECT_EQ(res, 0);
 
-					cipher_sz += current_sz;
+					output_sz += current_sz;
 					EXPECT_EQ(res, 0);
 				}
 
@@ -204,10 +203,10 @@ TEST(TripleDES, MMT_enc)
 				EXPECT_EQ(res, 0);
 				EXPECT_EQ(pad_sz, 0);
 
-				res = Crypto::Utils::to_hex(cipher.get(), cipher_sz, cipher_str, false);
+				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
+				EXPECT_EQ(output_str, test["CIPHERTEXT"]);
 			}
 		}
 	}
@@ -222,29 +221,29 @@ TEST(TripleDES, MonteCarlo_enc)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/MCT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["ENCRYPT"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["ENCRYPT"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[24];
-			uint8_t plain[Crypto::TripleDES::BLOCK_SIZE];
-			uint8_t	cipher[3][Crypto::TripleDES::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t plain_sz  = sizeof(plain);
-			std::size_t cipher_sz = sizeof(cipher[0]);
-			std::size_t pad_sz    = 0;
-			std::string cipher_str;
+			uint8_t input[Crypto::TripleDES::BLOCK_SIZE];
+			uint8_t	output[3][Crypto::TripleDES::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
+			std::size_t pad_sz = 0;
+			std::string output_str;
 
 			res = 0;
-			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY1"], key,      key_sz);
-			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY2"], key + 8,  key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY1"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY2"], key + 8, key_sz);
 			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY3"], key + 16, key_sz);
 			EXPECT_EQ(res, 0);
 
 			key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PLAINTEXT"], plain, plain_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["PLAINTEXT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;
@@ -257,29 +256,29 @@ TEST(TripleDES, MonteCarlo_enc)
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, true);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(cipher[0], cipher[1], cipher_sz);
-					memcpy(cipher[1], cipher[2], cipher_sz);
+					memcpy(output[0], output[1], output_sz);
+					memcpy(output[1], output[2], output_sz);
 
-					res = ctx.update(plain, plain_sz, cipher[2], cipher_sz);
+					res = ctx.update(input, input_sz, output[2], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(plain, cipher[2], plain_sz);
+					memcpy(input, output[2], input_sz);
 				}
 
-				res = Crypto::Utils::to_hex(cipher[2], cipher_sz, cipher_str, false);
+				res = Crypto::Utils::to_hex(output[2], output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(cipher_str, test["CIPHERTEXT"]);
+				EXPECT_EQ(output_str, test["CIPHERTEXT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
-					key[i] ^= cipher[2 - (i / 8)][i % 8];
+					key[i] ^= output[2 - (i / 8)][i % 8];
 				}
 
-				memcpy(plain, cipher[2], plain_sz);
+				memcpy(input, output[2], input_sz);
 			}
 		}
 	}
@@ -294,7 +293,7 @@ TEST(TripleDES, MMT_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/MMT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path);
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path);
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
@@ -302,35 +301,35 @@ TEST(TripleDES, MMT_dec)
 				int res;
 				uint8_t key[24];
 				std::size_t key_sz = sizeof(key);
-				std::size_t cipher_sz = test["CIPHERTEXT"].length() / 2;
-				std::size_t plain_sz  = test["PLAINTEXT"].length() / 2;
-				std::unique_ptr<uint8_t[]> cipher(new uint8_t[cipher_sz]);
-				std::unique_ptr<uint8_t[]> plain(new uint8_t[plain_sz]);
+				std::size_t input_sz = test["CIPHERTEXT"].length() / 2;
+				std::size_t output_sz = test["PLAINTEXT"].length() / 2;
+				std::unique_ptr<uint8_t[]> input(new uint8_t[input_sz]);
+				std::unique_ptr<uint8_t[]> output(new uint8_t[output_sz]);
 				std::size_t total_sz, current_sz, pad_sz = 0;
-				std::string plain_str;
+				std::string output_str;
 
 				res = 0;
-				res += Crypto::Utils::from_hex(test["KEY1"], key,      key_sz);
-				res += Crypto::Utils::from_hex(test["KEY2"], key + 8,  key_sz);
+				res += Crypto::Utils::from_hex(test["KEY1"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["KEY2"], key + 8, key_sz);
 				res += Crypto::Utils::from_hex(test["KEY3"], key + 16, key_sz);
 				EXPECT_EQ(res, 0);
 
 				key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
-				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], cipher.get(), cipher_sz);
+				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, false);
 
-				total_sz = plain_sz;
-				plain_sz = 0;
-				for ( std::size_t i = 0 ; i < cipher_sz ; ++i ) {
-					current_sz = total_sz - plain_sz;
+				total_sz = output_sz;
+				output_sz = 0;
+				for ( std::size_t i = 0 ; i < input_sz ; ++i ) {
+					current_sz = total_sz - output_sz;
 
-					res = ctx.update(cipher.get() + i, 1, plain.get() + plain_sz, current_sz);
+					res = ctx.update(input.get() + i, 1, output.get() + output_sz, current_sz);
 					EXPECT_EQ(res, 0);
 
-					plain_sz += current_sz;
+					output_sz += current_sz;
 					EXPECT_EQ(res, 0);
 				}
 
@@ -338,10 +337,10 @@ TEST(TripleDES, MMT_dec)
 				EXPECT_EQ(res, 0);
 				EXPECT_EQ(pad_sz, 0);
 
-				res = Crypto::Utils::to_hex(plain.get(), plain_sz, plain_str, false);
+				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(plain_str, test["PLAINTEXT"]);
+				EXPECT_EQ(output_str, test["PLAINTEXT"]);
 			}
 		}
 	}
@@ -356,29 +355,29 @@ TEST(TripleDES, MonteCarlo_dec)
 	for ( auto file : files ) {
 		std::string file_path = TestOptions::get().vect_dir + "TDES/MCT/" + file;
 
-		auto test_vectors = TestVectors::NISTParser(file_path)["DECRYPT"];
+		auto test_vectors = TestVectors::NISTCAVPParser(file_path)["DECRYPT"];
 		EXPECT_FALSE(test_vectors.empty());
 
 		for ( auto tests : test_vectors ) {
 			int res;
 			uint8_t key[24];
-			uint8_t	cipher[Crypto::TripleDES::BLOCK_SIZE];
-			uint8_t plain[3][Crypto::TripleDES::BLOCK_SIZE];
-			std::size_t key_sz    = sizeof(key);
-			std::size_t cipher_sz = sizeof(cipher);
-			std::size_t plain_sz  = sizeof(plain[0]);
-			std::size_t pad_sz    = 0;
-			std::string plain_str;
+			uint8_t	input[Crypto::TripleDES::BLOCK_SIZE];
+			uint8_t output[3][Crypto::TripleDES::BLOCK_SIZE];
+			std::size_t key_sz = sizeof(key);
+			std::size_t input_sz = sizeof(input);
+			std::size_t output_sz = sizeof(output[0]);
+			std::size_t pad_sz = 0;
+			std::string output_str;
 
 			res = 0;
-			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY1"], key,      key_sz);
-			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY2"], key + 8,  key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY1"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY2"], key + 8, key_sz);
 			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY3"], key + 16, key_sz);
 			EXPECT_EQ(res, 0);
 
 			key_sz = (0 == memcmp(key, key + 16, 8)) ? 16 : 24;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CIPHERTEXT"], cipher, cipher_sz);
+			res = Crypto::Utils::from_hex(tests.test_cases[0]["CIPHERTEXT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;
@@ -391,29 +390,29 @@ TEST(TripleDES, MonteCarlo_dec)
 				Crypto::ECB<Crypto::TripleDES> ctx(key, key_sz, false);
 
 				for ( std::size_t i = 0 ; i < 10000 ; ++i ) {
-					memcpy(plain[0], plain[1], plain_sz);
-					memcpy(plain[1], plain[2], plain_sz);
+					memcpy(output[0], output[1], output_sz);
+					memcpy(output[1], output[2], output_sz);
 
-					res = ctx.update(cipher, cipher_sz, plain[2], plain_sz);
+					res = ctx.update(input, input_sz, output[2], output_sz);
 					EXPECT_EQ(res, 0);
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
 					EXPECT_EQ(pad_sz, 0);
 
-					memcpy(cipher, plain[2], cipher_sz);
+					memcpy(input, output[2], input_sz);
 				}
 
-				res = Crypto::Utils::to_hex(plain[2], plain_sz, plain_str, false);
+				res = Crypto::Utils::to_hex(output[2], output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
 
-				EXPECT_EQ(plain_str, test["PLAINTEXT"]);
+				EXPECT_EQ(output_str, test["PLAINTEXT"]);
 
 				for ( std::size_t i = 0 ; i < key_sz ; ++i ) {
-					key[i] ^= plain[2 - (i / 8)][i % 8];
+					key[i] ^= output[2 - (i / 8)][i % 8];
 				}
 
-				memcpy(cipher, plain[2], cipher_sz);
+				memcpy(input, output[2], input_sz);
 			}
 		}
 	}

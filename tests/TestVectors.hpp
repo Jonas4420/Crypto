@@ -118,7 +118,7 @@ class TestVectors
 		bool empty(void) { return vectors.empty(); }
 
 		// Parser for AES contest test vectors
-		static TestVectors AESCandidateParser(std::string file_path)
+		static TestVectors AESContestParser(std::string file_path)
 		{
 			TestVectors result;
 			TestCase test_case;
@@ -183,8 +183,8 @@ class TestVectors
 			return result;
 		}
 
-		// Parser for NIST test vectors
-		static TestVectors NISTParser(std::string file_path)
+		// Parser for NIST CAVP test vectors
+		static TestVectors NISTCAVPParser(std::string file_path)
 		{
 			TestVectors result;
 			TestCase test_case;

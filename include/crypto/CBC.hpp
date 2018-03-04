@@ -21,9 +21,9 @@ class CBC : public CipherMode
 
 		~CBC(void)
 		{
+			zeroize(iv,          sizeof(iv));
 			zeroize(buffer,      sizeof(buffer));
 			zeroize(&buffer_sz,  sizeof(buffer_sz));
-			zeroize(iv,          sizeof(iv));
 			zeroize(&is_encrypt, sizeof(is_encrypt));
 		}
 
@@ -32,14 +32,14 @@ class CBC : public CipherMode
 			std::size_t need_sz, total_sz, write_sz;
 
 			// Check that output is large enough
-			need_sz = ((buffer_sz + input_sz) / BLOCK_SIZE) * BLOCK_SIZE;
+			total_sz = buffer_sz + input_sz;
+			need_sz  = (total_sz / BLOCK_SIZE) * BLOCK_SIZE;
 			if ( output_sz < need_sz ) {
 				output_sz = need_sz;
 				return CRYPTO_CIPHER_MODE_INVALID_LENGTH;
 			}
 
 			// Process input
-			total_sz  = buffer_sz + input_sz;
 			output_sz = 0;
 			while ( total_sz >= BLOCK_SIZE ) {
 				// Fill the buffer with input
@@ -47,30 +47,28 @@ class CBC : public CipherMode
 					write_sz = BLOCK_SIZE - buffer_sz;
 
 					memcpy(buffer + buffer_sz, input, write_sz);
-					buffer_sz = BLOCK_SIZE;
 
-					input    += write_sz;
-					input_sz -= write_sz;
+					buffer_sz += BLOCK_SIZE;
+					input     += write_sz;
+					input_sz  -= write_sz;
 				}
 
 				if ( is_encrypt ) {
 					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						buffer[i] = buffer[i] ^ iv[i];
+						buffer[i] ^= iv[i];
 					}
 
 					sc_ctx.encrypt(buffer, output);
 					buffer_sz = 0;
 
-					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						iv[i] = output[i];
-					}
+					memcpy(iv, output, BLOCK_SIZE);
 				} else {
 					sc_ctx.decrypt(buffer, output);
 					buffer_sz = 0;
 
 					for ( std::size_t i = 0 ; i < BLOCK_SIZE ; ++i ) {
-						output[i] = output[i] ^ iv[i];
-						iv[i]   = buffer[i];
+						output[i] ^= iv[i];
+						iv[i]      = buffer[i];
 					}
 				}
 
@@ -103,9 +101,9 @@ class CBC : public CipherMode
 	protected:
 		SC sc_ctx;
 
+		uint8_t     iv[BLOCK_SIZE];
 		uint8_t     buffer[BLOCK_SIZE];
 		std::size_t buffer_sz;
-		uint8_t     iv[BLOCK_SIZE];
 		bool        is_encrypt;
 };
 

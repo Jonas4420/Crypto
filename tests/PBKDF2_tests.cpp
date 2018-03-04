@@ -16,7 +16,7 @@ TEST(PBKDF2, test_vectors)
 			"70617373776f7264", "73616c74",
 			"1", "20",
 			"0c60c80f961f0e71f3a9b524af6012062fe037a6"
-	       	}, {
+		}, {
 			"70617373776f7264", "73616c74",
 			"2", "20",
 			"ea6c014dc72d6f8ccd1ed92ace1d41f0d8de8957"
@@ -50,9 +50,9 @@ TEST(PBKDF2, test_vectors)
 		std::string output;
 
 		Crypto::Utils::from_hex(test[0], password, password_sz);
-		Crypto::Utils::from_hex(test[1], salt,     salt_sz);
+		Crypto::Utils::from_hex(test[1], salt, salt_sz);
 		std::size_t iterations = atoi(test[2].c_str());
-		std::size_t key_sz     = atoi(test[3].c_str());
+		std::size_t key_sz = atoi(test[3].c_str());
 
 		if ( TestOptions::get().is_fast && iterations > 10000 ) {
 			continue;

@@ -187,7 +187,7 @@ TEST(PEM, read_pem_abnormal)
 		std::string exception, expected = "Missing header";
 
 		try {
-			Crypto::PEM::decode("RSA PRIVATE KEY", pem,  data, data_sz);
+			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
 		} catch ( const Crypto::PEM::Exception &pe ) {
 			exception = pe.what();
 		}
@@ -328,7 +328,7 @@ TEST(PEM, read_pem_abnormal)
 		std::string exception, expected = "Invalid character";
 
 		try {
-			Crypto::PEM::decode("RSA PRIVATE KEY", pem,  data, data_sz);
+			Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
 		} catch ( const Crypto::Base64::Exception &pe ) {
 			exception = pe.what();
 		}

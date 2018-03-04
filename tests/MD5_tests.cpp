@@ -98,7 +98,7 @@ TEST(MD5, mac_test_vector)
 		std::string output;
 
 		Crypto::Utils::from_hex(test[0], key, key_sz);
-		Crypto::Utils::from_hex(test[1], in,  in_sz);
+		Crypto::Utils::from_hex(test[1], in, in_sz);
 
 		Crypto::HMAC_get<Crypto::MD5>(key, key_sz, in, in_sz, out);
 		Crypto::Utils::to_hex(out, 16, output, false);

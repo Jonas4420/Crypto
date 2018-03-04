@@ -21,7 +21,7 @@ TEST(HMAC, update_ctx)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=32"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=32"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -61,7 +61,7 @@ TEST(HMAC, reset_ctx)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=32"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=32"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -108,7 +108,7 @@ TEST(HMAC_SHA1, KAT)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=20"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=20"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -142,7 +142,7 @@ TEST(HMAC_SHA224, KAT)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=28"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=28"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -176,7 +176,7 @@ TEST(HMAC_SHA256, KAT)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=32"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=32"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -210,7 +210,7 @@ TEST(HMAC_SHA384, KAT)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=48"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=48"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
@@ -244,7 +244,7 @@ TEST(HMAC_SHA512, KAT)
 	std::string file = "HMAC.rsp";
 	std::string file_path = TestOptions::get().vect_dir + "HMAC/" + file;
 
-	auto test_vectors = TestVectors::NISTParser(file_path)["L=64"];
+	auto test_vectors = TestVectors::NISTCAVPParser(file_path)["L=64"];
 	EXPECT_FALSE(test_vectors.empty());
 
 	for ( auto tests : test_vectors ) {
