@@ -147,7 +147,7 @@ TEST(GCM, update_sz)
 {
 	// Buffer empty, provide < BLOCK_SIZE, space 0
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], input[32], output[32];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -164,14 +164,14 @@ TEST(GCM, update_sz)
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
 		output_sz = 0;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 1);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 1);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 
 	// Buffer empty, provide = BLOCK_SIZE, space 0
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], input[32], output[32];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -188,14 +188,14 @@ TEST(GCM, update_sz)
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
 		output_sz = 8;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 
 	// Total input size overflows
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], input[32], output[32];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -212,17 +212,17 @@ TEST(GCM, update_sz)
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
 		input_sz = output_sz = 1;
-		ret = ctx.update(input, input_sz, output, output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.update(input, input_sz, output, output_sz);
+		EXPECT_EQ(res, 0);
 
 		input_sz = output_sz = -1;
-		ret = ctx.update(input, input_sz, output, output_sz);
-		EXPECT_EQ(ret, 3);
+		res = ctx.update(input, input_sz, output, output_sz);
+		EXPECT_EQ(res, 3);
 	}
 
 	// Total input size is bigger than what GCM can produce
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], input[32], output[32];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -239,18 +239,18 @@ TEST(GCM, update_sz)
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
 		input_sz = output_sz = 1;
-		ret = ctx.update(input, input_sz, output, output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.update(input, input_sz, output, output_sz);
+		EXPECT_EQ(res, 0);
 
 		input_sz = output_sz = UL64(0x0000000FFFFFFFE0);
-		ret = ctx.update(input, input_sz, output, output_sz);
-		EXPECT_EQ(ret, 3);
+		res = ctx.update(input, input_sz, output, output_sz);
+		EXPECT_EQ(res, 3);
 	}
 }
 
 TEST(GCM, finish_sz)
 {
-	int ret;
+	int res;
 	uint8_t key[16], iv[16], add[16], input[32], output[32];
 	std::size_t key_sz = sizeof(key);
 	std::size_t iv_sz = sizeof(iv);
@@ -269,8 +269,8 @@ TEST(GCM, finish_sz)
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
 		output_sz = 16;
-		ret = ctx.finish(output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)0);
 	}
 }
@@ -279,7 +279,7 @@ TEST(GCM, get_tag)
 {
 	// Normal case
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], tag[16];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -294,16 +294,16 @@ TEST(GCM, get_tag)
 
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
-		ret = ctx.finish(pad_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(pad_sz);
+		EXPECT_EQ(res, 0);
 
-		ret = ctx.get_tag(tag, tag_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.get_tag(tag, tag_sz);
+		EXPECT_EQ(res, 0);
 	}
 
 	// Requested tag is too small
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], tag[3];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -318,16 +318,16 @@ TEST(GCM, get_tag)
 
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
-		ret = ctx.finish(pad_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(pad_sz);
+		EXPECT_EQ(res, 0);
 
-		ret = ctx.get_tag(tag, tag_sz);
-		EXPECT_EQ(ret, 1);
+		res = ctx.get_tag(tag, tag_sz);
+		EXPECT_EQ(res, 1);
 	}
 
 	// Requested tag is too big
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], tag[17];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -342,11 +342,11 @@ TEST(GCM, get_tag)
 
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
-		ret = ctx.finish(pad_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(pad_sz);
+		EXPECT_EQ(res, 0);
 
-		ret = ctx.get_tag(tag, tag_sz);
-		EXPECT_EQ(ret, 1);
+		res = ctx.get_tag(tag, tag_sz);
+		EXPECT_EQ(res, 1);
 	}
 }
 
@@ -354,7 +354,7 @@ TEST(GCM, check_tag)
 {
 	// Requested tag is too small
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], tag[3];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -370,17 +370,17 @@ TEST(GCM, check_tag)
 
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
-		ret = ctx.finish(pad_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(pad_sz);
+		EXPECT_EQ(res, 0);
 
 		tag_sz = 3;
-		ret = ctx.check_tag(tag, tag_sz, is_auth);
-		EXPECT_EQ(ret, 1);
+		res = ctx.check_tag(tag, tag_sz, is_auth);
+		EXPECT_EQ(res, 1);
 	}
 
 	// Requested tag is too big
 	{
-		int ret;
+		int res;
 		uint8_t key[16], iv[16], add[16], tag[3];
 		std::size_t key_sz = sizeof(key);
 		std::size_t iv_sz = sizeof(iv);
@@ -396,12 +396,12 @@ TEST(GCM, check_tag)
 
 		Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv, iv_sz, add, add_sz, true);
 
-		ret = ctx.finish(pad_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(pad_sz);
+		EXPECT_EQ(res, 0);
 
 		tag_sz = 17;
-		ret = ctx.check_tag(tag, tag_sz, is_auth);
-		EXPECT_EQ(ret, 1);
+		res = ctx.check_tag(tag, tag_sz, is_auth);
+		EXPECT_EQ(res, 1);
 	}
 }
 
@@ -435,16 +435,11 @@ TEST(GCM, KAT_enc)
 				std::size_t total_sz, current_sz, pad_sz = 0;
 				std::string output_str, tag_str;
 
-				res = Crypto::Utils::from_hex(test["Key"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv.get(), iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["AAD"], add.get(), add_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["PT"], input.get(), input_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["Key"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv.get(), iv_sz);
+				res += Crypto::Utils::from_hex(test["AAD"], add.get(), add_sz);
+				res += Crypto::Utils::from_hex(test["PT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv.get(), iv_sz, add.get(), add_sz, true);
@@ -515,19 +510,12 @@ TEST(GCM, KAT_dec)
 				std::string output_str, tag_str;
 				bool is_auth = false;
 
-				res = Crypto::Utils::from_hex(test["Key"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv.get(), iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["AAD"], add.get(), add_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["CT"], input.get(), input_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["Tag"], tag.get(), tag_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["Key"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv.get(), iv_sz);
+				res += Crypto::Utils::from_hex(test["AAD"], add.get(), add_sz);
+				res += Crypto::Utils::from_hex(test["CT"], input.get(), input_sz);
+				res += Crypto::Utils::from_hex(test["Tag"], tag.get(), tag_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::GCM<Crypto::AES> ctx(key, key_sz, iv.get(), iv_sz, add.get(), add_sz, false);

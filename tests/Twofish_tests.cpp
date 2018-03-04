@@ -132,10 +132,9 @@ TEST(Twofish, MonteCarlo_ECB_enc)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;
@@ -204,13 +203,10 @@ TEST(Twofish, MonteCarlo_CBC_enc)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["PT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;
@@ -337,10 +333,9 @@ TEST(Twofish, MonteCarlo_ECB_dec)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;
@@ -407,13 +402,10 @@ TEST(Twofish, MonteCarlo_CBC_dec)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["CT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			int iterations = 0;

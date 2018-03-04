@@ -37,7 +37,7 @@ TEST(CTR, encrypt_test_vector)
 
 		uint8_t output[Crypto::AES::BLOCK_SIZE * 10];
 		std::size_t output_sz = sizeof(output);
-		std::string outputtext;
+		std::string output_str;
 
 		Crypto::Utils::from_hex(test[0], key, key_sz);
 		Crypto::Utils::from_hex(test[1], counter, counter_sz);
@@ -60,8 +60,8 @@ TEST(CTR, encrypt_test_vector)
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
 
-		Crypto::Utils::to_hex(output, offset, outputtext, false);
-		EXPECT_THAT(outputtext, test[3]);
+		Crypto::Utils::to_hex(output, offset, output_str, false);
+		EXPECT_THAT(output_str, test[3]);
 	}
 }
 
@@ -94,7 +94,7 @@ TEST(CTR, decrypt_test_vector)
 
 		uint8_t output[Crypto::AES::BLOCK_SIZE * 10];
 		std::size_t output_sz = sizeof(output);
-		std::string outputtext;
+		std::string output_str;
 
 		Crypto::Utils::from_hex(test[0], key, key_sz);
 		Crypto::Utils::from_hex(test[1], counter, counter_sz);
@@ -117,14 +117,14 @@ TEST(CTR, decrypt_test_vector)
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
 
-		Crypto::Utils::to_hex(output, offset, outputtext, false);
-		EXPECT_THAT(outputtext, test[3]);
+		Crypto::Utils::to_hex(output, offset, output_str, false);
+		EXPECT_THAT(output_str, test[3]);
 	}
 }
 
 TEST(CTR, update_sz)
 {
-	int ret;
+	int res;
 
 	uint8_t key[16];
 	std::size_t key_sz = sizeof(key);
@@ -147,8 +147,8 @@ TEST(CTR, update_sz)
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
 		output_sz = 0;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 1);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 1);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 
@@ -157,15 +157,15 @@ TEST(CTR, update_sz)
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
 		output_sz = 8;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 }
 
 TEST(CTR, finish_sz)
 {
-	int ret;
+	int res;
 
 	uint8_t key[16];
 	std::size_t key_sz = sizeof(key);
@@ -188,8 +188,8 @@ TEST(CTR, finish_sz)
 		Crypto::CTR<Crypto::AES> ctx(key, key_sz, counter);
 
 		output_sz = 16;
-		ret = ctx.finish(output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)0);
 	}
 }

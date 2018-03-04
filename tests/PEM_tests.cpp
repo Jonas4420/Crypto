@@ -156,13 +156,13 @@ TEST(PEM, read_pem)
 	};
 
 	for ( auto test : tests ) {
-		int ret;
+		int res;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string der;
 
-		ret = Crypto::PEM::decode("RSA PRIVATE KEY", test[0], data, data_sz, test[1]);
-		EXPECT_EQ(ret, 0);
+		res = Crypto::PEM::decode("RSA PRIVATE KEY", test[0], data, data_sz, test[1]);
+		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(data, data_sz, der, false);
 		EXPECT_THAT(der, test[2]);
@@ -754,15 +754,15 @@ TEST(PEM, write_pem)
 	};
 
 	for ( auto test : tests ) {
-		int ret;
+		int res;
 		uint8_t data[1024];
 		std::size_t data_sz = sizeof(data);
 		std::string pem = "";
 
 		Crypto::Utils::from_hex(test[0], data, data_sz);
-		ret = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
+		res = Crypto::PEM::encode("RSA PRIVATE KEY", data, data_sz, pem,
 				test[1], test[2], test[3]);
-		EXPECT_EQ(ret, 0);
+		EXPECT_EQ(res, 0);
 
 		EXPECT_THAT(pem, test[4]);
 	}

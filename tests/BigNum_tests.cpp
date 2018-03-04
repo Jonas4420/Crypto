@@ -1447,15 +1447,15 @@ TEST(BigNum, write_binary)
 	};
 
 	for ( auto test : tests ) {
-		int ret;
+		int res;
 		uint8_t data[512];
 		std::size_t data_sz = sizeof(data);
 		std::string str;
 
 		Crypto::BigNum X(test[0], atoi(test[1].c_str()));
 
-		ret = X.to_binary(data, data_sz);
-		EXPECT_EQ(ret, 0);
+		res = X.to_binary(data, data_sz);
+		EXPECT_EQ(res, 0);
 
 		Crypto::Utils::to_hex(data, data_sz, str, false);
 		EXPECT_EQ(str, test[2]);
@@ -1464,15 +1464,15 @@ TEST(BigNum, write_binary)
 
 TEST(BigNum, write_binary_abnormal)
 {
-	int ret;
+	int res;
 	std::size_t data_sz;
 
 	Crypto::BigNum X("123123123123123123123123123", 16);
 
 	data_sz = 13;
-	ret = X.to_binary(NULL, data_sz);
+	res = X.to_binary(NULL, data_sz);
 
-	EXPECT_EQ(ret, 1);
+	EXPECT_EQ(res, 1);
 	EXPECT_EQ(data_sz, (std::size_t)14);
 }
 

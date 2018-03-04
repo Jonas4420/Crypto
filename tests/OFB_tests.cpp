@@ -40,13 +40,10 @@ TEST(OFB, KAT_enc)
 				std::size_t pad_sz = 0;
 				std::string output_str;
 
-				res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["PLAINTEXT"], input.get(), input_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
+				res += Crypto::Utils::from_hex(test["PLAINTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
@@ -93,13 +90,10 @@ TEST(OFB, MMT_enc)
 				std::size_t total_sz, current_sz, pad_sz = 0;
 				std::string output_str;
 
-				res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["PLAINTEXT"], input.get(), input_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
+				res += Crypto::Utils::from_hex(test["PLAINTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
@@ -154,13 +148,10 @@ TEST(OFB, MonteCarlo_enc)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["PLAINTEXT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["PLAINTEXT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			for ( auto test : tests ) {
@@ -228,13 +219,10 @@ TEST(OFB, KAT_dec)
 				std::size_t pad_sz = 0;
 				std::string output_str;
 
-				res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], input.get(), input_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
+				res += Crypto::Utils::from_hex(test["CIPHERTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
@@ -281,13 +269,10 @@ TEST(OFB, MMT_dec)
 				std::size_t total_sz, current_sz, pad_sz = 0;
 				std::string output_str;
 
-				res = Crypto::Utils::from_hex(test["KEY"], key, key_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::Utils::from_hex(test["CIPHERTEXT"], input.get(), input_sz);
+				res = 0;
+				res += Crypto::Utils::from_hex(test["KEY"], key, key_sz);
+				res += Crypto::Utils::from_hex(test["IV"], iv, iv_sz);
+				res += Crypto::Utils::from_hex(test["CIPHERTEXT"], input.get(), input_sz);
 				EXPECT_EQ(res, 0);
 
 				Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
@@ -342,13 +327,10 @@ TEST(OFB, MonteCarlo_dec)
 			std::size_t pad_sz = 0;
 			std::string output_str;
 
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
-			EXPECT_EQ(res, 0);
-
-			res = Crypto::Utils::from_hex(tests.test_cases[0]["CIPHERTEXT"], input, input_sz);
+			res = 0;
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["KEY"], key, key_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["IV"], iv, iv_sz);
+			res += Crypto::Utils::from_hex(tests.test_cases[0]["CIPHERTEXT"], input, input_sz);
 			EXPECT_EQ(res, 0);
 
 			for ( auto test : tests ) {
@@ -389,7 +371,7 @@ TEST(OFB, MonteCarlo_dec)
 
 TEST(OFB, update_sz)
 {
-	int ret;
+	int res;
 
 	uint8_t key[16];
 	std::size_t key_sz = sizeof(key);
@@ -412,8 +394,8 @@ TEST(OFB, update_sz)
 		Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
 
 		output_sz = 0;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 1);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 1);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 
@@ -422,15 +404,15 @@ TEST(OFB, update_sz)
 		Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
 
 		output_sz = 8;
-		ret = ctx.update(input, 8, output, output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.update(input, 8, output, output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)8);
 	}
 }
 
 TEST(OFB, finish_sz)
 {
-	int ret;
+	int res;
 
 	uint8_t key[16];
 	std::size_t key_sz = sizeof(key);
@@ -453,8 +435,8 @@ TEST(OFB, finish_sz)
 		Crypto::OFB<Crypto::AES> ctx(key, key_sz, iv);
 
 		output_sz = 16;
-		ret = ctx.finish(output_sz);
-		EXPECT_EQ(ret, 0);
+		res = ctx.finish(output_sz);
+		EXPECT_EQ(res, 0);
 		EXPECT_EQ(output_sz, (std::size_t)0);
 	}
 }
