@@ -10,27 +10,10 @@ notifications:
 matrix:
         include:
                 ##########################################################################
-                # Clang on OSX
+                # GCC on Linux 
                 ##########################################################################
-                - os: osx
-                  osx_image: xcode8.3
-                  compiler: clang
-                  env: BUILD_TYPE=Release
 
-                - os: osx
-                  osx_image: xcode8.3
-                  compiler: clang
-                  env: BUILD_TYPE=Debug
-
-                - os: osx
-                  osx_image: xcode8.3
-                  compiler: clang
-                  env: BUILD_TYPE=ASan
-
-                ##########################################################################
-                # Clang on Linux
-                ##########################################################################
-                - compiler: clang
+                - compiler: gcc
                   env: BUILD_TYPE=Release
                   addons: &valgrind
                         apt:
@@ -38,21 +21,6 @@ matrix:
                                         - ubuntu-toolchain-r-test
                                 packages:
                                         - valgrind
-
-                - compiler: clang
-                  env: BUILD_TYPE=Debug
-                  addons: *valgrind
-
-                - compiler: clang
-                  env: BUILD_TYPE=ASan
-
-                ##########################################################################
-                # GCC on Linux 
-                ##########################################################################
-
-                - compiler: gcc
-                  env: BUILD_TYPE=Release
-                  addons: *valgrind
 
                 - compiler: gcc
                   env: BUILD_TYPE=Debug
@@ -69,6 +37,38 @@ matrix:
                                         - ubuntu-toolchain-r-test
                                 packages:
                                         - lcov
+
+                ##########################################################################
+                # Clang on Linux
+                ##########################################################################
+                - compiler: clang
+                  env: BUILD_TYPE=Release
+                  addons: *valgrind
+
+                - compiler: clang
+                  env: BUILD_TYPE=Debug
+                  addons: *valgrind
+
+                - compiler: clang
+                  env: BUILD_TYPE=ASan
+ 
+                ##########################################################################
+                # Clang on OSX
+                ##########################################################################
+                - os: osx
+                  osx_image: xcode8.3
+                  compiler: clang
+                  env: BUILD_TYPE=Release
+
+                - os: osx
+                  osx_image: xcode8.3
+                  compiler: clang
+                  env: BUILD_TYPE=Debug
+
+                - os: osx
+                  osx_image: xcode8.3
+                  compiler: clang
+                  env: BUILD_TYPE=ASan
 
 before_script:
         - cd "${TRAVIS_BUILD_DIR}"

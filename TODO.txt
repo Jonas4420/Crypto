@@ -1,7 +1,3 @@
-Sym
-	CS1 tests (most probably bugs with needed size and fill of buffer)
-	CS2 + tests
-	CS3 + tests
 Asym
 	ECDomainParameters + tests
 	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
