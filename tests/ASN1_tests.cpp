@@ -689,10 +689,10 @@ TEST(ASN1, read_oid_abnormal)
 TEST(ASN1, read_sequence)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{ "1000"                                                                     },
-		{ "10030101FF",                       "0101FF"                               },
-		{ "10060101FF020100",                 "0101FF", "020100"                     },
-		{ "100E0101FF02010010060101FF020100", "0101FF", "020100", "10060101FF020100" }
+		{ "3000"                                                                     },
+		{ "30030101FF",                       "0101FF"                               },
+		{ "30060101FF020100",                 "0101FF", "020100"                     },
+		{ "300E0101FF02010010060101FF020100", "0101FF", "020100", "10060101FF020100" }
 	};
 
 	for ( auto test : tests ) {
@@ -737,6 +737,22 @@ TEST(ASN1, read_sequence_abnormal)
 		EXPECT_EQ(res, expected_res);
 	}
 
+	// Tag is not Constructed
+	{
+		int res;
+		uint8_t data[256];
+		std::size_t data_sz = sizeof(data);
+		std::vector<std::pair<const uint8_t*, std::size_t>> sequence;
+		std::size_t read_sz;
+		int expected_res = Crypto::ASN1::CRYPTO_ASN1_TAG_ERROR;
+
+		res = Crypto::Utils::from_hex("1000", data, data_sz);
+		EXPECT_EQ(res, 0);
+
+		res = Crypto::ASN1::read_sequence(data, data_sz, sequence, read_sz);
+		EXPECT_EQ(res, expected_res);
+	}
+
 	// Only Tag in Sequence
 	{
 		int res;
@@ -746,7 +762,7 @@ TEST(ASN1, read_sequence_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("100104", data, data_sz);
+		res = Crypto::Utils::from_hex("300104", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_sequence(data, data_sz, sequence, read_sz);
@@ -762,7 +778,7 @@ TEST(ASN1, read_sequence_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("10020401", data, data_sz);
+		res = Crypto::Utils::from_hex("30020401", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_sequence(data, data_sz, sequence, read_sz);
@@ -778,7 +794,7 @@ TEST(ASN1, read_sequence_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("1003040200", data, data_sz);
+		res = Crypto::Utils::from_hex("3003040200", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_sequence(data, data_sz, sequence, read_sz);
@@ -789,10 +805,10 @@ TEST(ASN1, read_sequence_abnormal)
 TEST(ASN1, read_set)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{ "1100"                                                                     },
-		{ "11030101FF",                       "0101FF"                               },
-		{ "11060101FF020100",                 "0101FF", "020100"                     },
-		{ "110E0101FF02010011060101FF020100", "0101FF", "020100", "11060101FF020100" }
+		{ "3100"                                                                     },
+		{ "31030101FF",                       "0101FF"                               },
+		{ "31060101FF020100",                 "0101FF", "020100"                     },
+		{ "310E0101FF02010011060101FF020100", "0101FF", "020100", "11060101FF020100" }
 	};
 
 	for ( auto test : tests ) {
@@ -837,6 +853,22 @@ TEST(ASN1, read_set_abnormal)
 		EXPECT_EQ(res, expected_res);
 	}
 
+	// Tag is not constructed
+	{
+		int res;
+		uint8_t data[256];
+		std::size_t data_sz = sizeof(data);
+		std::vector<std::pair<const uint8_t*, std::size_t>> set;
+		std::size_t read_sz;
+		int expected_res = Crypto::ASN1::CRYPTO_ASN1_TAG_ERROR;
+
+		res = Crypto::Utils::from_hex("1100", data, data_sz);
+		EXPECT_EQ(res, 0);
+
+		res = Crypto::ASN1::read_set(data, data_sz, set, read_sz);
+		EXPECT_EQ(res, expected_res);
+	}	
+
 	// Only Tag in Set
 	{
 		int res;
@@ -846,7 +878,7 @@ TEST(ASN1, read_set_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("110104", data, data_sz);
+		res = Crypto::Utils::from_hex("310104", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_set(data, data_sz, set, read_sz);
@@ -862,7 +894,7 @@ TEST(ASN1, read_set_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("11020401", data, data_sz);
+		res = Crypto::Utils::from_hex("31020401", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_set(data, data_sz, set, read_sz);
@@ -878,7 +910,7 @@ TEST(ASN1, read_set_abnormal)
 		std::size_t read_sz;
 		int expected_res = Crypto::ASN1::CRYPTO_ASN1_OUT_OF_DATA;
 
-		res = Crypto::Utils::from_hex("1103040200", data, data_sz);
+		res = Crypto::Utils::from_hex("3103040200", data, data_sz);
 		EXPECT_EQ(res, 0);
 
 		res = Crypto::ASN1::read_set(data, data_sz, set, read_sz);
@@ -1330,10 +1362,10 @@ TEST(ASN1, write_oid_abnormal)
 TEST(ASN1, write_sequence)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{                                         "1000"                             },
-		{ "0101FF",                               "10030101FF"                       },
-		{ "0101FF", "020100",                     "10060101FF020100"                 },
-		{ "0101FF", "020100", "10060101FF020100", "100E0101FF02010010060101FF020100" }
+		{                                         "3000"                             },
+		{ "0101FF",                               "30030101FF"                       },
+		{ "0101FF", "020100",                     "30060101FF020100"                 },
+		{ "0101FF", "020100", "10060101FF020100", "300E0101FF02010010060101FF020100" }
 	};
 
 	for ( auto test : tests ) {
@@ -1370,10 +1402,10 @@ TEST(ASN1, write_sequence)
 TEST(ASN1, write_set)
 {
 	const std::vector<std::vector<std::string>> tests = {
-		{                                         "1100"                             },
-		{ "0101FF",                               "11030101FF"                       },
-		{ "0101FF", "020100",                     "11060101FF020100"                 },
-		{ "0101FF", "020100", "10060101FF020100", "110E0101FF02010010060101FF020100" }
+		{                                         "3100"                             },
+		{ "0101FF",                               "31030101FF"                       },
+		{ "0101FF", "020100",                     "31060101FF020100"                 },
+		{ "0101FF", "020100", "10060101FF020100", "310E0101FF02010010060101FF020100" }
 	};
 
 	for ( auto test : tests ) {

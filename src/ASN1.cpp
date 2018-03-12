@@ -13,9 +13,10 @@ ASN1::read_boolean(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )            { return res; }
-	if ( Tag::BOOLEAN != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 1 != len )            { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                                 { return res; }
+	if ( Tag::BOOLEAN   != (tag & Tag::BOOLEAN) )   { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 1 != len )                                 { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -36,9 +37,10 @@ ASN1::read_integer(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )            { return res; }
-	if ( Tag::INTEGER != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )            { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                                 { return res; }
+	if ( Tag::INTEGER != (tag & Tag::INTEGER) )     { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                                 { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -80,9 +82,9 @@ ASN1::read_bit_string(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )               { return res; }
-	if ( Tag::BIT_STRING != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )               { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                                   { return res; }
+	if ( Tag::BIT_STRING != (tag & Tag::BIT_STRING) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                                   { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -115,8 +117,8 @@ ASN1::read_octet_string(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                 { return res; }
-	if ( Tag::OCTET_STRING != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                       { return res; }
+	if ( Tag::OCTET_STRING != (tag & Tag::OCTET_STRING) ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -144,8 +146,9 @@ ASN1::read_null(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )             { return res; }
-	if ( Tag::TAG_NULL != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                 { return res; }
+	if ( Tag::TAG_NULL != (tag & Tag::TAG_NULL) )   { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -166,9 +169,10 @@ ASN1::read_oid(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                      { return res; }
-	if ( Tag::OBJECT_IDENTIFIER != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )                      { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                                                 { return res; }
+	if ( Tag::OBJECT_IDENTIFIER != (tag & Tag::OBJECT_IDENTIFIER) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) )                 { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                                                 { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -194,8 +198,9 @@ ASN1::read_sequence(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )             { return res; }
-	if ( Tag::SEQUENCE != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                     { return res; }
+	if ( Tag::SEQUENCE != (tag & Tag::SEQUENCE) )       { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::CONSTRUCTED != (tag & Tag::CONSTRUCTED) ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -235,8 +240,9 @@ ASN1::read_set(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )             { return res; }
-	if ( Tag::SET != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                     { return res; }
+	if ( Tag::SET != (tag & Tag::SET) )                 { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( Tag::CONSTRUCTED != (tag & Tag::CONSTRUCTED) ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -299,7 +305,7 @@ ASN1::write_boolean(bool boolean, uint8_t *data, std::size_t data_sz, std::size_
 	int res;
 
 	// Write Tag and Len
-	res = write_header(Tag::BOOLEAN, 1, data, data_sz, write_sz);
+	res = write_header(Tag::PRIMITIVE | Tag::BOOLEAN, 1, data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 	data += write_sz;
 
@@ -344,7 +350,7 @@ ASN1::write_integer(const BigNum &integer, uint8_t *data, std::size_t data_sz, s
 	}
 
 	// Write Tag and Len
-	res = write_header(Tag::INTEGER, pad_sz + n->size(), data, data_sz, write_sz);
+	res = write_header(Tag::PRIMITIVE | Tag::INTEGER, pad_sz + n->size(), data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 	data += write_sz;
 
@@ -406,7 +412,7 @@ ASN1::write_null(uint8_t *data, std::size_t data_sz, std::size_t &write_sz)
 	int res;
 
 	// Write Tag and Len
-	res = write_header(Tag::TAG_NULL, 0, data, data_sz, write_sz);
+	res = write_header(Tag::PRIMITIVE | Tag::TAG_NULL, 0, data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 
 	return CRYPTO_ASN1_SUCCESS;
@@ -427,7 +433,7 @@ ASN1::write_oid(const OID &oid, uint8_t *data, std::size_t data_sz, std::size_t 
 	}
 
 	// Write Tag and Len
-	res = write_header(Tag::OBJECT_IDENTIFIER, oid_sz, data, data_sz, write_sz);
+	res = write_header(Tag::PRIMITIVE | Tag::OBJECT_IDENTIFIER, oid_sz, data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 	data += write_sz;
 
@@ -452,7 +458,7 @@ ASN1::write_sequence(const std::vector<std::pair<const uint8_t*, std::size_t>> &
 	}
 
 	// Write Tag and Len
-	res = write_header(Tag::SEQUENCE, sequence_sz, data, data_sz, write_sz);
+	res = write_header(Tag::CONSTRUCTED | Tag::SEQUENCE, sequence_sz, data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 	data += write_sz;
 
@@ -479,7 +485,7 @@ ASN1::write_set(const std::vector<std::pair<const uint8_t*, std::size_t>> &set,
 	}
 
 	// Write Tag and Len
-	res = write_header(Tag::SET, set_sz, data, data_sz, write_sz);
+	res = write_header(Tag::CONSTRUCTED | Tag::SET, set_sz, data, data_sz, write_sz);
 	if ( 0 != res ) { return res; }
 	data += write_sz;
 
@@ -699,6 +705,16 @@ ASN1::write_len(std::size_t len, uint8_t data[5], std::size_t &write_sz)
 	write_sz = 1 + len_sz;
 
 	return CRYPTO_ASN1_SUCCESS;
+}
+
+ASN1::Tag operator&(ASN1::Tag lhs, ASN1::Tag rhs)
+{
+	return static_cast<ASN1::Tag>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
+}
+
+ASN1::Tag operator|(ASN1::Tag lhs, ASN1::Tag rhs)
+{
+	return static_cast<ASN1::Tag>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
 }
 
 }

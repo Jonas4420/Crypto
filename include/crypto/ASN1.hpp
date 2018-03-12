@@ -41,6 +41,7 @@ class ASN1
 		static int write_data(const Tag&, const uint8_t*, std::size_t, uint8_t*, std::size_t, std::size_t&);
 
 		enum class Tag : uint8_t {
+			// Tag Number
 			RESERVED                = 0x00,
 			BOOLEAN			= 0x01,
 			INTEGER			= 0x02,
@@ -69,7 +70,14 @@ class ASN1
 			GENERAL_STRING		= 0x1B,
 			UNIVERSAL_STRING	= 0x1C,
 			CHARACTER_STRING	= 0x1D,
-			BMP_STRING		= 0x1E
+			BMP_STRING		= 0x1E,
+			// Class and P/C
+			UNIVERSAL               = 0x00,
+			APPLICATION             = 0x40,
+			CONTEXT_SPECIFIC        = 0x80,
+			PRIVATE                 = 0xC0,
+			PRIMITIVE               = 0x00,
+			CONSTRUCTED             = 0x20
 		};
 
 		class Exception : public std::runtime_error
@@ -93,6 +101,9 @@ class ASN1
 		static int write_tag(const Tag&, uint8_t[1], std::size_t&);
 		static int write_len(std::size_t, uint8_t[5], std::size_t&);
 };
+
+ASN1::Tag operator&(ASN1::Tag, ASN1::Tag);
+ASN1::Tag operator|(ASN1::Tag, ASN1::Tag);
 
 }
 

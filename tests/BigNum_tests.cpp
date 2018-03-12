@@ -1056,7 +1056,7 @@ TEST(BigNum, gcd)
 		Crypto::BigNum Y(test[1]);
 		Crypto::BigNum A(test[2]);
 
-		EXPECT_EQ(X.gcd(Y), A);
+		EXPECT_EQ(Crypto::BigNum::gcd(X, Y), A);
 	}
 }
 
@@ -1091,7 +1091,7 @@ TEST(BigNum, lcm)
 		Crypto::BigNum Y(test[1]);
 		Crypto::BigNum A(test[2]);
 
-		EXPECT_EQ(X.lcm(Y), A);
+		EXPECT_EQ(Crypto::BigNum::lcm(X, Y), A);
 	}
 }
 
@@ -1541,7 +1541,7 @@ TEST(BigNum, self_test)
 		X = Crypto::BigNum(gcd_pairs[i][0]);
 		Y = Crypto::BigNum(gcd_pairs[i][1]);
 
-		A = X.gcd(Y);
+		A = Crypto::BigNum::gcd(X, Y);
 		EXPECT_EQ(A, gcd_pairs[i][2]);
 	}
 }

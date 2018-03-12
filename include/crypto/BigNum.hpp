@@ -83,13 +83,13 @@ class BigNum
 		void set_bit(std::size_t, int);
 
 		/* Modulo operations */
-		BigNum gcd(const BigNum&) const;
-		BigNum lcm(const BigNum&) const;
+		static BigNum gcd(const BigNum&, const BigNum&);
+		static BigNum lcm(const BigNum&, const BigNum&);
 		BigNum inv(const BigNum&) const;
 
 		/* Random and prime operations */
 		bool is_prime(int (*)(void *, uint8_t*, std::size_t), void*) const;
-		static BigNum gen_prime(std::size_t, int (*)(void *, uint8_t*, std::size_t), void*, bool=false);
+		static BigNum gen_prime(std::size_t, int (*)(void *, uint8_t*, std::size_t), void*, bool = false);
 
 		/* Cast and dump functions */
 		uint64_t limb(std::size_t = 0) const;

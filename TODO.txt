@@ -1,9 +1,27 @@
-Asym
-	ECDomainParameters + tests
+RSA
+	Load / Write / Gen keys
+	Encrypt
+	Sign
+	Paddings
+	Tests
+	Support for multi-primes
+DH
+	Load PEM
+	Gen Keys
+	Perform DH
+	Tests
+DSA
+	Load PEM
+	Gen Keys
+	Sign
+	Tests
+ECC
+	ECDomainParameters
 	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
 	ECDSA
-	DH
 	ECDH
-	DSA
-	RSA (enc, sign, load keys, paddings)
+	ECIES
+	Tests
 	EC GF(2m)
+ASN1
+	Better support for Class and P/C for Identifiers

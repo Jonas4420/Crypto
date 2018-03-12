@@ -1074,13 +1074,13 @@ BigNum::set_bit(std::size_t pos, int flag)
 }
 
 BigNum
-BigNum::gcd(const BigNum &other) const
+BigNum::gcd(const BigNum &lhs, const BigNum &rhs)
 {
 	std::size_t lz, lzt;
 	BigNum TA, TB;
 
-	TA = *this;
-	TB = other;
+	TA = lhs;
+	TB = rhs;
 
 	lz  = TA.lsb();
 	lzt = TB.lsb();
@@ -1111,9 +1111,9 @@ BigNum::gcd(const BigNum &other) const
 }
 
 BigNum
-BigNum::lcm(const BigNum &other) const
+BigNum::lcm(const BigNum &lhs, const BigNum &rhs)
 {
-	return (*this * other) / gcd(other);
+	return (lhs * rhs) / gcd(lhs, rhs);
 }
 
 BigNum
@@ -1125,7 +1125,7 @@ BigNum::inv(const BigNum &other) const
 		throw BigNum::Exception("Invalid value for inverse");
 	}
 
-	G = gcd(other);
+	G = gcd(*this, other);
 
 	if ( G != 1 ) {
 		return BigNum(0);
