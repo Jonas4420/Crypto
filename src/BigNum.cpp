@@ -266,6 +266,10 @@ BigNum::BigNum(const uint8_t *data, std::size_t data_sz)
 BigNum::BigNum(const BigNum &other)
 	: BigNum()
 {
+	if ( other == 0 ) {
+		return;
+	}
+
 	// Sign
 	s = other.s;
 
@@ -295,24 +299,28 @@ BigNum&
 BigNum::operator=(const BigNum &other)
 {
 	if ( &other != this ) {
-		// Sign
-		s = other.s;
+		if ( other == 0 ) {
+			*this = BigNum();
+		} else {
+			// Sign
+			s = other.s;
 
-		// Number of limbs
-		std::size_t i;
-		for ( i = other.n - 1 ; i > 0 ; --i ) {
-			if ( 0 != other.p[i] ) {
-				break;
+			// Number of limbs
+			std::size_t i;
+			for ( i = other.n - 1 ; i > 0 ; --i ) {
+				if ( 0 != other.p[i] ) {
+					break;
+				}
 			}
-		}
-		++i;
-		grow(i);
+			++i;
+			grow(i);
 
-		// Content of limbs
-		if ( NULL != p ) {
-			memset(p, 0x00, n * ciL);
+			// Content of limbs
+			if ( NULL != p ) {
+				memset(p, 0x00, n * ciL);
+			}
+			memcpy(p, other.p, i * ciL);
 		}
-		memcpy(p, other.p, i * ciL);
 	}
 
 	return *this;

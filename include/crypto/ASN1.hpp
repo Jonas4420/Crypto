@@ -104,6 +104,7 @@ class ASN1
 
 ASN1::Tag operator&(ASN1::Tag, ASN1::Tag);
 ASN1::Tag operator|(ASN1::Tag, ASN1::Tag);
+ASN1::Tag get_id(ASN1::Tag);
 
 }
 

@@ -13,10 +13,9 @@ ASN1::read_boolean(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                 { return res; }
-	if ( Tag::BOOLEAN   != (tag & Tag::BOOLEAN) )   { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 1 != len )                                 { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                               { return res; }
+	if ( (Tag::PRIMITIVE | Tag::BOOLEAN) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 1 != len )                               { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -37,10 +36,9 @@ ASN1::read_integer(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                 { return res; }
-	if ( Tag::INTEGER != (tag & Tag::INTEGER) )     { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )                                 { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                               { return res; }
+	if ( (Tag::PRIMITIVE | Tag::INTEGER) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                               { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -82,9 +80,9 @@ ASN1::read_bit_string(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                   { return res; }
-	if ( Tag::BIT_STRING != (tag & Tag::BIT_STRING) ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )                                   { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                       { return res; }
+	if ( Tag::BIT_STRING != get_id(tag) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                       { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -117,8 +115,8 @@ ASN1::read_octet_string(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                       { return res; }
-	if ( Tag::OCTET_STRING != (tag & Tag::OCTET_STRING) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                         { return res; }
+	if ( Tag::OCTET_STRING != get_id(tag) ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -146,9 +144,8 @@ ASN1::read_null(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                 { return res; }
-	if ( Tag::TAG_NULL != (tag & Tag::TAG_NULL) )   { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                { return res; }
+	if ( (Tag::PRIMITIVE | Tag::TAG_NULL) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -169,10 +166,9 @@ ASN1::read_oid(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                                 { return res; }
-	if ( Tag::OBJECT_IDENTIFIER != (tag & Tag::OBJECT_IDENTIFIER) ) { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::PRIMITIVE != (tag & Tag::PRIMITIVE) )                 { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( 0 == len )                                                 { return CRYPTO_ASN1_VALUE_ERROR; }
+	if ( 0 != res )                                         { return res; }
+	if ( (Tag::PRIMITIVE | Tag::OBJECT_IDENTIFIER) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 == len )                                         { return CRYPTO_ASN1_VALUE_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -198,9 +194,8 @@ ASN1::read_sequence(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                     { return res; }
-	if ( Tag::SEQUENCE != (tag & Tag::SEQUENCE) )       { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::CONSTRUCTED != (tag & Tag::CONSTRUCTED) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                                  { return res; }
+	if ( (Tag::CONSTRUCTED | Tag::SEQUENCE) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -240,9 +235,8 @@ ASN1::read_set(const uint8_t *data, std::size_t data_sz,
 
 	// Read Tag and Length
 	res = read_header(data, data_sz, tag, len, read_sz);
-	if ( 0 != res )                                     { return res; }
-	if ( Tag::SET != (tag & Tag::SET) )                 { return CRYPTO_ASN1_TAG_ERROR; }
-	if ( Tag::CONSTRUCTED != (tag & Tag::CONSTRUCTED) ) { return CRYPTO_ASN1_TAG_ERROR; }
+	if ( 0 != res )                             { return res; }
+	if ( (Tag::CONSTRUCTED | Tag::SET) != tag ) { return CRYPTO_ASN1_TAG_ERROR; }
 	data    += read_sz;
 	data_sz -= read_sz;
 
@@ -715,6 +709,12 @@ ASN1::Tag operator&(ASN1::Tag lhs, ASN1::Tag rhs)
 ASN1::Tag operator|(ASN1::Tag lhs, ASN1::Tag rhs)
 {
 	return static_cast<ASN1::Tag>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
+}
+
+ASN1::Tag
+get_id(ASN1::Tag tag)
+{
+	return static_cast<ASN1::Tag>(static_cast<uint8_t>(tag) & 0x1F);
 }
 
 }

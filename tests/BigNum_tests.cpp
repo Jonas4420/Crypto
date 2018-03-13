@@ -69,6 +69,14 @@ TEST(BigNum, constructors)
 		EXPECT_NE(Y, val);
 	}
 
+	// Copy constructor with empty value
+	{
+		Crypto::BigNum X;
+		Crypto::BigNum Y(X);
+
+		EXPECT_EQ(X, Y);
+	}
+
 	// Copy constructor
 	{
 		int val = 42;
@@ -101,6 +109,16 @@ TEST(BigNum, constructors)
 
 		EXPECT_EQ(Y, val);
 		EXPECT_NE(Y, val_neg);
+	}
+
+	// Copy assignment operator with empty value
+	{
+		Crypto::BigNum X;
+		Crypto::BigNum Y;
+
+		Y = X;
+
+		EXPECT_EQ(X, Y);
 	}
 
 	// Copy assignment operator
