@@ -968,74 +968,28 @@ TEST(RSAPrivateKey, is_valid_rng)
 TEST(RSA, gen_keypair)
 {
 	std::vector<std::vector<std::string>> tests = {
-		{ "128", "100" },
-		{ "512",  "50" },
-		{ "1024", "20" },
-		{ "2048", "10" },
-		{ "4096",  "5" },
-		{ "8192",  "1" }
+		{ "128", "100", "10" },
+		{ "512",  "50",  "5" },
+		{ "1024", "20",  "0" },
+		{ "2048", "10",  "0" },
+		{ "4096",  "5",  "0" },
+		{ "8192",  "1",  "0" },
+		{ "16384", "0",  "0" }
 	};
 
 	for ( auto test : tests ) {
 		std::size_t n_bits = atoi(test[0].c_str());
-		std::size_t iterations = atoi(test[1].c_str());
-
-		if ( TestOptions::get().is_fast && n_bits > 1024 ) {
-			continue;
-		}
+		std::size_t iterations = TestOptions::get().is_fast ?
+			atoi(test[2].c_str()) : atoi(test[1].c_str());
 
 		for ( std::size_t i = 0 ; i < iterations ; ++i ) {
-			int res;
-
 			// Generate Key Pair and check validity
 			auto keyPair = Crypto::RSA::gen_keypair(hmac_drbg_rand, NULL, n_bits, 3);
 			EXPECT_TRUE(Crypto::RSA::is_valid(keyPair, hmac_drbg_rand, NULL));
 
-			// Check public key's N length
-			{
-				std::size_t data_sz, read_sz;
-				std::vector<std::pair<const uint8_t*, std::size_t>> sequence;
-				Crypto::BigNum n;
-
-				data_sz = 0;
-				res = keyPair.first.to_binary(NULL, data_sz);
-				EXPECT_EQ(res, 1);
-
-				std::unique_ptr<uint8_t[]> data(new uint8_t[data_sz]);
-				res = keyPair.first.to_binary(data.get(), data_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::ASN1::read_sequence(data.get(), data_sz, sequence, read_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::ASN1::read_integer(sequence[0].first, sequence[0].second, n, read_sz);
-				EXPECT_EQ(res, 0);
-
-				EXPECT_EQ(n.bitlen(), n_bits);
-			}
-
-			// Check private key's N length
-			{
-				std::size_t data_sz, read_sz;
-				std::vector<std::pair<const uint8_t*, std::size_t>> sequence;
-				Crypto::BigNum n;
-
-				data_sz = 0;
-				res = keyPair.second.to_binary(NULL, data_sz);
-				EXPECT_EQ(res, 1);
-
-				std::unique_ptr<uint8_t[]> data(new uint8_t[data_sz]);
-				res = keyPair.second.to_binary(data.get(), data_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::ASN1::read_sequence(data.get(), data_sz, sequence, read_sz);
-				EXPECT_EQ(res, 0);
-
-				res = Crypto::ASN1::read_integer(sequence[1].first, sequence[1].second, n, read_sz);
-				EXPECT_EQ(res, 0);
-
-				EXPECT_EQ(n.bitlen(), n_bits);
-			}
+			// Check keys' size
+			EXPECT_EQ(keyPair.first.bitlen(), n_bits);
+			EXPECT_EQ(keyPair.second.bitlen(), n_bits);
 		}
 	}
 }

@@ -1,10 +1,9 @@
 RSA
-	Encrypt
-	Sign
-	Paddings
-	Support for multi-primes
-ASN1
-	Better support for Class and P/C for Identifiers
+	RSAES-OAEP
+	RSAES-PKCS1-V1_5 
+	RSASSA-PSS
+	RSASSA-PKCS1-V1_5
+	Test vectors
 DH
 	Load PEM
 	Gen Keys
@@ -15,8 +14,15 @@ DSA
 	Sign
 ECC
 	ECDomainParameters
-	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
+	EC GF(p)
 	ECDSA
 	ECDH
 	ECIES
-	EC GF(2m)
+RSA
+	Support for multi-primes
+	use RR for exp_mod for speed optimization
+	blindering of operations for private key operations
+ASN1
+	Better support for Class and P/C for Identifiers
+ECC
+	EC GF(2m), ensure that types and keys are not mixed up with GF(p)

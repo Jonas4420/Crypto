@@ -28,6 +28,7 @@ class RSAPublicKey
 		int to_binary(uint8_t*, std::size_t&) const;
 
 		bool is_valid(void) const;
+		std::size_t bitlen(void) const;
 
 		friend RSA;
 	private:
@@ -50,6 +51,7 @@ class RSAPrivateKey
 		int to_binary(uint8_t*, std::size_t&) const;
 
 		bool is_valid(int (*)(void *, uint8_t*, std::size_t) = NULL, void* = NULL) const;
+		std::size_t bitlen(void) const;
 
 		friend RSA;
 	private:
@@ -71,6 +73,11 @@ class RSA
 		static bool is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&>&,
 				int (*)(void *, uint8_t*, std::size_t) = NULL, void* = NULL);
 
+		static int RSAEP(const RSAPublicKey&, const uint8_t*, std::size_t, uint8_t*, std::size_t&);
+		static int RSADP(const RSAPrivateKey&, const uint8_t*, std::size_t, uint8_t*, std::size_t&);
+		static int RSASP1(const RSAPrivateKey&, const uint8_t*, std::size_t, uint8_t*, std::size_t&);
+		static int RSAVP1(const RSAPublicKey&, const uint8_t*, std::size_t, uint8_t*, std::size_t&);
+
 		class Exception : public std::runtime_error
 		{
 			public:
@@ -79,6 +86,7 @@ class RSA
 
 		static const int CRYPTO_RSA_SUCCESS             = 0x00;
 		static const int CRYPTO_RSA_INVALID_LENGTH      = 0x01;
+		static const int CRYPTO_RSA_OUT_OF_RANGE        = 0x02;
 	private:
 };
 

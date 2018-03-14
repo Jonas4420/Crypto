@@ -85,6 +85,12 @@ RSAPublicKey::is_valid(void) const
 	return is_valid;
 }
 
+std::size_t
+RSAPublicKey::bitlen(void) const
+{
+	return n.bitlen();
+}
+
 RSAPrivateKey::RSAPrivateKey(const BigNum &e, const BigNum &p, const BigNum &q, bool carmichael)
 	: e(e), p(p), q(q)
 {
@@ -208,6 +214,12 @@ RSAPrivateKey::is_valid(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng
 	return is_valid;
 }
 
+std::size_t
+RSAPrivateKey::bitlen(void) const
+{
+	return n.bitlen();
+}
+
 std::pair<RSAPublicKey, RSAPrivateKey>
 RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 		std::size_t n_bits, const BigNum &e)
@@ -244,6 +256,94 @@ RSA::is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&> &keyPai
 	is_valid = is_valid && (keyPair.first.e == keyPair.second.e);
 
 	return is_valid;
+}
+
+int
+RSA::RSAEP(const RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+{
+	BigNum m(input, input_sz);
+
+	if ( m >= pubKey.n ) {
+		return CRYPTO_RSA_OUT_OF_RANGE;
+	}
+
+	if ( output_sz < pubKey.n.size() ) {
+		output_sz = pubKey.n.size();
+		return CRYPTO_RSA_INVALID_LENGTH;
+	}
+
+	BigNum c = m.exp_mod(pubKey.e, pubKey.n);
+	c.to_binary(output, output_sz);
+
+	return CRYPTO_RSA_SUCCESS;
+}
+
+int
+RSA::RSADP(const RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+{
+	BigNum c(input, input_sz);
+
+	if ( c >= privKey.n ) {
+		return CRYPTO_RSA_OUT_OF_RANGE;
+	}
+
+	if ( output_sz < privKey.n.size() ) {
+		output_sz = privKey.n.size();
+		return CRYPTO_RSA_INVALID_LENGTH;
+	}
+
+	BigNum m1 = c.exp_mod(privKey.dp, privKey.p);
+	BigNum m2 = c.exp_mod(privKey.dq, privKey.q);
+	BigNum h  = ((m1 - m2) * privKey.qp) % privKey.p;
+	BigNum m  = m2 + (privKey.q * h);
+
+	m.to_binary(output, output_sz);
+
+	return CRYPTO_RSA_SUCCESS;
+}
+
+int
+RSA::RSASP1(const RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+{
+	BigNum m(input, input_sz);
+
+	if ( m >= privKey.n ) {
+		return CRYPTO_RSA_OUT_OF_RANGE;
+	}
+
+	if ( output_sz < privKey.n.size() ) {
+		output_sz = privKey.n.size();
+		return CRYPTO_RSA_INVALID_LENGTH;
+	}
+
+	BigNum s1 = m.exp_mod(privKey.dp, privKey.p);
+	BigNum s2 = m.exp_mod(privKey.dq, privKey.q);
+	BigNum h  = ((s1 - s2) * privKey.qp) % privKey.p;
+	BigNum s  = s2 + (privKey.q * h);
+
+	s.to_binary(output, output_sz);
+
+	return CRYPTO_RSA_SUCCESS;
+}
+
+int
+RSA::RSAVP1(const RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+{
+	BigNum s(input, input_sz);
+
+	if ( s >= pubKey.n.size() ) {
+		return CRYPTO_RSA_OUT_OF_RANGE;
+	}
+
+	if ( output_sz < pubKey.n.size() ) {
+		output_sz = pubKey.n.size();
+		return CRYPTO_RSA_INVALID_LENGTH;
+	}
+
+	BigNum m = s.exp_mod(pubKey.e, pubKey.n);
+	m.to_binary(output, output_sz);
+
+	return CRYPTO_RSA_SUCCESS;
 }
 
 }
