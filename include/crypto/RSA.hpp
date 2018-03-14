@@ -68,7 +68,8 @@ class RSA
 	public:
 		static std::pair<RSAPublicKey, RSAPrivateKey> gen_keypair(int (*)(void *, uint8_t*, std::size_t), void*,
 				std::size_t, const BigNum&);
-		static bool is_valid(const RSAPublicKey&, const RSAPrivateKey&);
+		static bool is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&>&,
+				int (*)(void *, uint8_t*, std::size_t) = NULL, void* = NULL);
 
 		class Exception : public std::runtime_error
 		{

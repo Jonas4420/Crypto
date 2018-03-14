@@ -20,16 +20,16 @@ RSAPublicKey::RSAPublicKey(const uint8_t *data, std::size_t data_sz)
 
 	// Read sequence
 	res = Crypto::ASN1::read_sequence(data, data_sz, sequence, read_sz);
-	if ( ASN1::CRYPTO_ASN1_SUCCESS != res )  { throw RSA::Exception("Bad RSAPublicKey format"); }
-	if ( data_sz != read_sz )                { throw RSA::Exception("Bad RSAPublicKey format"); }
-	if ( 2 != sequence.size() )              { throw RSA::Exception("Bad RSAPublicKey format"); }
+	if ( ASN1::CRYPTO_ASN1_SUCCESS != res ) { throw RSA::Exception("Bad RSAPublicKey format"); }
+	if ( data_sz != read_sz )               { throw RSA::Exception("Bad RSAPublicKey format"); }
+	if ( 2 != sequence.size() )             { throw RSA::Exception("Bad RSAPublicKey format"); }
 
 	std::size_t i = 0;
 	std::vector<BigNum*> fields = { &n, &e };
 
 	for ( auto field : fields ) {
 		res = Crypto::ASN1::read_integer(sequence[i].first, sequence[i].second, *field, read_sz);
-		if ( ASN1::CRYPTO_ASN1_SUCCESS != res )  { throw RSA::Exception("Bad RSAPublicKey format"); }
+		if ( ASN1::CRYPTO_ASN1_SUCCESS != res ) { throw RSA::Exception("Bad RSAPublicKey format"); }
 
 		++i;
 	}
@@ -119,7 +119,7 @@ RSAPrivateKey::RSAPrivateKey(const uint8_t *data, std::size_t data_sz)
 
 	// Get version
 	res = Crypto::ASN1::read_integer(sequence[0].first, sequence[0].second, version, read_sz);
-	if ( ASN1::CRYPTO_ASN1_SUCCESS != res )  { throw RSA::Exception("Bad RSAPrivateKey format"); }
+	if ( ASN1::CRYPTO_ASN1_SUCCESS != res ) { throw RSA::Exception("Bad RSAPrivateKey format"); }
 
 	// Check that version is 0
 	if ( version != 0 )         { throw RSA::Exception("RSAPrivateKey version is not supported"); }
@@ -211,7 +211,7 @@ std::pair<RSAPublicKey, RSAPrivateKey>
 RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 		std::size_t n_bits, const BigNum &e)
 {
-	BigNum g, n, p, q;
+	BigNum n, p, q;
 
 	if ( (NULL == f_rng)|| (n_bits < 128) || (0 != (n_bits % 2)) || (e < 3) ) {
 		throw RSA::Exception("Invalid key pair parameters");
@@ -220,14 +220,10 @@ RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 	do {
 		p = BigNum::gen_prime(n_bits >> 1, f_rng, p_rng, false);
 		q = BigNum::gen_prime(n_bits >> 1, f_rng, p_rng, false);
-
-		if ( p == q ) { continue; }
+		p.safe_cond_swap(q, p < q);
 
 		n = p * q;
-		if ( n_bits != n.bitlen() ) { continue; }
-
-		p.safe_cond_swap(q, p < q);
-	} while ( BigNum::gcd(e, (p - 1) * (q - 1)) != 1 );
+	} while ( (p == q) || (n_bits != n.bitlen()) || BigNum::gcd(e, (p - 1) * (q - 1)) != 1 );
 
 	RSAPublicKey pubKey(n, e);
 	RSAPrivateKey privKey(e, p, q);
@@ -236,13 +232,15 @@ RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 }
 
 bool
-RSA::is_valid(const RSAPublicKey &pub, const RSAPrivateKey &priv)
+RSA::is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&> &keyPair,
+		int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng)
 {
 	bool is_valid = true;
 
-	is_valid = is_valid && pub.is_valid();
-	is_valid = is_valid && priv.is_valid();
-	is_valid = is_valid && (pub.n == priv.n) && (pub.e == priv.e);
+	is_valid = is_valid && keyPair.first.is_valid();
+	is_valid = is_valid && keyPair.second.is_valid(f_rng, p_rng);
+	is_valid = is_valid && (keyPair.first.n == keyPair.second.n);
+	is_valid = is_valid && (keyPair.first.e == keyPair.second.e);
 
 	return is_valid;
 }

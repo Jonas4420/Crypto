@@ -1,27 +1,22 @@
 RSA
-	Load / Write / Gen keys
 	Encrypt
 	Sign
 	Paddings
-	Tests
 	Support for multi-primes
+ASN1
+	Better support for Class and P/C for Identifiers
 DH
 	Load PEM
 	Gen Keys
 	Perform DH
-	Tests
 DSA
 	Load PEM
 	Gen Keys
 	Sign
-	Tests
 ECC
 	ECDomainParameters
 	EC GF(p), ensure that types and keys are not mixed up (if using GF(2m))
 	ECDSA
 	ECDH
 	ECIES
-	Tests
 	EC GF(2m)
-ASN1
-	Better support for Class and P/C for Identifiers
