@@ -2,6 +2,7 @@
 
 #include "crypto/ASN1.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace Crypto
