@@ -3,6 +3,8 @@
 
 #include "crypto/MessageDigest.hpp"
 
+#include <type_traits>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -13,6 +15,9 @@ namespace Crypto
 template <class MD>
 class HMAC
 {
+	static_assert(std::is_base_of<MessageDigest, MD>::value,
+			"Template argument should be a MessageDigest");
+
 	public:
 		HMAC(const uint8_t *key, std::size_t key_sz)
 		{
@@ -98,6 +103,9 @@ class HMAC
 template <class MD>
 void HMAC_get(const uint8_t *key, std::size_t key_sz, const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
+	static_assert(std::is_base_of<MessageDigest, MD>::value,
+			"Template argument should be a MessageDigest");
+
 	HMAC<MD> ctx(key, key_sz);
 	ctx.update(input, input_sz);
 	ctx.finish(output);

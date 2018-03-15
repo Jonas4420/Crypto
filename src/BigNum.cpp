@@ -1192,7 +1192,7 @@ BigNum::inv(const BigNum &other) const
 }
 
 bool
-BigNum::is_prime(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng) const
+BigNum::is_prime(int (*f_rng)(void*, uint8_t*, std::size_t), void *p_rng) const
 {
 	bool result = false;
 	BigNum X(this->abs());
@@ -1236,7 +1236,10 @@ BigNum::gen_prime(std::size_t nbits, int (*f_rng)(void *, uint8_t*, std::size_t)
 	std::size_t seed_sz = n * ciL;
 	std::unique_ptr<uint8_t[]> seed(new uint8_t[seed_sz]);
 
-	f_rng(p_rng, seed.get(), seed_sz);
+	if ( 0 != f_rng(p_rng, seed.get(), seed_sz) ) {
+		throw BigNum::Exception("Random number generator failure");
+	}
+
 	X = BigNum(seed.get(), seed_sz);
 
 	k = X.bitlen();

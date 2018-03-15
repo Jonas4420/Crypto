@@ -56,7 +56,7 @@ TEST(Base64, decode_test_vector)
 		{ "Zm8=",     "fo"     },
 		{ "Zm9v",     "foo"    },
 		{ "Zm9vYg==", "foob"   },
-		{ "Zm9vYmE=", "fooba"  }, 
+		{ "Zm9vYmE=", "fooba"  },
 		{ "Zm9vYmFy", "foobar" }
 	};
 	

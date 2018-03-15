@@ -4,6 +4,8 @@
 #include "crypto/CipherMode.hpp"
 #include "crypto/SymmetricCipher.hpp"
 
+#include <type_traits>
+
 #include <cstring>
 
 namespace Crypto
@@ -12,6 +14,9 @@ namespace Crypto
 template <class SC>
 class CBC : public CipherMode
 {
+	static_assert(std::is_base_of<SymmetricCipher, SC>::value,
+			"Template argument should be a SymmetricCipher");
+
 	public:
 		CBC(const uint8_t *key, std::size_t key_sz, const uint8_t iv[SC::BLOCK_SIZE], bool is_encrypt)
 			: sc_ctx(key, key_sz), buffer_sz(0), is_encrypt(is_encrypt)

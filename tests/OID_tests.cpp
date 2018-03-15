@@ -438,7 +438,7 @@ TEST(OID, to_string)
 TEST(OID, cmp)
 {
 	// Test case #1
-	{ 
+	{
 		Crypto::OID oid_1(1);
 		oid_1 += 12;
 		oid_1 += 243;
@@ -454,7 +454,7 @@ TEST(OID, cmp)
 	}
 
 	// Test case #2
-	{ 
+	{
 		Crypto::OID oid_1(1);
 		oid_1 += 12;
 		oid_1 += 243;

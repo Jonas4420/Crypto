@@ -14,10 +14,10 @@ class TestOptions
 		}
 
 		bool        is_fast;
-		std::string vect_dir; 
+		std::string vect_dir;
 	private:
-		TestOptions(void) 
-		{ 
+		TestOptions(void)
+		{
 			const char *env_fast     = std::getenv("CRYPTO_TEST_IS_FAST");
 			const char *env_vect_dir = std::getenv("CRYPTO_TEST_VECT_DIR");
 

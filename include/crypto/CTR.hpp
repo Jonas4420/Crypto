@@ -4,6 +4,8 @@
 #include "crypto/CipherMode.hpp"
 #include "crypto/SymmetricCipher.hpp"
 
+#include <type_traits>
+
 #include <cstring>
 
 namespace Crypto
@@ -12,6 +14,9 @@ namespace Crypto
 template <class SC>
 class CTR : public CipherMode
 {
+	static_assert(std::is_base_of<SymmetricCipher, SC>::value,
+			"Template argument should be a SymmetricCipher");
+
 	public:
 		CTR(const uint8_t *key, std::size_t key_sz, uint8_t counter[SC::BLOCK_SIZE])
 			: sc_ctx(key, key_sz), limit_reached(false)

@@ -968,19 +968,22 @@ TEST(RSAPrivateKey, is_valid_rng)
 TEST(RSA, gen_keypair)
 {
 	std::vector<std::vector<std::string>> tests = {
-		{ "128", "100", "10" },
-		{ "512",  "50",  "5" },
-		{ "1024", "20",  "0" },
-		{ "2048", "10",  "0" },
-		{ "4096",  "5",  "0" },
-		{ "8192",  "1",  "0" },
-		{ "16384", "0",  "0" }
+		{ "128",  "10" },
+		{ "512",  "10" },
+		{ "1024", "10" },
+		{ "2048",  "5" },
+		{ "4096",  "1" }
 	};
 
 	for ( auto test : tests ) {
 		std::size_t n_bits = atoi(test[0].c_str());
-		std::size_t iterations = TestOptions::get().is_fast ?
-			atoi(test[2].c_str()) : atoi(test[1].c_str());
+		std::size_t iterations = atoi(test[1].c_str());
+
+		if ( TestOptions::get().is_fast ) {
+			if ( n_bits > 1024 ) { continue; }
+
+			iterations = 5;
+		}
 
 		for ( std::size_t i = 0 ; i < iterations ; ++i ) {
 			// Generate Key Pair and check validity

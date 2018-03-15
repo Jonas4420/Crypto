@@ -28,7 +28,7 @@ class PEM
 
 		static const int CRYPTO_PEM_SUCCESS        = 0x00;
 		static const int CRYPTO_PEM_INVALID_LENGTH = 0x01;
-	private:
+	protected:
 		static inline std::string get_header(std::string);
 		static inline std::string get_footer(std::string);
 

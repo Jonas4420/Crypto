@@ -1,6 +1,8 @@
 #ifndef CRYPTO_MESSAGEDIGEST_H
 #define CRYPTO_MESSAGEDIGEST_H
 
+#include <type_traits>
+
 #include <cstddef>
 #include <cstdint>
 
@@ -29,6 +31,9 @@ class MessageDigest
 template <class MD>
 static void MessageDigest_get(const uint8_t *input, std::size_t input_sz, uint8_t *output)
 {
+	static_assert(std::is_base_of<MessageDigest, MD>::value,
+			"Template argument should be a MessageDigest");
+
 	MD ctx;
 	ctx.update(input, input_sz);
 	ctx.finish(output);

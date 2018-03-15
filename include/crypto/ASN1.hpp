@@ -92,7 +92,7 @@ class ASN1
 		static const int CRYPTO_ASN1_TAG_ERROR      = 0x03;
 		static const int CRYPTO_ASN1_LENGTH_ERROR   = 0x04;
 		static const int CRYPTO_ASN1_VALUE_ERROR    = 0x05;
-	private:
+	protected:
 		static int read_header(const uint8_t*, std::size_t, Tag&, std::size_t&, std::size_t&);
 		static int read_tag(const uint8_t*, std::size_t, Tag&, std::size_t&);
 		static int read_len(const uint8_t*, std::size_t, std::size_t&, std::size_t&);

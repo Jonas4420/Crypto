@@ -4,6 +4,8 @@
 #include "crypto/CipherMode.hpp"
 #include "crypto/SymmetricCipher.hpp"
 
+#include <type_traits>
+
 #include <cstring>
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
@@ -42,6 +44,9 @@ namespace Crypto
 template <class SC>
 class GCM : public CipherMode
 {
+	static_assert(std::is_base_of<SymmetricCipher, SC>::value,
+			"Template argument should be a SymmetricCipher");
+
 	public:
 		GCM(const uint8_t *key, std::size_t key_sz, const uint8_t *iv, std::size_t iv_sz,
 				const uint8_t *add, std::size_t add_sz, bool is_encrypt)
@@ -234,7 +239,7 @@ class GCM : public CipherMode
 				uint64_t mod = (vl & 0x01) ? UL64(0xE100000000000000) : 0;
 
 				vl = (vh << 63) | (vl >> 1);
-				vh = (vh >>  1) ^ mod; 
+				vh = (vh >>  1) ^ mod;
 
 				HL[i] = vl;
 				HH[i] = vh;

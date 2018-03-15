@@ -25,7 +25,7 @@ class Base64
 
 		static const int CRYPTO_BASE64_SUCCESS        = 0x00;
 		static const int CRYPTO_BASE64_INVALID_LENGTH = 0x01;
-	private:
+	protected:
 		static const char    encode_map[64];
 		static const uint8_t decode_map[128];
 		static const char    pad;

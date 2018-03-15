@@ -107,7 +107,7 @@ class BigNum
 		static const int CRYPTO_BIGNUM_INVALID_LENGTH       = 0x01;
 		static const int CRYPTO_BIGNUM_SMALL_PRIME          = 0x02;
 		static const int CRYPTO_BIGNUM_PRIME_NOT_ACCEPTABLE = 0x03;
-	private:
+	protected:
 		int         s; // signed integer
 		std::size_t n; // number of limbs
 		uint64_t   *p; // vector of limbs

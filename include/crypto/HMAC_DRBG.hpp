@@ -4,6 +4,8 @@
 #include "crypto/DRBG.hpp"
 #include "crypto/HMAC.hpp"
 
+#include <type_traits>
+
 #include <memory>
 
 namespace Crypto
@@ -12,6 +14,9 @@ namespace Crypto
 template <class MD>
 class HMAC_DRBG : public DRBG
 {
+	static_assert(std::is_base_of<MessageDigest, MD>::value,
+			"Template argument should be a MessageDigest");
+
 	public:
 		HMAC_DRBG(const uint8_t *entropy, std::size_t entropy_sz,
 				const uint8_t *nonce = NULL, std::size_t nonce_sz = 0,

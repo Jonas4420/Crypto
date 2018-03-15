@@ -164,7 +164,7 @@ class OID
 		static const int CRYPTO_OID_SUCCESS        = 0x00;
 		static const int CRYPTO_OID_INVALID_LENGTH = 0x01;
 		static const int CRYPTO_OID_VALUE_ERROR    = 0x02;
-	private:
+	protected:
 		std::vector<uint32_t> nodes;
 
 		static int fill_bytes(const uint8_t*&, std::size_t&, uint8_t[5], std::size_t&);

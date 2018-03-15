@@ -4,6 +4,8 @@
 #include "crypto/MessageDigest.hpp"
 #include "crypto/Utils.hpp"
 
+#include <type_traits>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -14,6 +16,9 @@ namespace Crypto
 template <class MD>
 class PBKDF1
 {
+	static_assert(std::is_base_of<MessageDigest, MD>::value,
+			"Template argument should be a MessageDigest");
+
 	public:
 		static void derive_key(const uint8_t *password, std::size_t password_sz,
 				const uint8_t *salt, std::size_t salt_sz,
