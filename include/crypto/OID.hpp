@@ -153,6 +153,11 @@ class OID
 										DEFINE_OID(nist_hashalgs()+1, id_sha256)
 										DEFINE_OID(nist_hashalgs()+2, id_sha384)
 										DEFINE_OID(nist_hashalgs()+3, id_sha512)
+										DEFINE_OID(nist_hashalgs()+4, id_sha224)
+										DEFINE_OID(nist_hashalgs()+7, id_sha3_224)
+										DEFINE_OID(nist_hashalgs()+8, id_sha3_256)
+										DEFINE_OID(nist_hashalgs()+9, id_sha3_384)
+										DEFINE_OID(nist_hashalgs()+10, id_sha3_512)
 #undef DEFINE_OID
 
 		class Exception : public std::runtime_error

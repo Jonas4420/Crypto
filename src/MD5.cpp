@@ -24,6 +24,8 @@
 namespace Crypto
 {
 
+const OID MD5::oid_alg = OID::id_md5();
+
 MD5::MD5(void)
 {
 	reset();

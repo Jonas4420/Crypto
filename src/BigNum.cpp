@@ -678,21 +678,21 @@ BigNum::div_mod(const BigNum &other) const
 		{
 			Z.p[i - t - 1]--;
 
-			memset(T1.p, 0, T1.n * ciL);
+			memset(T1.p, 0x00, T1.n * ciL);
 			T1.p[0] = (t < 1) ? 0 : Y.p[t - 1];
 			T1.p[1] = Y.p[t];
 
-			memset(T3.p, 0, T3.n * ciL);
+			memset(T3.p, 0x00, T3.n * ciL);
 			T3.p[0] = Z.p[i - t - 1];
 			T1 = T1 * T3;
 
-			memset(T2.p, 0, T2.n * ciL);
+			memset(T2.p, 0x00, T2.n * ciL);
 			T2.p[0] = (i < 2) ? 0 : X.p[i - 2];
 			T2.p[1] = (i < 1) ? 0 : X.p[i - 1];
 			T2.p[2] = X.p[i];
 		} while ( T1 > T2 );
 
-		memset(T3.p, 0, T3.n * ciL);
+		memset(T3.p, 0x00, T3.n * ciL);
 		T3.p[0] = Z.p[i - t - 1];
 		T1 = Y * T3;
 		T1 = T1 << (biL * (i - t - 1));
@@ -982,7 +982,9 @@ BigNum::operator>>=(std::size_t shift)
 	t = bitlen();
 
 	if ( shift >= t ) {
-		memset(p, 0, n * ciL);
+		if ( NULL != p ) {
+			memset(p, 0x00, n * ciL);
+		}
 
 		return *this;
 	}
@@ -1411,7 +1413,7 @@ BigNum::grow(std::size_t new_size)
 	if ( n < new_size ) {
 		tmp = new uint64_t[new_size];
 
-		memset(tmp, 0, new_size * ciL);
+		memset(tmp, 0x00, new_size * ciL);
 
 		if ( NULL != p ) {
 			memcpy(tmp, p, n * ciL);
@@ -1769,7 +1771,7 @@ BigNum::mont_mul(const BigNum &B, const BigNum &N, uint64_t mm, const BigNum &T)
 		throw BigNum::Exception("Invalid value");
 	}
 
-	memset(T.p, 0, T.n * ciL);
+	memset(T.p, 0x00, T.n * ciL);
 
 	d = T.p;
 	n = N.n;

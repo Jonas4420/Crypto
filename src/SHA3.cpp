@@ -23,6 +23,11 @@
 namespace Crypto
 {
 
+const OID SHA3_224::oid_alg = OID::id_sha3_224();
+const OID SHA3_256::oid_alg = OID::id_sha3_256();
+const OID SHA3_384::oid_alg = OID::id_sha3_384();
+const OID SHA3_512::oid_alg = OID::id_sha3_512();
+
 SHA3::SHA3(std::size_t digest_sz)
 	: digest_sz(digest_sz), r(200 - 2 * digest_sz)
 {

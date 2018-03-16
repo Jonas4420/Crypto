@@ -11,6 +11,8 @@
 namespace Crypto
 {
 
+const OID SHA384::oid_alg = OID::id_sha384();
+
 SHA384::SHA384(void)
 {
 	reset();

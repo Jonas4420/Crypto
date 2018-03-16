@@ -37,19 +37,41 @@ class SHA3 : public MessageDigest
 		static const uint64_t RC[24];
 };
 
-template<std::size_t DigestSize>
-class SHA3_Final : public SHA3
+class SHA3_224 : public SHA3
 {
 	public:
-		SHA3_Final(void) : SHA3(DigestSize) {}
-		static const std::size_t SIZE       = DigestSize;
-		static const std::size_t BLOCK_SIZE = 200 - 2 * DigestSize;
+		SHA3_224(void) : SHA3(SIZE) {}
+		static const OID oid_alg;
+		static const std::size_t SIZE       = 28;
+		static const std::size_t BLOCK_SIZE = 144;
 };
 
-typedef SHA3_Final<28> SHA3_224;
-typedef SHA3_Final<32> SHA3_256;
-typedef SHA3_Final<48> SHA3_384;
-typedef SHA3_Final<64> SHA3_512;
+class SHA3_256 : public SHA3
+{
+	public:
+		SHA3_256(void) : SHA3(SIZE) {}
+		static const OID oid_alg;
+		static const std::size_t SIZE       = 32;
+		static const std::size_t BLOCK_SIZE = 136;
+};
+
+class SHA3_384 : public SHA3
+{
+	public:
+		SHA3_384(void) : SHA3(SIZE) {}
+		static const OID oid_alg;
+		static const std::size_t SIZE       = 48;
+		static const std::size_t BLOCK_SIZE = 104;
+};
+
+class SHA3_512 : public SHA3
+{
+	public:
+		SHA3_512(void) : SHA3(SIZE) {}
+		static const OID oid_alg;
+		static const std::size_t SIZE       = 64;
+		static const std::size_t BLOCK_SIZE = 72;
+};
 
 }
 

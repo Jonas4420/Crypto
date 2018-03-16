@@ -16,6 +16,7 @@ class SHA1 : public MessageDigest
 		virtual void finish(uint8_t*);
 		virtual void reset(void);
 
+		static const OID oid_alg;
 		static const std::size_t SIZE       = 20;
 		static const std::size_t BLOCK_SIZE = 64;
 	protected:

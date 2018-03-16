@@ -24,6 +24,8 @@
 namespace Crypto
 {
 
+const OID RIPEMD160::oid_alg = OID::id_ripemd160();
+
 RIPEMD160::RIPEMD160(void)
 {
 	reset();
