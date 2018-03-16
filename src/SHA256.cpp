@@ -46,8 +46,6 @@ do {                                            \
 namespace Crypto
 {
 
-const OID SHA256::oid_alg = OID::id_sha256();
-
 SHA256::SHA256(void)
 {
 	reset();

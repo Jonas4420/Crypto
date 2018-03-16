@@ -4,6 +4,14 @@
 #include "gmock/gmock.h"
 
 #include "crypto/OID.hpp"
+#include "crypto/MD5.hpp"
+#include "crypto/RIPEMD160.hpp"
+#include "crypto/SHA1.hpp"
+#include "crypto/SHA224.hpp"
+#include "crypto/SHA256.hpp"
+#include "crypto/SHA384.hpp"
+#include "crypto/SHA512.hpp"
+#include "crypto/SHA3.hpp"
 #include "crypto/Utils.hpp"
 
 TEST(OID, construction)
@@ -493,4 +501,19 @@ TEST(OID, named)
 	oid.to_binary(data, data_sz);
 	Crypto::Utils::to_hex(data, data_sz, oid_str);
 	EXPECT_EQ(oid_str, expected_str);
+}
+
+TEST(OID, get_oid)
+{
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::MD5>(),       Crypto::OID::id_md5());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::RIPEMD160>(), Crypto::OID::id_ripemd160());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA1>(),      Crypto::OID::id_sha1());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA224>(),    Crypto::OID::id_sha224());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA256>(),    Crypto::OID::id_sha256());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA384>(),    Crypto::OID::id_sha384());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA512>(),    Crypto::OID::id_sha512());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA3_224>(),  Crypto::OID::id_sha3_224());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA3_256>(),  Crypto::OID::id_sha3_256());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA3_384>(),  Crypto::OID::id_sha3_384());
+	EXPECT_EQ(Crypto::OID::get_oid<Crypto::SHA3_512>(),  Crypto::OID::id_sha3_512());
 }

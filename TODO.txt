@@ -1,7 +1,12 @@
 RSA
-	RSAES-PKCS1-V1_5 
-	RSASSA-PSS
-	RSASSA-PKCS1-V1_5
+	Test vectors
+	use RR for exp_mod for speed optimization
+	blindering of operations for private key operations
+RSA (Padding schemes)
+	RSAES_OAEP
+	RSAES_PKCS1_v1_5
+	RSASSA_PSS
+	RSASSA_PKCS1_v1_5
 	Test vectors
 DH
 	Load PEM
@@ -19,8 +24,6 @@ ECC
 	ECIES
 RSA
 	Support for multi-primes
-	use RR for exp_mod for speed optimization
-	blindering of operations for private key operations
 ASN1
 	Better support for Class and P/C for Identifiers
 ECC

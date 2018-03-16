@@ -5,8 +5,6 @@
 namespace Crypto
 {
 
-const OID SHA224::oid_alg = OID::id_sha224();
-
 SHA224::SHA224(void)
 {
 	reset();

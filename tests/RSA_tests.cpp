@@ -34,12 +34,12 @@ TEST(RSAPublicKey, constructor)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPublicKey expected(55, 3);
+		Crypto::RSA::RSAPublicKey expected(55, 3);
 
 		res = Crypto::Utils::from_hex("3006020137020103", data, data_sz);
 		EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(Crypto::RSAPublicKey(data, data_sz), expected);
+		EXPECT_EQ(Crypto::RSA::RSAPublicKey(data, data_sz), expected);
 	}
 
 	// Case #2: from actual PEM file (OpenSSL key)
@@ -57,7 +57,7 @@ TEST(RSAPublicKey, constructor)
 				"CBC9ABC499FEE61269DDA55852D64F44CD72C5377449E92064B0476F86C58941"
 				"98750E8DDADCF8074CF33072E7515D15A32F387A0B2D48F768DF7CECEB94E033", 16);
 		Crypto::BigNum e("010001", 16);
-		Crypto::RSAPublicKey expected(n, e);
+		Crypto::RSA::RSAPublicKey expected(n, e);
 
 		std::string pem = "-----BEGIN RSA PUBLIC KEY-----\n"
 			"MIIBCgKCAQEA1zijWmiMUCXMnBAPLURHrZtOdtGLnRPYosdhA6dM4bRUNTJGAMOk\n"
@@ -71,7 +71,7 @@ TEST(RSAPublicKey, constructor)
 		res = Crypto::PEM::decode("RSA PUBLIC KEY", pem, data, data_sz);
 		EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(Crypto::RSAPublicKey(data, data_sz), expected);
+		EXPECT_EQ(Crypto::RSA::RSAPublicKey(data, data_sz), expected);
 	}
 }
 
@@ -88,7 +88,7 @@ TEST(RSAPublicKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPublicKey pubKey(data, data_sz);
+			Crypto::RSA::RSAPublicKey pubKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -107,7 +107,7 @@ TEST(RSAPublicKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPublicKey pubKey(data, data_sz);
+			Crypto::RSA::RSAPublicKey pubKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -126,7 +126,7 @@ TEST(RSAPublicKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPublicKey pubKey(data, data_sz);
+			Crypto::RSA::RSAPublicKey pubKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -145,7 +145,7 @@ TEST(RSAPublicKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPublicKey pubKey(data, data_sz);
+			Crypto::RSA::RSAPublicKey pubKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -164,7 +164,7 @@ TEST(RSAPublicKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPublicKey pubKey(data, data_sz);
+			Crypto::RSA::RSAPublicKey pubKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -182,7 +182,7 @@ TEST(RSAPublicKey, to_binary)
 		std::size_t data_sz = sizeof(data);
 		std::string pubKey_str, expected = "3006020137020103";
 
-		Crypto::RSAPublicKey pubKey(55, 3);
+		Crypto::RSA::RSAPublicKey pubKey(55, 3);
 
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -220,7 +220,7 @@ TEST(RSAPublicKey, to_binary)
 				"CBC9ABC499FEE61269DDA55852D64F44CD72C5377449E92064B0476F86C58941"
 				"98750E8DDADCF8074CF33072E7515D15A32F387A0B2D48F768DF7CECEB94E033", 16);
 		Crypto::BigNum e("010001", 16);
-		Crypto::RSAPublicKey pubKey(n, e);
+		Crypto::RSA::RSAPublicKey pubKey(n, e);
 
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -240,7 +240,7 @@ TEST(RSAPublicKey, to_binary_abnormal)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPublicKey pubKey(55, 3);
+		Crypto::RSA::RSAPublicKey pubKey(55, 3);
 
 		data_sz = 0;
 		res = pubKey.to_binary(data, data_sz);
@@ -267,7 +267,7 @@ TEST(RSAPublicKey, to_binary_abnormal)
 				"CBC9ABC499FEE61269DDA55852D64F44CD72C5377449E92064B0476F86C58941"
 				"98750E8DDADCF8074CF33072E7515D15A32F387A0B2D48F768DF7CECEB94E033", 16);
 		Crypto::BigNum e("010001", 16);
-		Crypto::RSAPublicKey pubKey(n, e);
+		Crypto::RSA::RSAPublicKey pubKey(n, e);
 
 		data_sz = 0;
 		res = pubKey.to_binary(data, data_sz);
@@ -335,7 +335,7 @@ TEST(RSAPublicKey, is_valid)
 		Crypto::BigNum e(test[1], 16);
 		bool expected = (test[2] == "true");
 
-		Crypto::RSAPublicKey publicKey(n, e);
+		Crypto::RSA::RSAPublicKey publicKey(n, e);
 
 		EXPECT_EQ(publicKey.is_valid(), expected);
 	}
@@ -349,12 +349,12 @@ TEST(RSAPrivateKey, constructor)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPrivateKey expected(3, 5, 11, true);
+		Crypto::RSA::RSAPrivateKey expected(3, 5, 11, true);
 
 		res = Crypto::Utils::from_hex("301B02010002013702010302010702010502010B020103020107020101", data, data_sz);
 		EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(Crypto::RSAPrivateKey(data, data_sz), expected);
+		EXPECT_EQ(Crypto::RSA::RSAPrivateKey(data, data_sz), expected);
 	}
 
 	// Case #2: small key (Euler totient)
@@ -363,12 +363,12 @@ TEST(RSAPrivateKey, constructor)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPrivateKey expected(3, 5, 11, false);
+		Crypto::RSA::RSAPrivateKey expected(3, 5, 11, false);
 
 		res = Crypto::Utils::from_hex("301B02010002013702010302011B02010502010B020103020107020101", data, data_sz);
 		EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(Crypto::RSAPrivateKey(data, data_sz), expected);
+		EXPECT_EQ(Crypto::RSA::RSAPrivateKey(data, data_sz), expected);
 	}
 
 	// Case #3: from actual PEM file (OpenSSL key)
@@ -386,7 +386,7 @@ TEST(RSAPrivateKey, constructor)
 				"3EE984705704283B2B008F3D5FBDF9D073C8D57DD8B8123C9F5B812216F89D85"
 				"CB52EA303D890E17C955E77284DFB4D7388EF9749C9E40CB448C749F7F7C446F"
 				"3E8B151C885591E7912ABA363840B3FCC4B0CF0A849666416B7025AFA081FC09", 16);
-		Crypto::RSAPrivateKey expected(e, p, q, false);
+		Crypto::RSA::RSAPrivateKey expected(e, p, q, false);
 
 		std::string pem = "-----BEGIN RSA PRIVATE KEY-----\n"
 			"MIIEpAIBAAKCAQEA1zijWmiMUCXMnBAPLURHrZtOdtGLnRPYosdhA6dM4bRUNTJG\n"
@@ -419,7 +419,7 @@ TEST(RSAPrivateKey, constructor)
 		res = Crypto::PEM::decode("RSA PRIVATE KEY", pem, data, data_sz);
 		EXPECT_EQ(res, 0);
 
-		EXPECT_EQ(Crypto::RSAPrivateKey(data, data_sz), expected);
+		EXPECT_EQ(Crypto::RSA::RSAPrivateKey(data, data_sz), expected);
 	}
 }
 
@@ -436,7 +436,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -455,7 +455,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -474,7 +474,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -493,7 +493,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -512,7 +512,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -531,7 +531,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -550,7 +550,7 @@ TEST(RSAPrivateKey, constructor_abnormal)
 		EXPECT_EQ(res, 0);
 
 		try {
-			Crypto::RSAPrivateKey privKey(data, data_sz);
+			Crypto::RSA::RSAPrivateKey privKey(data, data_sz);
 		} catch ( const Crypto::RSA::Exception &re ) {
 			exception = re.what();
 		}
@@ -568,7 +568,7 @@ TEST(RSAPrivateKey, to_binary)
 		std::size_t data_sz = sizeof(data);
 		std::string privKey_str, expected = "301B02010002013702010302010702010502010B020103020107020101";
 
-		Crypto::RSAPrivateKey privKey(3, 5, 11, true);
+		Crypto::RSA::RSAPrivateKey privKey(3, 5, 11, true);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -586,7 +586,7 @@ TEST(RSAPrivateKey, to_binary)
 		std::size_t data_sz = sizeof(data);
 		std::string privKey_str, expected = "301B02010002013702010302011B02010502010B020103020107020101";
 
-		Crypto::RSAPrivateKey privKey(3, 5, 11, false);
+		Crypto::RSA::RSAPrivateKey privKey(3, 5, 11, false);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -652,7 +652,7 @@ TEST(RSAPrivateKey, to_binary)
 				"3EE984705704283B2B008F3D5FBDF9D073C8D57DD8B8123C9F5B812216F89D85"
 				"CB52EA303D890E17C955E77284DFB4D7388EF9749C9E40CB448C749F7F7C446F"
 				"3E8B151C885591E7912ABA363840B3FCC4B0CF0A849666416B7025AFA081FC09", 16);
-		Crypto::RSAPrivateKey privKey(e, p, q, false);
+		Crypto::RSA::RSAPrivateKey privKey(e, p, q, false);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
@@ -672,7 +672,7 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPrivateKey privKey(3, 5, 11, true);
+		Crypto::RSA::RSAPrivateKey privKey(3, 5, 11, true);
 
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
@@ -690,7 +690,7 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 		uint8_t data[256];
 		std::size_t data_sz = sizeof(data);
 
-		Crypto::RSAPrivateKey privKey(3, 5, 11, false);
+		Crypto::RSA::RSAPrivateKey privKey(3, 5, 11, false);
 
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
@@ -717,7 +717,7 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 				"3EE984705704283B2B008F3D5FBDF9D073C8D57DD8B8123C9F5B812216F89D85"
 				"CB52EA303D890E17C955E77284DFB4D7388EF9749C9E40CB448C749F7F7C446F"
 				"3E8B151C885591E7912ABA363840B3FCC4B0CF0A849666416B7025AFA081FC09", 16);
-		Crypto::RSAPrivateKey privKey(e, p, q, false);
+		Crypto::RSA::RSAPrivateKey privKey(e, p, q, false);
 
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
@@ -875,7 +875,7 @@ TEST(RSAPrivateKey, is_valid_no_rng)
 		Crypto::BigNum qp(test[7], 16);
 		bool expected = (test[8] == "true");
 
-		Crypto::RSAPrivateKey privateKey(n, e, d, p, q, dp, dq, qp);
+		Crypto::RSA::RSAPrivateKey privateKey(n, e, d, p, q, dp, dq, qp);
 
 		EXPECT_EQ(privateKey.is_valid(), expected);
 	}
@@ -958,7 +958,7 @@ TEST(RSAPrivateKey, is_valid_rng)
 		Crypto::BigNum qp(test[7], 16);
 		bool expected = (test[8] == "true");
 
-		Crypto::RSAPrivateKey privateKey(n, e, d, p, q, dp, dq, qp);
+		Crypto::RSA::RSAPrivateKey privateKey(n, e, d, p, q, dp, dq, qp);
 
 		EXPECT_TRUE(privateKey.is_valid());
 		EXPECT_EQ(privateKey.is_valid(hmac_drbg_rand, NULL), expected);
@@ -1155,8 +1155,8 @@ TEST(RSA, is_valid)
 		res += Crypto::Utils::from_hex(test[1], priv, priv_sz);
 		EXPECT_EQ(res, 0);
 
-		Crypto::RSAPublicKey pubKey(pub, pub_sz);
-		Crypto::RSAPrivateKey privKey(priv, priv_sz);
+		Crypto::RSA::RSAPublicKey pubKey(pub, pub_sz);
+		Crypto::RSA::RSAPrivateKey privKey(priv, priv_sz);
 
 		EXPECT_EQ(Crypto::RSA::is_valid({ pubKey, privKey }), expected);
 	}

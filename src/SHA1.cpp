@@ -35,8 +35,6 @@
 namespace Crypto
 {
 
-const OID SHA1::oid_alg = OID::id_sha1();
-
 SHA1::SHA1(void)
 {
 	reset();

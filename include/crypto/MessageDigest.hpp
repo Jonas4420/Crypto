@@ -1,8 +1,6 @@
 #ifndef CRYPTO_MESSAGEDIGEST_H
 #define CRYPTO_MESSAGEDIGEST_H
 
-#include "crypto/OID.hpp"
-
 #include <type_traits>
 
 #include <cstddef>

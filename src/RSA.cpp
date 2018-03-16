@@ -8,12 +8,12 @@
 namespace Crypto
 {
 
-RSAPublicKey::RSAPublicKey(const BigNum &n, const BigNum &e)
+RSA::RSAPublicKey::RSAPublicKey(const BigNum &n, const BigNum &e)
 	: n(n), e(e)
 {
 }
 
-RSAPublicKey::RSAPublicKey(const uint8_t *data, std::size_t data_sz)
+RSA::RSAPublicKey::RSAPublicKey(const uint8_t *data, std::size_t data_sz)
 {
 	int res;
 	std::size_t read_sz;
@@ -37,19 +37,13 @@ RSAPublicKey::RSAPublicKey(const uint8_t *data, std::size_t data_sz)
 }
 
 bool
-RSAPublicKey::operator==(const RSAPublicKey &other) const
+RSA::RSAPublicKey::operator==(const RSAPublicKey &other) const
 {
 	return (this->n == other.n) && (this->e == other.e);
 }
 
-bool
-RSAPublicKey::operator!=(const RSAPublicKey &other) const
-{
-	return ! (*this == other);
-}
-
 int
-RSAPublicKey::to_binary(uint8_t *data, std::size_t &data_sz) const
+RSA::RSAPublicKey::to_binary(uint8_t *data, std::size_t &data_sz) const
 {
 	int res;
 	std::vector<std::pair<const uint8_t*, std::size_t>> sequence;
@@ -74,7 +68,7 @@ RSAPublicKey::to_binary(uint8_t *data, std::size_t &data_sz) const
 }
 
 bool
-RSAPublicKey::is_valid(void) const
+RSA::RSAPublicKey::is_valid(void) const
 {
 	bool is_valid = true;
 
@@ -86,12 +80,12 @@ RSAPublicKey::is_valid(void) const
 }
 
 std::size_t
-RSAPublicKey::bitlen(void) const
+RSA::RSAPublicKey::bitlen(void) const
 {
 	return n.bitlen();
 }
 
-RSAPrivateKey::RSAPrivateKey(const BigNum &e, const BigNum &p, const BigNum &q, bool carmichael)
+RSA::RSAPrivateKey::RSAPrivateKey(const BigNum &e, const BigNum &p, const BigNum &q, bool carmichael)
 	: e(e), p(p), q(q)
 {
 	BigNum p1 = p - 1;
@@ -104,14 +98,14 @@ RSAPrivateKey::RSAPrivateKey(const BigNum &e, const BigNum &p, const BigNum &q, 
 	qp = q.inv(p);
 }
 
-RSAPrivateKey::RSAPrivateKey(const BigNum &n, const BigNum &e,
+RSA::RSAPrivateKey::RSAPrivateKey(const BigNum &n, const BigNum &e,
 		const BigNum &d, const BigNum &p, const BigNum &q,
 		const BigNum &dp, const BigNum &dq, const BigNum &qp)
 	: n(n), e(e), d(d), p(p), q(q), dp(dp), dq(dq), qp(qp)
 {
 }
 
-RSAPrivateKey::RSAPrivateKey(const uint8_t *data, std::size_t data_sz)
+RSA::RSAPrivateKey::RSAPrivateKey(const uint8_t *data, std::size_t data_sz)
 {
 	int res;
 	std::size_t read_sz;
@@ -143,21 +137,15 @@ RSAPrivateKey::RSAPrivateKey(const uint8_t *data, std::size_t data_sz)
 }
 
 bool
-RSAPrivateKey::operator==(const RSAPrivateKey &other) const
+RSA::RSAPrivateKey::operator==(const RSAPrivateKey &other) const
 {
 	return (this->n == other.n) && (this->e == other.e)
 		&& (this->d == other.d) && (this->p == other.p) && (this->q == other.q)
 		&& (this->dp == other.dp) && (this->dq == other.dq) && (this->qp == other.qp);
 }
 
-bool
-RSAPrivateKey::operator!=(const RSAPrivateKey &other) const
-{
-	return ! (*this == other);
-}
-
 int
-RSAPrivateKey::to_binary(uint8_t *data, std::size_t &data_sz) const
+RSA::RSAPrivateKey::to_binary(uint8_t *data, std::size_t &data_sz) const
 {
 	int res;
 	std::vector<std::pair<const uint8_t*, std::size_t>> sequence;
@@ -184,7 +172,7 @@ RSAPrivateKey::to_binary(uint8_t *data, std::size_t &data_sz) const
 }
 
 bool
-RSAPrivateKey::is_valid(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng) const
+RSA::RSAPrivateKey::is_valid(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng) const
 {
 	bool is_valid = true;
 
@@ -215,12 +203,12 @@ RSAPrivateKey::is_valid(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng
 }
 
 std::size_t
-RSAPrivateKey::bitlen(void) const
+RSA::RSAPrivateKey::bitlen(void) const
 {
 	return n.bitlen();
 }
 
-std::pair<RSAPublicKey, RSAPrivateKey>
+std::pair<RSA::RSAPublicKey, RSA::RSAPrivateKey>
 RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 		std::size_t n_bits, const BigNum &e)
 {
@@ -245,7 +233,7 @@ RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 }
 
 bool
-RSA::is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&> &keyPair,
+RSA::is_valid(const std::pair<const RSA::RSAPublicKey&, const RSA::RSAPrivateKey&> &keyPair,
 		int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng)
 {
 	bool is_valid = true;
@@ -259,7 +247,8 @@ RSA::is_valid(const std::pair<const RSAPublicKey&, const RSAPrivateKey&> &keyPai
 }
 
 int
-RSA::RSAEP(const RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+RSA::Encrypt(const RSA::RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz,
+		uint8_t *output, std::size_t &output_sz)
 {
 	BigNum m(input, input_sz);
 
@@ -279,7 +268,8 @@ RSA::RSAEP(const RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_s
 }
 
 int
-RSA::RSADP(const RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
+RSA::Decrypt(const RSA::RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz,
+		uint8_t *output, std::size_t &output_sz)
 {
 	BigNum c(input, input_sz);
 
@@ -297,50 +287,6 @@ RSA::RSADP(const RSAPrivateKey &privKey, const uint8_t *input, std::size_t input
 	BigNum h  = ((m1 - m2) * privKey.qp) % privKey.p;
 	BigNum m  = m2 + (privKey.q * h);
 
-	m.to_binary(output, output_sz);
-
-	return CRYPTO_RSA_SUCCESS;
-}
-
-int
-RSA::RSASP1(const RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
-{
-	BigNum m(input, input_sz);
-
-	if ( m >= privKey.n ) {
-		return CRYPTO_RSA_OUT_OF_RANGE;
-	}
-
-	if ( output_sz < privKey.n.size() ) {
-		output_sz = privKey.n.size();
-		return CRYPTO_RSA_INVALID_LENGTH;
-	}
-
-	BigNum s1 = m.exp_mod(privKey.dp, privKey.p);
-	BigNum s2 = m.exp_mod(privKey.dq, privKey.q);
-	BigNum h  = ((s1 - s2) * privKey.qp) % privKey.p;
-	BigNum s  = s2 + (privKey.q * h);
-
-	s.to_binary(output, output_sz);
-
-	return CRYPTO_RSA_SUCCESS;
-}
-
-int
-RSA::RSAVP1(const RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz, uint8_t *output, std::size_t &output_sz)
-{
-	BigNum s(input, input_sz);
-
-	if ( s >= pubKey.n.size() ) {
-		return CRYPTO_RSA_OUT_OF_RANGE;
-	}
-
-	if ( output_sz < pubKey.n.size() ) {
-		output_sz = pubKey.n.size();
-		return CRYPTO_RSA_INVALID_LENGTH;
-	}
-
-	BigNum m = s.exp_mod(pubKey.e, pubKey.n);
 	m.to_binary(output, output_sz);
 
 	return CRYPTO_RSA_SUCCESS;
