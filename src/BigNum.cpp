@@ -334,7 +334,7 @@ BigNum::operator=(BigNum &&other)
 		std::swap(s, other.s);
 
 		// Swap only if more limbs in other destination
-		if ( other.n > n ) {
+		if ( other.n >= n ) {
 			// Number of limbs
 			std::swap(n, other.n);
 
@@ -343,8 +343,11 @@ BigNum::operator=(BigNum &&other)
 		} else {
 			if ( NULL != p ) {
 				memset(p, 0x00, n * ciL);
+
+				if ( NULL != other.p ) {
+					memcpy(p, other.p, other.n * ciL);
+				}
 			}
-			memcpy(p, other.p, other.n * ciL);
 		}
 	}
 

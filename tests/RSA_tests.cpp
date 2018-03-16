@@ -980,7 +980,7 @@ TEST(RSA, gen_keypair)
 		std::size_t iterations = atoi(test[1].c_str());
 
 		if ( TestOptions::get().is_fast ) {
-			if ( n_bits > 1024 ) { continue; }
+			if ( n_bits > 512 ) { continue; }
 
 			iterations = 5;
 		}
