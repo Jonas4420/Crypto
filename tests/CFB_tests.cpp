@@ -53,7 +53,7 @@ TEST(CFB8, KAT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -112,7 +112,7 @@ TEST(CFB8, MMT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -169,7 +169,7 @@ TEST(CFB8, MonteCarlo_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 				}
 
 				res = Crypto::Utils::to_hex(output, output_sz, output_str, false);
@@ -230,7 +230,7 @@ TEST(CFB8, KAT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -289,7 +289,7 @@ TEST(CFB8, MMT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -346,7 +346,7 @@ TEST(CFB8, MonteCarlo_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 				}
 
 				res = Crypto::Utils::to_hex(output, output_sz, output_str, false);
@@ -407,7 +407,7 @@ TEST(CFB128, KAT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -466,7 +466,7 @@ TEST(CFB128, MMT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -523,7 +523,7 @@ TEST(CFB128, MonteCarlo_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 				}
 
 				res = Crypto::Utils::to_hex(output, output_sz, output_str, false);
@@ -584,7 +584,7 @@ TEST(CFB128, KAT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -643,7 +643,7 @@ TEST(CFB128, MMT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -700,7 +700,7 @@ TEST(CFB128, MonteCarlo_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 				}
 
 				res = Crypto::Utils::to_hex(output, output_sz, output_str, false);

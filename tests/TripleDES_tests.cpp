@@ -201,7 +201,7 @@ TEST(TripleDES, MMT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -264,7 +264,7 @@ TEST(TripleDES, MonteCarlo_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, output[2], input_sz);
 				}
@@ -335,7 +335,7 @@ TEST(TripleDES, MMT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -398,7 +398,7 @@ TEST(TripleDES, MonteCarlo_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, output[2], input_sz);
 				}

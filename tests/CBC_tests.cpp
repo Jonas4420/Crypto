@@ -53,7 +53,7 @@ TEST(CBC, KAT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -112,7 +112,7 @@ TEST(CBC, MMT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -165,7 +165,7 @@ TEST(CBC, MonteCarlo_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, (i == 0) ? iv : output[0], input_sz);
 				}
@@ -440,7 +440,7 @@ TEST(CBC, KAT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -499,7 +499,7 @@ TEST(CBC, MMT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = Crypto::Utils::to_hex(output.get(), output_sz, output_str, false);
 				EXPECT_EQ(res, 0);
@@ -552,7 +552,7 @@ TEST(CBC, MonteCarlo_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, (i == 0) ? iv : output[0], input_sz);
 				}

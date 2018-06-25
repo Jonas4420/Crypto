@@ -154,7 +154,7 @@ TEST(Twofish, MonteCarlo_ECB_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, output[1], input_sz);
 				}
@@ -226,7 +226,7 @@ TEST(Twofish, MonteCarlo_CBC_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, (i == 0) ? iv : output[0], input_sz);
 				}
@@ -355,7 +355,7 @@ TEST(Twofish, MonteCarlo_ECB_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(input, output[1], input_sz);
 				}
@@ -425,7 +425,7 @@ TEST(Twofish, MonteCarlo_CBC_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					memcpy(iv, output[0], iv_sz);
 					memcpy(input, output[1], input_sz);

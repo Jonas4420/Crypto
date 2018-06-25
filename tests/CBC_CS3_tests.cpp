@@ -58,7 +58,7 @@ TEST(CBC_CS3, KAT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				output_sz = total_sz - current_sz;
 				res = ctx.steal_last(output.get() + current_sz, output_sz);
@@ -122,7 +122,7 @@ TEST(CBC_CS3, MMT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				output_sz = total_sz - current_sz;
 				res = ctx.steal_last(output.get() + current_sz, output_sz);
@@ -195,7 +195,7 @@ TEST(CBC_CS3, MonteCarlo_enc)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					output_sz = total_sz - current_sz;
 					res = ctx.steal_last(output[1] + current_sz, output_sz);
@@ -362,7 +362,7 @@ TEST(CBC_CS3, steal_test_vector_enc)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 
 		current_sz = total_sz - output_sz;
 		res = ctx.steal_last(output.get() + output_sz, current_sz);
@@ -423,7 +423,7 @@ TEST(CBC_CS3, KAT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				output_sz = total_sz - current_sz;
 				res = ctx.steal_last(output.get() + current_sz, output_sz);
@@ -495,7 +495,7 @@ TEST(CBC_CS3, MMT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				output_sz = total_sz - current_sz;
 				res = ctx.steal_last(output.get() + current_sz, output_sz);
@@ -560,7 +560,7 @@ TEST(CBC_CS3, MonteCarlo_dec)
 
 					res = ctx.finish(pad_sz);
 					EXPECT_EQ(res, 0);
-					EXPECT_EQ(pad_sz, 0);
+					EXPECT_EQ(pad_sz, (size_t)0);
 
 					output_sz = total_sz - current_sz;
 					res = ctx.steal_last(output[1] + current_sz, output_sz);
@@ -729,7 +729,7 @@ TEST(CBC_CS3, steal_test_vector_dec)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 
 		current_sz = total_sz - output_sz;
 		res = ctx.steal_last(output.get() + output_sz, current_sz);
@@ -767,7 +767,7 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 0, input_sz = 8, output_sz = 0
@@ -778,7 +778,7 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 0, input_sz = 24, output_sz = 0
@@ -789,7 +789,7 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 0, input_sz = 32, output_sz = 0
@@ -800,7 +800,7 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 15, input_sz = 0, output_sz = 0
@@ -811,13 +811,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 0;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 15, input_sz = 1, output_sz = 0
@@ -828,13 +828,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 1;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 15, input_sz = 16, output_sz = 0
@@ -845,13 +845,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 16;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 15, input_sz = 17, output_sz = 0
@@ -862,13 +862,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 17;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 16, input_sz = 0, output_sz = 0
@@ -879,13 +879,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 0;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 16, input_sz = 15, output_sz = 0
@@ -896,13 +896,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 15;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 16, input_sz = 16, output_sz = 0
@@ -913,13 +913,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 16;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 16, input_sz = 24, output_sz = 16
@@ -930,13 +930,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 24;
 		output_sz = 16;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 31, input_sz = 0, output_sz = 0
@@ -947,13 +947,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 0;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 31, input_sz = 1, output_sz = 0
@@ -964,13 +964,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 1;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 31, input_sz = 16, output_sz = 0
@@ -981,13 +981,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 16;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 	}
 
 	// buffer_sz = 31, input_sz = 33, output_sz = 0
@@ -998,13 +998,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 33;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 32);
+		EXPECT_EQ(output_sz, (size_t)32);
 	}
 
 	// buffer_sz = 31, input_sz = 33, output_sz = 32
@@ -1015,13 +1015,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 33;
 		output_sz = 32;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 32);
+		EXPECT_EQ(output_sz, (size_t)32);
 	}
 
 	// buffer_sz = 47, input_sz = 1, output_sz = 0
@@ -1032,13 +1032,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 1;
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 16);
+		EXPECT_EQ(output_sz, (size_t)16);
 	}
 	
 	// buffer_sz = 47, input_sz = 1, output_sz = 0
@@ -1049,13 +1049,13 @@ TEST(CBC_CS3, update_sz)
 		output_sz = 0;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 0);
+		EXPECT_EQ(output_sz, (size_t)0);
 
 		input_sz = 1;
 		output_sz = 16;
 		res = ctx.update(input, input_sz, output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 16);
+		EXPECT_EQ(output_sz, (size_t)16);
 	}
 }
 
@@ -1083,7 +1083,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 2);
-		EXPECT_EQ(pad_sz, 16);
+		EXPECT_EQ(pad_sz, (size_t)16);
 	}
 
 	// Buffer not empty < BLOCK_SIZE
@@ -1095,7 +1095,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 2);
-		EXPECT_EQ(pad_sz, 1);
+		EXPECT_EQ(pad_sz, (size_t)1);
 	}
 
 	// Buffer not empty = BLOCK_SIZE
@@ -1107,7 +1107,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 	}
 
 	// Buffer not empty > BLOCK_SIZE
@@ -1119,7 +1119,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 	}
 
 	// Buffer not empty = 2 * BLOCK_SIZE
@@ -1131,7 +1131,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 	}
 
 	// Buffer not empty > 2 * BLOCK_SIZE
@@ -1143,7 +1143,7 @@ TEST(CBC_CS3, finish_sz)
 
 		res = ctx.finish(pad_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(pad_sz, 0);
+		EXPECT_EQ(pad_sz, (size_t)0);
 	}
 }
 
@@ -1170,7 +1170,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 2);
-		EXPECT_EQ(output_sz, 16);
+		EXPECT_EQ(output_sz, (size_t)16);
 	}
 
 	// buffer_sz = 15, output_sz = 0
@@ -1185,7 +1185,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 2);
-		EXPECT_EQ(output_sz, 1);
+		EXPECT_EQ(output_sz, (size_t)1);
 	}
 
 	// buffer_sz = 16, output_sz = 0
@@ -1200,7 +1200,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 16);
+		EXPECT_EQ(output_sz, (size_t)16);
 	}
 
 	// buffer_sz = 16, output_sz = 16
@@ -1215,7 +1215,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 16;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 16);
+		EXPECT_EQ(output_sz, (size_t)16);
 	}
 
 	// buffer_sz = 31, output_sz = 0
@@ -1230,7 +1230,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 31);
+		EXPECT_EQ(output_sz, (size_t)31);
 	}
 
 	// buffer_sz = 31, output_sz = 31
@@ -1245,7 +1245,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 31;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 31);
+		EXPECT_EQ(output_sz, (size_t)31);
 	}
 
 	// buffer_sz = 32, output_sz = 0
@@ -1260,7 +1260,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 32);
+		EXPECT_EQ(output_sz, (size_t)32);
 	}
 
 	// buffer_sz = 32, output_sz = 32
@@ -1275,7 +1275,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 32;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 32);
+		EXPECT_EQ(output_sz, (size_t)32);
 	}
 
 	// buffer_sz = 40, output_sz = 0
@@ -1290,7 +1290,7 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 0;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(output_sz, 40);
+		EXPECT_EQ(output_sz, (size_t)40);
 	}
 
 	// buffer_sz = 40, output_sz = 40
@@ -1305,6 +1305,6 @@ TEST(CBC_CS3, steal_last_sz)
 		output_sz = 40;
 		res = ctx.steal_last(output, output_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(output_sz, 40);
+		EXPECT_EQ(output_sz, (size_t)40);
 	}
 }

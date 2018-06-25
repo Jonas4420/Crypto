@@ -458,7 +458,7 @@ TEST(GCM, KAT_enc)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = ctx.get_tag(tag.get(), tag_sz);
 				EXPECT_EQ(res, 0);
@@ -534,7 +534,7 @@ TEST(GCM, KAT_dec)
 
 				res = ctx.finish(pad_sz);
 				EXPECT_EQ(res, 0);
-				EXPECT_EQ(pad_sz, 0);
+				EXPECT_EQ(pad_sz, (size_t)0);
 
 				res = ctx.check_tag(tag.get(), tag_sz, is_auth);
 				EXPECT_EQ(res, 0);

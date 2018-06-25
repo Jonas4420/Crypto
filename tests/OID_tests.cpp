@@ -18,28 +18,28 @@ TEST(OID, construction)
 {
 	Crypto::OID oid;
 
-	EXPECT_EQ(oid.size(), 0);
+	EXPECT_EQ(oid.size(), (size_t)0);
 	EXPECT_EQ(oid.to_string(), "");
 
 	oid += 2;
 
-	EXPECT_EQ(oid.size(), 1);
-	EXPECT_EQ(oid[0], 2);
+	EXPECT_EQ(oid.size(), (size_t)1);
+	EXPECT_EQ(oid[0], (uint32_t)2);
 	EXPECT_EQ(oid.to_string(), "2");
 
 	oid += 47;
 
-	EXPECT_EQ(oid.size(), 2);
-	EXPECT_EQ(oid[0], 2);
-	EXPECT_EQ(oid[1], 47);
+	EXPECT_EQ(oid.size(), (size_t)2);
+	EXPECT_EQ(oid[0], (uint32_t)2);
+	EXPECT_EQ(oid[1], (uint32_t)47);
 	EXPECT_EQ(oid.to_string(), "2.47");
 
 	oid += 123;
 
-	EXPECT_EQ(oid.size(), 3);
-	EXPECT_EQ(oid[0], 2);
-	EXPECT_EQ(oid[1], 47);
-	EXPECT_EQ(oid[2], 123);
+	EXPECT_EQ(oid.size(), (size_t)3);
+	EXPECT_EQ(oid[0], (uint32_t)2);
+	EXPECT_EQ(oid[1], (uint32_t)47);
+	EXPECT_EQ(oid[2], (uint32_t)123);
 	EXPECT_EQ(oid.to_string(), "2.47.123");
 }
 

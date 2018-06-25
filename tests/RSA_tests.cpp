@@ -245,11 +245,11 @@ TEST(RSAPublicKey, to_binary_abnormal)
 		data_sz = 0;
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(data_sz, 8);
+		EXPECT_EQ(data_sz, (size_t)8);
 
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(data_sz, 8);
+		EXPECT_EQ(data_sz, (size_t)8);
 	}
 
 	// Case #2: not enough space to write (larger)
@@ -272,11 +272,11 @@ TEST(RSAPublicKey, to_binary_abnormal)
 		data_sz = 0;
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(data_sz, 270);
+		EXPECT_EQ(data_sz, (size_t)270);
 
 		res = pubKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(data_sz, 270);
+		EXPECT_EQ(data_sz, (size_t)270);
 	}
 }
 
@@ -677,11 +677,11 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(data_sz, 29);
+		EXPECT_EQ(data_sz, (size_t)29);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(data_sz, 29);
+		EXPECT_EQ(data_sz, (size_t)29);
 	}
 
 	// Case #2: Not enough space to write (small with Euler totient)
@@ -695,11 +695,11 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(data_sz, 29);
+		EXPECT_EQ(data_sz, (size_t)29);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(data_sz, 29);
+		EXPECT_EQ(data_sz, (size_t)29);
 	}
 
 	// Case #3: Not enough space to write (large from OpenSSL key)
@@ -722,11 +722,11 @@ TEST(RSAPrivateKey, to_binary_abnormal)
 		data_sz = 0;
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 1);
-		EXPECT_EQ(data_sz, 1192);
+		EXPECT_EQ(data_sz, (size_t)1192);
 
 		res = privKey.to_binary(data, data_sz);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(data_sz, 1192);
+		EXPECT_EQ(data_sz, (size_t)1192);
 	}
 }
 
