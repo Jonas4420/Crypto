@@ -2,6 +2,7 @@ RSA
 	Check sizes for RSA primitives
 	use RR for exp_mod for speed optimization
 	blindering of operations for private key operations
+	Test vectors for Textbook RSA
 RSA (Padding schemes)
 	RSAES_OAEP
 	RSAES_PKCS1_v1_5
