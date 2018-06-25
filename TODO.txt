@@ -1,5 +1,5 @@
 RSA
-	Test vectors
+	Check sizes for RSA primitives
 	use RR for exp_mod for speed optimization
 	blindering of operations for private key operations
 RSA (Padding schemes)
@@ -30,4 +30,3 @@ ECC
 	EC GF(2m), ensure that types and keys are not mixed up with GF(p)
 Global
 	Refactor exception and return codes (uniformization of uses)
-	Make class for secured byte vectors for auto zeroization

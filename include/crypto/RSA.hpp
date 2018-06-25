@@ -27,6 +27,7 @@ class RSA
 
 				bool is_valid(void) const;
 				std::size_t bitlen(void) const;
+				std::size_t size(void) const;
 
 				friend RSA;
 			protected:
@@ -49,6 +50,7 @@ class RSA
 
 				bool is_valid(int (*)(void *, uint8_t*, std::size_t) = NULL, void* = NULL) const;
 				std::size_t bitlen(void) const;
+				std::size_t size(void) const;
 
 				friend RSA;
 			protected:
@@ -103,6 +105,9 @@ class RSA
 		static const int CRYPTO_RSA_SUCCESS          = 0x00;
 		static const int CRYPTO_RSA_INVALID_LENGTH   = 0x01;
 		static const int CRYPTO_RSA_OUT_OF_RANGE     = 0x02;
+		static const int CRYPTO_RSA_MESSAGE_TOO_LONG = 0x03;
+		static const int CRYPTO_RSA_DECRYPTION_ERROR = 0x04;
+		static const int CRYPTO_RSA_RNG_ERROR        = 0x05;
 	protected:
 		static void zeroize(void *v, std::size_t n)
 		{

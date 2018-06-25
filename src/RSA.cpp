@@ -85,6 +85,12 @@ RSA::RSAPublicKey::bitlen(void) const
 	return n.bitlen();
 }
 
+std::size_t
+RSA::RSAPublicKey::size(void) const
+{
+	return n.size();
+}
+
 RSA::RSAPrivateKey::RSAPrivateKey(const BigNum &e, const BigNum &p, const BigNum &q, bool carmichael)
 	: e(e), p(p), q(q)
 {
@@ -208,6 +214,12 @@ RSA::RSAPrivateKey::bitlen(void) const
 	return n.bitlen();
 }
 
+std::size_t
+RSA::RSAPrivateKey::size(void) const
+{
+	return n.size();
+}
+
 std::pair<RSA::RSAPublicKey, RSA::RSAPrivateKey>
 RSA::gen_keypair(int (*f_rng)(void *, uint8_t*, std::size_t), void *p_rng,
 		std::size_t n_bits, const BigNum &e)
@@ -250,19 +262,27 @@ int
 RSA::Encrypt(const RSA::RSAPublicKey &pubKey, const uint8_t *input, std::size_t input_sz,
 		uint8_t *output, std::size_t &output_sz)
 {
+	std::size_t key_sz = pubKey.size();
 	BigNum m(input, input_sz);
 
 	if ( m >= pubKey.n ) {
 		return CRYPTO_RSA_OUT_OF_RANGE;
 	}
 
-	if ( output_sz < pubKey.n.size() ) {
-		output_sz = pubKey.n.size();
+	if ( output_sz < key_sz ) {
+		output_sz = key_sz;
 		return CRYPTO_RSA_INVALID_LENGTH;
 	}
 
 	BigNum c = m.exp_mod(pubKey.e, pubKey.n);
+
+	// Padding on key size's length
+	// TODO: check sizes
+	memset(output, 0x00, key_sz);
+	output += (key_sz - c.size());
+
 	c.to_binary(output, output_sz);
+	output_sz = key_sz;
 
 	return CRYPTO_RSA_SUCCESS;
 }
@@ -271,14 +291,15 @@ int
 RSA::Decrypt(const RSA::RSAPrivateKey &privKey, const uint8_t *input, std::size_t input_sz,
 		uint8_t *output, std::size_t &output_sz)
 {
+	std::size_t key_sz = privKey.size();
 	BigNum c(input, input_sz);
 
 	if ( c >= privKey.n ) {
 		return CRYPTO_RSA_OUT_OF_RANGE;
 	}
 
-	if ( output_sz < privKey.n.size() ) {
-		output_sz = privKey.n.size();
+	if ( output_sz < key_sz ) {
+		output_sz = key_sz;
 		return CRYPTO_RSA_INVALID_LENGTH;
 	}
 
@@ -287,7 +308,13 @@ RSA::Decrypt(const RSA::RSAPrivateKey &privKey, const uint8_t *input, std::size_
 	BigNum h  = ((m1 - m2) * privKey.qp) % privKey.p;
 	BigNum m  = m2 + (privKey.q * h);
 
+	// Padding on key size's length
+	// TODO: check sizes
+	memset(output, 0x00, key_sz);
+	output += (key_sz - m.size());
+
 	m.to_binary(output, output_sz);
+	output_sz = key_sz;
 
 	return CRYPTO_RSA_SUCCESS;
 }

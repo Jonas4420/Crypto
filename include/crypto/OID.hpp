@@ -3,6 +3,7 @@
 
 #include "crypto/MD5.hpp"
 #include "crypto/RIPEMD160.hpp"
+#include "crypto/SHA1.hpp"
 #include "crypto/SHA224.hpp"
 #include "crypto/SHA256.hpp"
 #include "crypto/SHA384.hpp"
@@ -172,16 +173,17 @@ class OID
 		template<class MD>
 		static inline OID get_oid(void)
 		{
-			if ( std::is_class<MD5>::value )       { return id_md5(); }
-			if ( std::is_class<RIPEMD160>::value ) { return id_ripemd160(); }
-			if ( std::is_class<SHA224>::value )    { return id_sha224(); }
-			if ( std::is_class<SHA256>::value )    { return id_sha256(); }
-			if ( std::is_class<SHA384>::value )    { return id_sha384(); }
-			if ( std::is_class<SHA512>::value )    { return id_sha512(); }
-			if ( std::is_class<SHA3_224>::value )  { return id_sha3_224(); }
-			if ( std::is_class<SHA3_256>::value )  { return id_sha3_256(); }
-			if ( std::is_class<SHA3_384>::value )  { return id_sha3_384(); }
-			if ( std::is_class<SHA3_512>::value )  { return id_sha3_512(); }
+			if ( std::is_same<MD, MD5>::value )       { return id_md5(); }
+			if ( std::is_same<MD, RIPEMD160>::value ) { return id_ripemd160(); }
+			if ( std::is_same<MD, SHA1>::value )      { return id_sha1(); }
+			if ( std::is_same<MD, SHA224>::value )    { return id_sha224(); }
+			if ( std::is_same<MD, SHA256>::value )    { return id_sha256(); }
+			if ( std::is_same<MD, SHA384>::value )    { return id_sha384(); }
+			if ( std::is_same<MD, SHA512>::value )    { return id_sha512(); }
+			if ( std::is_same<MD, SHA3_224>::value )  { return id_sha3_224(); }
+			if ( std::is_same<MD, SHA3_256>::value )  { return id_sha3_256(); }
+			if ( std::is_same<MD, SHA3_384>::value )  { return id_sha3_384(); }
+			if ( std::is_same<MD, SHA3_512>::value )  { return id_sha3_512(); }
 
 			return 0;
 		}
