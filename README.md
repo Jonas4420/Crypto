@@ -1,6 +1,6 @@
 # C++ Cryptographic library
 
-[![Build Status](https://travis-ci.org/Jonas4420/Crypto.svg?branch=master)](https://travis-ci.org/Jonas4420/Crypto)
+[![Build Status](https://travis-ci.com/Jonas4420/Crypto.svg?branch=master)](https://travis-ci.com/Jonas4420/Crypto)
 [![codecov](https://codecov.io/gh/Jonas4420/Crypto/branch/master/graph/badge.svg)](https://codecov.io/gh/Jonas4420/Crypto)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
